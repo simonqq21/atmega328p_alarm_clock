@@ -20,7 +20,7 @@ Linker script and memory map
 Address of section .data set to 0x800100
 LOAD /usr/lib/gcc/avr/7.3.0/../../../avr/lib/avr5/crtatmega328p.o
 LOAD demo.o
-LOAD /tmp/ccwVJckT.o
+LOAD /tmp/ccm6WUr7.o
 START GROUP
 LOAD /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a
 LOAD /usr/lib/gcc/avr/7.3.0/../../../avr/lib/avr5/libm.a
@@ -127,7 +127,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x0000000000000000       0x8a
+.text           0x0000000000000000       0xb2
  *(.vectors)
  .vectors       0x0000000000000000       0x68 /usr/lib/gcc/avr/7.3.0/../../../avr/lib/avr5/crtatmega328p.o
                 0x0000000000000000                __vectors
@@ -209,30 +209,30 @@ END GROUP
                 0x000000000000007c                __vector_18
                 0x000000000000007c                __vector_20
  .text          0x0000000000000080        0x0 demo.o
- .text          0x0000000000000080        0x0 /tmp/ccwVJckT.o
+ .text          0x0000000000000080        0x0 /tmp/ccm6WUr7.o
  .text          0x0000000000000080        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
                 0x0000000000000080                . = ALIGN (0x2)
  *(.text.*)
- .text.startup  0x0000000000000080        0x6 demo.o
+ .text.startup  0x0000000000000080       0x2e demo.o
                 0x0000000000000080                main
  .text.libgcc.mul
-                0x0000000000000086        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
+                0x00000000000000ae        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
  .text.libgcc.div
-                0x0000000000000086        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
- .text.libgcc   0x0000000000000086        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
+                0x00000000000000ae        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
+ .text.libgcc   0x00000000000000ae        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
  .text.libgcc.prologue
-                0x0000000000000086        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
+                0x00000000000000ae        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
  .text.libgcc.builtins
-                0x0000000000000086        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
+                0x00000000000000ae        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
  .text.libgcc.fmul
-                0x0000000000000086        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
+                0x00000000000000ae        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
  .text.libgcc.fixed
-                0x0000000000000086        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
-                0x0000000000000086                . = ALIGN (0x2)
+                0x00000000000000ae        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
+                0x00000000000000ae                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x0000000000000086        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
-                0x0000000000000086                exit
-                0x0000000000000086                _exit
+ .fini9         0x00000000000000ae        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
+                0x00000000000000ae                exit
+                0x00000000000000ae                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -251,16 +251,16 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x0000000000000086        0x4 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
+ .fini0         0x00000000000000ae        0x4 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
  *(.fini0)
-                0x000000000000008a                _etext = .
+                0x00000000000000b2                _etext = .
 
-.data           0x0000000000800100        0x0 load address 0x000000000000008a
+.data           0x0000000000800100        0x0 load address 0x00000000000000b2
                 [!provide]                        PROVIDE (__data_start, .)
  *(.data)
  .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/7.3.0/../../../avr/lib/avr5/crtatmega328p.o
  .data          0x0000000000800100        0x0 demo.o
- .data          0x0000000000800100        0x0 /tmp/ccwVJckT.o
+ .data          0x0000000000800100        0x0 /tmp/ccm6WUr7.o
  .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
  *(.data*)
  *(.gnu.linkonce.d*)
@@ -276,13 +276,13 @@ END GROUP
  *(.bss)
  .bss           0x0000000000800100        0x0 /usr/lib/gcc/avr/7.3.0/../../../avr/lib/avr5/crtatmega328p.o
  .bss           0x0000000000800100        0x0 demo.o
- .bss           0x0000000000800100        0x0 /tmp/ccwVJckT.o
+ .bss           0x0000000000800100        0x0 /tmp/ccm6WUr7.o
  .bss           0x0000000000800100        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
  *(.bss*)
  *(COMMON)
                 [!provide]                        PROVIDE (__bss_end, .)
-                0x000000000000008a                __data_load_start = LOADADDR (.data)
-                0x000000000000008a                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00000000000000b2                __data_load_start = LOADADDR (.data)
+                0x00000000000000b2                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x0000000000800100        0x0
                 [!provide]                        PROVIDE (__noinit_start, .)
@@ -310,15 +310,15 @@ END GROUP
 .user_signatures
  *(.user_signatures*)
 
-.stab           0x0000000000000000      0x768
+.stab           0x0000000000000000      0x804
  *(.stab)
- .stab          0x0000000000000000      0x4e0 demo.o
- .stab          0x00000000000004e0      0x288 /tmp/ccwVJckT.o
+ .stab          0x0000000000000000      0x57c demo.o
+ .stab          0x000000000000057c      0x288 /tmp/ccm6WUr7.o
                                         0x294 (size before relaxing)
 
-.stabstr        0x0000000000000000      0xce0
+.stabstr        0x0000000000000000      0xd02
  *(.stabstr)
- .stabstr       0x0000000000000000      0xce0 demo.o
+ .stabstr       0x0000000000000000      0xd02 demo.o
 
 .stab.excl
  *(.stab.excl)
@@ -336,7 +336,7 @@ END GROUP
  *(.comment)
  .comment       0x0000000000000000       0x11 demo.o
                                          0x12 (size before relaxing)
- .comment       0x0000000000000011       0x12 /tmp/ccwVJckT.o
+ .comment       0x0000000000000011       0x12 /tmp/ccm6WUr7.o
 
 .note.gnu.avr.deviceinfo
                 0x0000000000000000       0x40

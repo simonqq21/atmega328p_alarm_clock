@@ -44,7 +44,7 @@ PIN for reading value
 /*
 inline function to set pin as output
 */
-static inline void gpio_set_pin_output(uint8_t *ddrreg, uint8_t pin)
+static inline void gpio_set_pin_output(volatile uint8_t *ddrreg, uint8_t pin)
 {
     *ddrreg |= _BV(pin);
 }
@@ -52,7 +52,7 @@ static inline void gpio_set_pin_output(uint8_t *ddrreg, uint8_t pin)
 /*
 inline function to set pin as input
 */
-static inline void gpio_set_pin_input(uint8_t *ddrreg, uint8_t pin)
+static inline void gpio_set_pin_input(volatile uint8_t *ddrreg, uint8_t pin)
 {
     *ddrreg &= ~_BV(pin);
 }
@@ -60,7 +60,7 @@ static inline void gpio_set_pin_input(uint8_t *ddrreg, uint8_t pin)
 /*
 inline function to set pin high
 */
-static inline void gpio_set_pin_high(uint8_t *portreg, uint8_t pin)
+static inline void gpio_set_pin_high(volatile uint8_t *portreg, uint8_t pin)
 {
     *portreg |= _BV(pin);
 }
@@ -68,7 +68,7 @@ static inline void gpio_set_pin_high(uint8_t *portreg, uint8_t pin)
 /*
 inline function to set pin low
 */
-static inline void gpio_set_pin_low(uint8_t *portreg, uint8_t pin)
+static inline void gpio_set_pin_low(volatile uint8_t *portreg, uint8_t pin)
 {
     *portreg &= ~_BV(pin);
 }
@@ -76,7 +76,7 @@ static inline void gpio_set_pin_low(uint8_t *portreg, uint8_t pin)
 /*
 inline function to toggle pin value
 */
-static inline void gpio_set_pin_toggle(uint8_t *portreg, uint8_t pin)
+static inline void gpio_set_pin_toggle(volatile uint8_t *portreg, uint8_t pin)
 {
     *portreg ^= _BV(pin);
 }
@@ -84,7 +84,7 @@ static inline void gpio_set_pin_toggle(uint8_t *portreg, uint8_t pin)
 /*
 inline function to read pin value
 */
-static inline uint8_t gpio_set_pin_toggle(uint8_t *pinreg, uint8_t pin)
+static inline uint8_t gpio_read_pin(volatile uint8_t *pinreg, uint8_t pin)
 {
     if (*pinreg & _BV(pin))
     {
@@ -98,18 +98,30 @@ static inline uint8_t gpio_set_pin_toggle(uint8_t *pinreg, uint8_t pin)
 
 int main(void)
 {
+    gpio_set_pin_output(&DDRB, PB5);
+    gpio_set_pin_high(&PORTB, PB5);
+
+    gpio_set_pin_output(&DDRD, PD0);
+    gpio_set_pin_high(&PORTD, PD0);
+    // gpio_set_pin_low(&PORTD, PD0);
+    gpio_set_pin_output(&DDRD, PD3);
+    gpio_set_pin_high(&PORTD, PD3);
+    _delay_ms(1000);
+    gpio_set_pin_low(&PORTD, PD3);
+
     // initialize TM1637
-    TM1637_DDR |= _BV(TM1637_CLK);
-    TM1637_DDR |= _BV(TM1637_DIO);
-    TM1637_PORT |= _BV()
+    gpio_set_pin_output(&TM1637_DDR, TM1637_CLK);
+    gpio_set_pin_input(&TM1637_DDR, TM1637_DIO);
+    gpio_set_pin_high(&TM1637_PORT, TM1637_CLK);
+    gpio_set_pin_high(&TM1637_PORT, TM1637_DIO);
 
-        // Send memory write command
+    // Send memory write command
 
-        // Set the initial address
+    // Set the initial address
 
-        // Transfer multiple words continuously
+    // Transfer multiple words continuously
 
-        // Send display control command
+    // Send display control command
 
-        return 0;
+    return 0;
 }
