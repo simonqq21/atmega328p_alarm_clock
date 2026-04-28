@@ -20,7 +20,7 @@ Linker script and memory map
 Address of section .data set to 0x800100
 LOAD /usr/lib/gcc/avr/7.3.0/../../../avr/lib/avr5/crtatmega328p.o
 LOAD demo.o
-LOAD /tmp/ccladeTh.o
+LOAD /tmp/ccbJvSX5.o
 START GROUP
 LOAD /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a
 LOAD /usr/lib/gcc/avr/7.3.0/../../../avr/lib/avr5/libm.a
@@ -209,7 +209,7 @@ END GROUP
                 0x000000000000007c                __vector_18
                 0x000000000000007c                __vector_20
  .text          0x0000000000000080       0xc6 demo.o
- .text          0x0000000000000146        0x0 /tmp/ccladeTh.o
+ .text          0x0000000000000146        0x0 /tmp/ccbJvSX5.o
  .text          0x0000000000000146        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
                 0x0000000000000146                . = ALIGN (0x2)
  *(.text.*)
@@ -260,7 +260,7 @@ END GROUP
  *(.data)
  .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/7.3.0/../../../avr/lib/avr5/crtatmega328p.o
  .data          0x0000000000800100        0x0 demo.o
- .data          0x0000000000800100        0x0 /tmp/ccladeTh.o
+ .data          0x0000000000800100        0x0 /tmp/ccbJvSX5.o
  .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
  *(.data*)
  *(.gnu.linkonce.d*)
@@ -276,7 +276,7 @@ END GROUP
  *(.bss)
  .bss           0x0000000000800100        0x0 /usr/lib/gcc/avr/7.3.0/../../../avr/lib/avr5/crtatmega328p.o
  .bss           0x0000000000800100        0x0 demo.o
- .bss           0x0000000000800100        0x0 /tmp/ccladeTh.o
+ .bss           0x0000000000800100        0x0 /tmp/ccbJvSX5.o
  .bss           0x0000000000800100        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
  *(.bss*)
  *(COMMON)
@@ -313,7 +313,7 @@ END GROUP
 .stab           0x0000000000000000      0xcf0
  *(.stab)
  .stab          0x0000000000000000      0xa68 demo.o
- .stab          0x0000000000000a68      0x288 /tmp/ccladeTh.o
+ .stab          0x0000000000000a68      0x288 /tmp/ccbJvSX5.o
                                         0x294 (size before relaxing)
 
 .stabstr        0x0000000000000000      0xd3b
@@ -336,7 +336,7 @@ END GROUP
  *(.comment)
  .comment       0x0000000000000000       0x11 demo.o
                                          0x12 (size before relaxing)
- .comment       0x0000000000000011       0x12 /tmp/ccladeTh.o
+ .comment       0x0000000000000011       0x12 /tmp/ccbJvSX5.o
 
 .note.gnu.avr.deviceinfo
                 0x0000000000000000       0x40

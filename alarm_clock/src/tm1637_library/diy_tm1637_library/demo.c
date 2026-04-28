@@ -312,13 +312,13 @@ int main(void)
     // _delay_ms(1000);
 
     // Transfer multiple words continuously
-    data = 0b00000001;
+    data = 0b00111111;
     tm1637_write_byte(data);
-    data = 0b10000010;
+    data = 0b10000110;
     tm1637_write_byte(data);
-    data = 0b00000100;
+    data = 0b11011011;
     tm1637_write_byte(data);
-    data = 0b00001000;
+    data = 0b11100110;
     tm1637_write_byte(data);
     tm1637_stop();
     // _delay_ms(1000);
