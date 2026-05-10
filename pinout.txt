@@ -1,0 +1,7 @@
+7 segment cathodes: PD0 to PD7 A to DP 
+7 segment anodes: PB0-PB3 LTR 
+second flasher LED: PB5 
+buzzer: PB4
+DHT11: PC0 
+BTN0 to BTN2: PC1-PC3 
+DS1307: PC4-PC5

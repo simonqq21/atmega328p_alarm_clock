@@ -1,0 +1,488 @@
+
+demo.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         0000000a  00800100  00000298  0000030c  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         00000298  00000000  00000000  00000074  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .stab         00000ce4  00000000  00000000  00000318  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  3 .stabstr      00000ed5  00000000  00000000  00000ffc  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  4 .comment      00000011  00000000  00000000  00001ed1  2**0
+                  CONTENTS, READONLY
+  5 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00001ee4  2**2
+                  CONTENTS, READONLY
+  6 .debug_info   000005f4  00000000  00000000  00001f24  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_abbrev 000005a2  00000000  00000000  00002518  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_line   0000001a  00000000  00000000  00002aba  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    00000208  00000000  00000000  00002ad4  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 34 00 	jmp	0x68	; 0x68 <__ctors_end>
+   4:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+   8:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+   c:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  10:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  14:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  18:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  1c:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  20:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  24:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  28:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  2c:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  30:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  34:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  38:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  3c:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  40:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  44:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  48:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  4c:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  50:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  54:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  58:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  5c:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  60:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+  64:	0c 94 49 00 	jmp	0x92	; 0x92 <__bad_interrupt>
+
+00000068 <__ctors_end>:
+  68:	11 24       	eor	r1, r1
+  6a:	1f be       	out	0x3f, r1	; 63
+  6c:	cf ef       	ldi	r28, 0xFF	; 255
+  6e:	d8 e0       	ldi	r29, 0x08	; 8
+  70:	de bf       	out	0x3e, r29	; 62
+  72:	cd bf       	out	0x3d, r28	; 61
+
+00000074 <__do_copy_data>:
+  74:	11 e0       	ldi	r17, 0x01	; 1
+  76:	a0 e0       	ldi	r26, 0x00	; 0
+  78:	b1 e0       	ldi	r27, 0x01	; 1
+  7a:	e8 e9       	ldi	r30, 0x98	; 152
+  7c:	f2 e0       	ldi	r31, 0x02	; 2
+  7e:	02 c0       	rjmp	.+4      	; 0x84 <__do_copy_data+0x10>
+  80:	05 90       	lpm	r0, Z+
+  82:	0d 92       	st	X+, r0
+  84:	aa 30       	cpi	r26, 0x0A	; 10
+  86:	b1 07       	cpc	r27, r17
+  88:	d9 f7       	brne	.-10     	; 0x80 <__do_copy_data+0xc>
+  8a:	0e 94 c6 00 	call	0x18c	; 0x18c <main>
+  8e:	0c 94 4a 01 	jmp	0x294	; 0x294 <_exit>
+
+00000092 <__bad_interrupt>:
+  92:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+00000096 <gpio_set_pin_output>:
+#include "gpio.h"
+
+void gpio_set_pin_output(Pin *pin)
+{
+  96:	dc 01       	movw	r26, r24
+    *pin->ddr |= _BV(pin->pin_num);
+  98:	ed 91       	ld	r30, X+
+  9a:	fc 91       	ld	r31, X
+  9c:	11 97       	sbiw	r26, 0x01	; 1
+  9e:	90 81       	ld	r25, Z
+  a0:	16 96       	adiw	r26, 0x06	; 6
+  a2:	8c 91       	ld	r24, X
+  a4:	21 e0       	ldi	r18, 0x01	; 1
+  a6:	30 e0       	ldi	r19, 0x00	; 0
+  a8:	01 c0       	rjmp	.+2      	; 0xac <gpio_set_pin_output+0x16>
+  aa:	22 0f       	add	r18, r18
+  ac:	8a 95       	dec	r24
+  ae:	ea f7       	brpl	.-6      	; 0xaa <gpio_set_pin_output+0x14>
+  b0:	89 2f       	mov	r24, r25
+  b2:	82 2b       	or	r24, r18
+  b4:	80 83       	st	Z, r24
+}
+  b6:	08 95       	ret
+
+000000b8 <gpio_set_pin_input>:
+
+void gpio_set_pin_input(Pin *pin)
+{
+  b8:	dc 01       	movw	r26, r24
+    *pin->ddr &= ~_BV(pin->pin_num);
+  ba:	ed 91       	ld	r30, X+
+  bc:	fc 91       	ld	r31, X
+  be:	11 97       	sbiw	r26, 0x01	; 1
+  c0:	20 81       	ld	r18, Z
+  c2:	16 96       	adiw	r26, 0x06	; 6
+  c4:	3c 91       	ld	r19, X
+  c6:	81 e0       	ldi	r24, 0x01	; 1
+  c8:	90 e0       	ldi	r25, 0x00	; 0
+  ca:	01 c0       	rjmp	.+2      	; 0xce <gpio_set_pin_input+0x16>
+  cc:	88 0f       	add	r24, r24
+  ce:	3a 95       	dec	r19
+  d0:	ea f7       	brpl	.-6      	; 0xcc <gpio_set_pin_input+0x14>
+  d2:	80 95       	com	r24
+  d4:	82 23       	and	r24, r18
+  d6:	80 83       	st	Z, r24
+}
+  d8:	08 95       	ret
+
+000000da <gpio_toggle_pin_mode>:
+
+void gpio_toggle_pin_mode(Pin *pin)
+{
+  da:	dc 01       	movw	r26, r24
+    *pin->ddr ^= _BV(pin->pin_num);
+  dc:	ed 91       	ld	r30, X+
+  de:	fc 91       	ld	r31, X
+  e0:	11 97       	sbiw	r26, 0x01	; 1
+  e2:	90 81       	ld	r25, Z
+  e4:	16 96       	adiw	r26, 0x06	; 6
+  e6:	8c 91       	ld	r24, X
+  e8:	21 e0       	ldi	r18, 0x01	; 1
+  ea:	30 e0       	ldi	r19, 0x00	; 0
+  ec:	01 c0       	rjmp	.+2      	; 0xf0 <gpio_toggle_pin_mode+0x16>
+  ee:	22 0f       	add	r18, r18
+  f0:	8a 95       	dec	r24
+  f2:	ea f7       	brpl	.-6      	; 0xee <gpio_toggle_pin_mode+0x14>
+  f4:	89 2f       	mov	r24, r25
+  f6:	82 27       	eor	r24, r18
+  f8:	80 83       	st	Z, r24
+}
+  fa:	08 95       	ret
+
+000000fc <gpio_read_pin>:
+
+uint8_t gpio_read_pin(Pin *pin)
+{
+    if (*pin->pin & _BV(pin->pin_num))
+  fc:	dc 01       	movw	r26, r24
+  fe:	14 96       	adiw	r26, 0x04	; 4
+ 100:	ed 91       	ld	r30, X+
+ 102:	fc 91       	ld	r31, X
+ 104:	15 97       	sbiw	r26, 0x05	; 5
+ 106:	20 81       	ld	r18, Z
+ 108:	30 e0       	ldi	r19, 0x00	; 0
+ 10a:	16 96       	adiw	r26, 0x06	; 6
+ 10c:	8c 91       	ld	r24, X
+ 10e:	f9 01       	movw	r30, r18
+ 110:	02 c0       	rjmp	.+4      	; 0x116 <gpio_read_pin+0x1a>
+ 112:	f5 95       	asr	r31
+ 114:	e7 95       	ror	r30
+ 116:	8a 95       	dec	r24
+ 118:	e2 f7       	brpl	.-8      	; 0x112 <gpio_read_pin+0x16>
+ 11a:	cf 01       	movw	r24, r30
+    }
+    else
+    {
+        return 0;
+    }
+}
+ 11c:	81 70       	andi	r24, 0x01	; 1
+ 11e:	08 95       	ret
+
+00000120 <gpio_set_pin_high>:
+
+void gpio_set_pin_high(Pin *pin)
+{
+ 120:	dc 01       	movw	r26, r24
+    *pin->port |= _BV(pin->pin_num);
+ 122:	12 96       	adiw	r26, 0x02	; 2
+ 124:	ed 91       	ld	r30, X+
+ 126:	fc 91       	ld	r31, X
+ 128:	13 97       	sbiw	r26, 0x03	; 3
+ 12a:	90 81       	ld	r25, Z
+ 12c:	16 96       	adiw	r26, 0x06	; 6
+ 12e:	8c 91       	ld	r24, X
+ 130:	21 e0       	ldi	r18, 0x01	; 1
+ 132:	30 e0       	ldi	r19, 0x00	; 0
+ 134:	01 c0       	rjmp	.+2      	; 0x138 <gpio_set_pin_high+0x18>
+ 136:	22 0f       	add	r18, r18
+ 138:	8a 95       	dec	r24
+ 13a:	ea f7       	brpl	.-6      	; 0x136 <gpio_set_pin_high+0x16>
+ 13c:	89 2f       	mov	r24, r25
+ 13e:	82 2b       	or	r24, r18
+ 140:	80 83       	st	Z, r24
+}
+ 142:	08 95       	ret
+
+00000144 <gpio_set_pin_low>:
+
+void gpio_set_pin_low(Pin *pin)
+{
+ 144:	dc 01       	movw	r26, r24
+    *pin->port &= ~_BV(pin->pin_num);
+ 146:	12 96       	adiw	r26, 0x02	; 2
+ 148:	ed 91       	ld	r30, X+
+ 14a:	fc 91       	ld	r31, X
+ 14c:	13 97       	sbiw	r26, 0x03	; 3
+ 14e:	20 81       	ld	r18, Z
+ 150:	16 96       	adiw	r26, 0x06	; 6
+ 152:	3c 91       	ld	r19, X
+ 154:	81 e0       	ldi	r24, 0x01	; 1
+ 156:	90 e0       	ldi	r25, 0x00	; 0
+ 158:	01 c0       	rjmp	.+2      	; 0x15c <gpio_set_pin_low+0x18>
+ 15a:	88 0f       	add	r24, r24
+ 15c:	3a 95       	dec	r19
+ 15e:	ea f7       	brpl	.-6      	; 0x15a <gpio_set_pin_low+0x16>
+ 160:	80 95       	com	r24
+ 162:	82 23       	and	r24, r18
+ 164:	80 83       	st	Z, r24
+}
+ 166:	08 95       	ret
+
+00000168 <gpio_toggle_pin_output>:
+ 168:	dc 01       	movw	r26, r24
+ 16a:	12 96       	adiw	r26, 0x02	; 2
+ 16c:	ed 91       	ld	r30, X+
+ 16e:	fc 91       	ld	r31, X
+ 170:	13 97       	sbiw	r26, 0x03	; 3
+ 172:	90 81       	ld	r25, Z
+ 174:	16 96       	adiw	r26, 0x06	; 6
+ 176:	8c 91       	ld	r24, X
+ 178:	21 e0       	ldi	r18, 0x01	; 1
+ 17a:	30 e0       	ldi	r19, 0x00	; 0
+ 17c:	01 c0       	rjmp	.+2      	; 0x180 <gpio_toggle_pin_output+0x18>
+ 17e:	22 0f       	add	r18, r18
+ 180:	8a 95       	dec	r24
+ 182:	ea f7       	brpl	.-6      	; 0x17e <gpio_toggle_pin_output+0x16>
+ 184:	89 2f       	mov	r24, r25
+ 186:	82 27       	eor	r24, r18
+ 188:	80 83       	st	Z, r24
+ 18a:	08 95       	ret
+
+0000018c <main>:
+    0b01111001, // E
+    0b01110001, // F
+};
+
+int main(void)
+{
+ 18c:	cf 93       	push	r28
+ 18e:	df 93       	push	r29
+ 190:	cd b7       	in	r28, 0x3d	; 61
+ 192:	de b7       	in	r29, 0x3e	; 62
+ 194:	c4 55       	subi	r28, 0x54	; 84
+ 196:	d1 09       	sbc	r29, r1
+ 198:	0f b6       	in	r0, 0x3f	; 63
+ 19a:	f8 94       	cli
+ 19c:	de bf       	out	0x3e, r29	; 62
+ 19e:	0f be       	out	0x3f, r0	; 63
+ 1a0:	cd bf       	out	0x3d, r28	; 61
+ 1a2:	8e 01       	movw	r16, r28
+ 1a4:	0f 5f       	subi	r16, 0xFF	; 255
+ 1a6:	1f 4f       	sbci	r17, 0xFF	; 255
+ 1a8:	f1 2c       	mov	r15, r1
+    Pin segment_pins[8];
+    for (int i = 0; i < 8; i++)
+    {
+        segment_pins[i].ddr = &DDRD;
+ 1aa:	3a e2       	ldi	r19, 0x2A	; 42
+ 1ac:	83 2e       	mov	r8, r19
+ 1ae:	91 2c       	mov	r9, r1
+        segment_pins[i].port = &PORTD;
+ 1b0:	4b e2       	ldi	r20, 0x2B	; 43
+ 1b2:	a4 2e       	mov	r10, r20
+ 1b4:	b1 2c       	mov	r11, r1
+        segment_pins[i].pin = &PIND;
+ 1b6:	59 e2       	ldi	r21, 0x29	; 41
+ 1b8:	c5 2e       	mov	r12, r21
+ 1ba:	d1 2c       	mov	r13, r1
+int main(void)
+{
+    Pin segment_pins[8];
+    for (int i = 0; i < 8; i++)
+    {
+        segment_pins[i].ddr = &DDRD;
+ 1bc:	f8 01       	movw	r30, r16
+ 1be:	91 82       	std	Z+1, r9	; 0x01
+ 1c0:	80 82       	st	Z, r8
+        segment_pins[i].port = &PORTD;
+ 1c2:	b3 82       	std	Z+3, r11	; 0x03
+ 1c4:	a2 82       	std	Z+2, r10	; 0x02
+        segment_pins[i].pin = &PIND;
+ 1c6:	d5 82       	std	Z+5, r13	; 0x05
+ 1c8:	c4 82       	std	Z+4, r12	; 0x04
+        segment_pins[i].pin_num = i;
+ 1ca:	f6 82       	std	Z+6, r15	; 0x06
+        gpio_set_pin_output(&segment_pins[i]);
+ 1cc:	c8 01       	movw	r24, r16
+ 1ce:	0e 94 4b 00 	call	0x96	; 0x96 <gpio_set_pin_output>
+ 1d2:	09 5f       	subi	r16, 0xF9	; 249
+ 1d4:	1f 4f       	sbci	r17, 0xFF	; 255
+ 1d6:	f3 94       	inc	r15
+};
+
+int main(void)
+{
+    Pin segment_pins[8];
+    for (int i = 0; i < 8; i++)
+ 1d8:	f8 e0       	ldi	r31, 0x08	; 8
+ 1da:	ff 12       	cpse	r15, r31
+ 1dc:	ef cf       	rjmp	.-34     	; 0x1bc <main+0x30>
+ 1de:	8e 01       	movw	r16, r28
+ 1e0:	07 5c       	subi	r16, 0xC7	; 199
+ 1e2:	1f 4f       	sbci	r17, 0xFF	; 255
+ 1e4:	f1 2c       	mov	r15, r1
+        gpio_set_pin_output(&segment_pins[i]);
+    }
+    Pin digit_pins[4];
+    for (int i = 0; i < 4; i++)
+    {
+        digit_pins[i].ddr = &DDRB;
+ 1e6:	84 e2       	ldi	r24, 0x24	; 36
+ 1e8:	88 2e       	mov	r8, r24
+ 1ea:	91 2c       	mov	r9, r1
+        digit_pins[i].port = &PORTB;
+ 1ec:	95 e2       	ldi	r25, 0x25	; 37
+ 1ee:	a9 2e       	mov	r10, r25
+ 1f0:	b1 2c       	mov	r11, r1
+        digit_pins[i].pin = &PINB;
+ 1f2:	23 e2       	ldi	r18, 0x23	; 35
+ 1f4:	c2 2e       	mov	r12, r18
+ 1f6:	d1 2c       	mov	r13, r1
+        gpio_set_pin_output(&segment_pins[i]);
+    }
+    Pin digit_pins[4];
+    for (int i = 0; i < 4; i++)
+    {
+        digit_pins[i].ddr = &DDRB;
+ 1f8:	f8 01       	movw	r30, r16
+ 1fa:	91 82       	std	Z+1, r9	; 0x01
+ 1fc:	80 82       	st	Z, r8
+        digit_pins[i].port = &PORTB;
+ 1fe:	b3 82       	std	Z+3, r11	; 0x03
+ 200:	a2 82       	std	Z+2, r10	; 0x02
+        digit_pins[i].pin = &PINB;
+ 202:	d5 82       	std	Z+5, r13	; 0x05
+ 204:	c4 82       	std	Z+4, r12	; 0x04
+        digit_pins[i].pin_num = i;
+ 206:	f6 82       	std	Z+6, r15	; 0x06
+        gpio_set_pin_output(&digit_pins[i]);
+ 208:	c8 01       	movw	r24, r16
+ 20a:	0e 94 4b 00 	call	0x96	; 0x96 <gpio_set_pin_output>
+ 20e:	09 5f       	subi	r16, 0xF9	; 249
+ 210:	1f 4f       	sbci	r17, 0xFF	; 255
+ 212:	f3 94       	inc	r15
+        segment_pins[i].pin = &PIND;
+        segment_pins[i].pin_num = i;
+        gpio_set_pin_output(&segment_pins[i]);
+    }
+    Pin digit_pins[4];
+    for (int i = 0; i < 4; i++)
+ 214:	f4 e0       	ldi	r31, 0x04	; 4
+ 216:	ff 12       	cpse	r15, r31
+ 218:	ef cf       	rjmp	.-34     	; 0x1f8 <main+0x6c>
+
+    while (1)
+    {
+        PORTB |= 0x0F;
+        PORTB &= ~0x08;
+        PORTD = ~digit_values[1];
+ 21a:	49 ef       	ldi	r20, 0xF9	; 249
+        _delay_ms(rate);
+        PORTB |= 0x0F;
+        PORTB &= ~0x04;
+        PORTD = ~digit_values[2];
+ 21c:	34 ea       	ldi	r19, 0xA4	; 164
+        _delay_ms(rate);
+        PORTB |= 0x0F;
+        PORTB &= ~0x02;
+        PORTD = ~digit_values[4];
+ 21e:	29 e9       	ldi	r18, 0x99	; 153
+        _delay_ms(rate);
+        PORTB |= 0x0F;
+        PORTB &= ~0x01;
+        PORTD = ~digit_values[8];
+ 220:	90 e8       	ldi	r25, 0x80	; 128
+        gpio_set_pin_output(&digit_pins[i]);
+    }
+
+    while (1)
+    {
+        PORTB |= 0x0F;
+ 222:	85 b1       	in	r24, 0x05	; 5
+ 224:	8f 60       	ori	r24, 0x0F	; 15
+ 226:	85 b9       	out	0x05, r24	; 5
+        PORTB &= ~0x08;
+ 228:	2b 98       	cbi	0x05, 3	; 5
+        PORTD = ~digit_values[1];
+ 22a:	4b b9       	out	0x0b, r20	; 11
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
+ 22c:	5f ef       	ldi	r21, 0xFF	; 255
+ 22e:	67 e8       	ldi	r22, 0x87	; 135
+ 230:	83 e1       	ldi	r24, 0x13	; 19
+ 232:	51 50       	subi	r21, 0x01	; 1
+ 234:	60 40       	sbci	r22, 0x00	; 0
+ 236:	80 40       	sbci	r24, 0x00	; 0
+ 238:	e1 f7       	brne	.-8      	; 0x232 <main+0xa6>
+ 23a:	00 c0       	rjmp	.+0      	; 0x23c <main+0xb0>
+ 23c:	00 00       	nop
+        _delay_ms(rate);
+        PORTB |= 0x0F;
+ 23e:	85 b1       	in	r24, 0x05	; 5
+ 240:	8f 60       	ori	r24, 0x0F	; 15
+ 242:	85 b9       	out	0x05, r24	; 5
+        PORTB &= ~0x04;
+ 244:	2a 98       	cbi	0x05, 2	; 5
+        PORTD = ~digit_values[2];
+ 246:	3b b9       	out	0x0b, r19	; 11
+ 248:	ef ef       	ldi	r30, 0xFF	; 255
+ 24a:	f7 e8       	ldi	r31, 0x87	; 135
+ 24c:	53 e1       	ldi	r21, 0x13	; 19
+ 24e:	e1 50       	subi	r30, 0x01	; 1
+ 250:	f0 40       	sbci	r31, 0x00	; 0
+ 252:	50 40       	sbci	r21, 0x00	; 0
+ 254:	e1 f7       	brne	.-8      	; 0x24e <main+0xc2>
+ 256:	00 c0       	rjmp	.+0      	; 0x258 <main+0xcc>
+ 258:	00 00       	nop
+        _delay_ms(rate);
+        PORTB |= 0x0F;
+ 25a:	85 b1       	in	r24, 0x05	; 5
+ 25c:	8f 60       	ori	r24, 0x0F	; 15
+ 25e:	85 b9       	out	0x05, r24	; 5
+        PORTB &= ~0x02;
+ 260:	29 98       	cbi	0x05, 1	; 5
+        PORTD = ~digit_values[4];
+ 262:	2b b9       	out	0x0b, r18	; 11
+ 264:	6f ef       	ldi	r22, 0xFF	; 255
+ 266:	87 e8       	ldi	r24, 0x87	; 135
+ 268:	e3 e1       	ldi	r30, 0x13	; 19
+ 26a:	61 50       	subi	r22, 0x01	; 1
+ 26c:	80 40       	sbci	r24, 0x00	; 0
+ 26e:	e0 40       	sbci	r30, 0x00	; 0
+ 270:	e1 f7       	brne	.-8      	; 0x26a <main+0xde>
+ 272:	00 c0       	rjmp	.+0      	; 0x274 <main+0xe8>
+ 274:	00 00       	nop
+        _delay_ms(rate);
+        PORTB |= 0x0F;
+ 276:	85 b1       	in	r24, 0x05	; 5
+ 278:	8f 60       	ori	r24, 0x0F	; 15
+ 27a:	85 b9       	out	0x05, r24	; 5
+        PORTB &= ~0x01;
+ 27c:	28 98       	cbi	0x05, 0	; 5
+        PORTD = ~digit_values[8];
+ 27e:	9b b9       	out	0x0b, r25	; 11
+ 280:	ff ef       	ldi	r31, 0xFF	; 255
+ 282:	57 e8       	ldi	r21, 0x87	; 135
+ 284:	63 e1       	ldi	r22, 0x13	; 19
+ 286:	f1 50       	subi	r31, 0x01	; 1
+ 288:	50 40       	sbci	r21, 0x00	; 0
+ 28a:	60 40       	sbci	r22, 0x00	; 0
+ 28c:	e1 f7       	brne	.-8      	; 0x286 <main+0xfa>
+ 28e:	00 c0       	rjmp	.+0      	; 0x290 <main+0x104>
+ 290:	00 00       	nop
+ 292:	c7 cf       	rjmp	.-114    	; 0x222 <main+0x96>
+
+00000294 <_exit>:
+ 294:	f8 94       	cli
+
+00000296 <__stop_program>:
+ 296:	ff cf       	rjmp	.-2      	; 0x296 <__stop_program>
