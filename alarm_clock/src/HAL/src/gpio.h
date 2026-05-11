@@ -48,6 +48,13 @@ void gpio_toggle_pin_mode(Pin *pin);
 uint8_t gpio_read_pin(Pin *pin);
 
 /**
+ * @brief GPIO set pin output
+ *
+ * @param pin the GPIO pin to set output
+ */
+void gpio_set_pin_val(Pin *pin, uint8_t value);
+
+/**
  * @brief GPIO set pin high
  *
  * @param pin the GPIO pin to set high
@@ -68,4 +75,4 @@ void gpio_set_pin_low(Pin *pin);
  */
 void gpio_toggle_pin_output(Pin *pin);
 
-#endif
+#endif // GPIO_H

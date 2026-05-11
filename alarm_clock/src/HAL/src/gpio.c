@@ -26,6 +26,17 @@ uint8_t gpio_read_pin(Pin *pin)
         return 0;
     }
 }
+void gpio_set_pin_val(Pin *pin, uint8_t value)
+{
+    if (value)
+    {
+        gpio_set_pin_high(pin);
+    }
+    else
+    {
+        gpio_set_pin_low(pin);
+    }
+}
 
 void gpio_set_pin_high(Pin *pin)
 {
