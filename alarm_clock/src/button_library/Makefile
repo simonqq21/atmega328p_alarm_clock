@@ -59,7 +59,7 @@ AVRDUDE_TARGET = m328pb
 
 OPTIMIZE	   = -O2
 DEFS		   =
-LIBS		   =  src/*.c
+LIBS		   =  src/*.c ../millis_micros_library/src/*.c ../HAL/src/*.c
 # You should not have to change anything below here.
 CC			 = avr-gcc
 # Override is only needed by avr-lib build system.
