@@ -17,10 +17,16 @@ typedef void (*button_action_t)(void);
 
 enum button_state
 {
-    BUTTON_IDLE,
-    BUTTON_SINGLE_CLICK,
-    BUTTON_DOUBLE_CLICK,
-    BUTTON_LONG_PRESS,
+    BUTTON_STATE_INIT,
+    BUTTON_STATE_DOWN,
+    BUTTON_STATE_UP,
+    BUTTON_STATE_COUNT,
+    BUTTON_STATE_PRESS,
+    BUTTON_STATE_PRESSEND,
+    // BUTTON_IDLE,
+    // BUTTON_SINGLE_CLICK,
+    // BUTTON_DOUBLE_CLICK,
+    // BUTTON_LONG_PRESS,
 };
 
 typedef struct
@@ -39,6 +45,11 @@ typedef struct
     button_action_t single_click_actions[8];
     button_action_t double_click_actions[8];
     button_action_t long_press_actions[8];
+
+    // debouncing variables
+    uint8_t debounceB0, debounceB1, debouncedBState;
+    uint32_t now, _startTime;
+    enum button_state _state;
 
 } ButtonBank;
 
@@ -70,26 +81,32 @@ void button_set_press_ms(ButtonBank *btn, uint16_t ms);
 /**
  * @brief button attach single click function
  */
-void button_attach_single_click(ButtonBank *btn, uint8_t index, button_action_t action);
+void button_attach_single_click(ButtonBank *btn,
+                                uint8_t index,
+                                button_action_t action);
 
 /**
  * @brief button attach double click function
  */
-void button_attach_double_click(ButtonBank *btn, uint8_t index, button_action_t action);
+void button_attach_double_click(ButtonBank *btn,
+                                uint8_t index,
+                                button_action_t action);
 
 /**
  * @brief button attach long press function
  */
-void button_attach_long_press(ButtonBank *btn, uint8_t index, button_action_t action);
+void button_attach_long_press(ButtonBank *btn,
+                              uint8_t index,
+                              button_action_t action);
 
 /**
  * @brief button debounce function
  */
-void button_debounce(ButtonBank *btn);
+uint8_t button_debounce(ButtonBank *btn);
 
 /**
  * @brief button FSM function
  */
-void button_fsm(ButtonBank *btn);
+void buttons_fsm(ButtonBank *btn, uint8_t debouncedBState);
 
 #endif // BUTTON_H
