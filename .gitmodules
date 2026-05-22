@@ -1,0 +1,6 @@
+[submodule "alarm_clock/src/AVR-DHT"]
+	path = alarm_clock/src/AVR-DHT
+	url = git@github.com:efthymios-ks/AVR-DHT.git
+[submodule "alarm_clock/src/avrSerial"]
+	path = alarm_clock/src/avrSerial
+	url = git@github.com:xythobuz/avrSerial.git
