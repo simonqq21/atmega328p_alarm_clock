@@ -4,3 +4,6 @@
 [submodule "alarm_clock/src/avrSerial"]
 	path = alarm_clock/src/avrSerial
 	url = git@github.com:xythobuz/avrSerial.git
+[submodule "alarm_clock/src/ds_rtc_lib"]
+	path = alarm_clock/src/ds_rtc_lib
+	url = git@github.com:simonqq21/ds_rtc_lib.git
