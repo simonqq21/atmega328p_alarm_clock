@@ -20,7 +20,7 @@ ISR(TIMER0_COMPA_vect)
 /**
  * @brief configure timer 0
  */
-void init_millis_timer(void)
+void millis_timer_init(void)
 {
     // TCCR0A = 0x00;
     // TCCR0B = 0x00;

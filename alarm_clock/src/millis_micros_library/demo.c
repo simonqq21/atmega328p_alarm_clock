@@ -65,7 +65,7 @@ void ioinit(void)
 int main()
 {
     ioinit();
-    init_millis_timer();
+    millis_timer_init();
 
     while (1)
     {

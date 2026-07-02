@@ -12,7 +12,7 @@
 
 extern volatile uint32_t millis;
 
-void init_millis_timer(void);
+void millis_timer_init(void);
 uint32_t get_millis(void);
 uint32_t get_micros(void);
 

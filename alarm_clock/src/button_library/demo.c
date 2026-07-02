@@ -144,7 +144,7 @@ uint8_t reading;
 int main(void)
 {
     ioinit();
-    init_millis_timer();
+    millis_timer_init();
     button_attach_single_click(&btns[0], btn1_1click_func);
     button_attach_single_click(&btns[1], btn2_1click_func);
     button_attach_single_click(&btns[2], btn3_1click_func);
