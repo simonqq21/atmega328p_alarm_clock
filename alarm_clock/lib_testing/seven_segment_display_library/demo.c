@@ -5,13 +5,10 @@
 #define F_CPU 16000000UL
 #endif
 #include "src/seven_segment.h"
+#include <util/delay.h>
+
 extern uint8_t digit_values[];
 
-// /home/simonque/Documents/code/atmega328p_alarm_clock/alarm_clock/src/
-// /home/simonque/Documents/code/atmega328p_alarm_clock/alarm_clock/src/HAL/src/gpio.h
-// /home/simonque/Documents/code/atmega328p_alarm_clock/alarm_clock/src/seven_segment_display_library/demo.c
-// HAL/src/gpio.h
-// seven_segment_display_library/demo.c
 uint32_t prev_millis;
 uint32_t t_millis, prev_millis1, prev_millis2;
 
@@ -26,15 +23,15 @@ ISR(TIMER0_COMPA_vect)
     // seven_segment_loop_isr();
 }
 
-ISR(TIMER0_COMPB_vect)
-{
-    seven_segment_loop_isr();
-}
-
-// ISR(TIMER2_COMPA_vect)
+// ISR(TIMER0_COMPB_vect)
 // {
 //     seven_segment_loop_isr();
 // }
+
+ISR(TIMER2_COMPA_vect)
+{
+    seven_segment_loop_isr();
+}
 
 // trigger a CTC every 1ms
 void timer2_init(void)
@@ -45,11 +42,12 @@ void timer2_init(void)
     // OCR2A = 250 - 1 = 249, 250 * 4us = 1ms
     // enable OCIE2A, output compare match A interrupt handle
     TCCR2A |= _BV(WGM21);
-    // TCCR2B |= _BV(CS22);
-    TCCR2B |= 0b011 << 0;
+    TCCR2B |= _BV(CS22);
+    // TCCR2B |= 0b011 << 0;
     TIMSK2 |= _BV(OCIE2A);
     OCR2A = 249;
 }
+
 uint8_t set_clear;
 
 void flash_colon_loop(void)
@@ -71,11 +69,12 @@ void flash_colon_loop(void)
 
 int main()
 {
-
     millis_timer_init();
     seven_segment_init();
-    seven_segment_set_all();
-    // timer2_init();
+    seven_segment_clear_all();
+    // DDRB |= _BV(1);
+
+    timer2_init();
 
     // uint8_t byte_arr[] = {
     //     digit_values[10],
@@ -85,46 +84,24 @@ int main()
     // };
     // seven_segment_write_bytes(byte_arr);
 
-    uint8_t byte_arr[] = {
-        0xa,
-        0xb,
-        0xc,
-        0xd,
-    };
-    seven_segment_write_digit_vals(byte_arr);
+    // uint8_t byte_arr[] = {
+    //     0xa,
+    //     0xb,
+    //     0xc,
+    //     0xd,
+    // };
+    // seven_segment_write_digit_vals(byte_arr);
+
+    // _delay_ms(2000);
 
     while (1)
     {
+        // PORTB |= _BV(1);
+        // _delay_ms(500);
+        // PORTB &= ~_BV(1);
+        // _delay_ms(500);
         t_millis = get_millis();
-
-        // if (t_millis - prev_millis > 1000)
-        // {
-        //     if (set_clear)
-        //     {
-        //         seven_segment_set_all();
-        //     }
-        //     else
-        //     {
-        //         seven_segment_clear_all();
-        //     }
-        //     set_clear = !set_clear;
-        //     prev_millis = t_millis;
-        // }
-
-        // if (t_millis - prev_millis > 500)
-        // {
-        //     prev_millis = get_millis();
-        //     if (set_clear)
-        //     {
-        //         seven_segment_set_colon(1);
-        //     }
-        //     else
-        //     {
-        //         seven_segment_set_colon(0);
-        //     }
-        //     set_clear = !set_clear;
-        // }
-
+        // flash_colon_loop();
         // display time with flashing colon for 10 seconds, changing
         // the time at 5 seconds.
 
@@ -137,7 +114,6 @@ int main()
         {
             flash_colon_loop();
             t_millis = get_millis();
-            // seven_segment_loop_isr();
         }
 
         hour = 20;
@@ -149,7 +125,6 @@ int main()
 
             flash_colon_loop();
             t_millis = get_millis();
-            // seven_segment_loop_isr();
         }
 
         // display month and day for 5 seconds

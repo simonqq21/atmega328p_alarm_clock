@@ -14,7 +14,10 @@ volatile uint32_t millis;
  */
 void millis_timer_ISR_loop(void)
 {
+    // ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    // {
     millis++;
+    // }
 }
 
 /**
@@ -27,25 +30,25 @@ void millis_timer_init(void)
     // TCCR0B |= _BV(CS01) | _BV(CS00);
     // TIMSK0 |= _BV(TOIE0);
     // sei();
-    millis = 0;
+    // millis = 0;
 
-    TCCR0A = 0x00;
-    TCCR0B = 0x00;
-    // WGM0 = 0b010, CTC mode
-    // COM0A = 0b00, COM0B = 0b00, normal port operation
-    TCCR0A |= _BV(WGM01);
-    // CS0 = 0b011, prescaler 64
-    // each tick is 4 us
-    TCCR0B |= _BV(CS01) | _BV(CS00);
-    // TCNT0 counts from 0 to 249 (restart every 250 counts)
-    OCR0A = 249;
-    OCR0B = 0;
-    // OCIE0B = 0b1, OCIE0A = 0b1
-    TIMSK0 |= _BV(OCIE0A);
-    // TIMSK0 |= _BV(OCIE0B);
-    // TIMSK0
-    // TIFR0
-    sei();
+    // TCCR0A = 0x00;
+    // TCCR0B = 0x00;
+    // // WGM0 = 0b010, CTC mode
+    // // COM0A = 0b00, COM0B = 0b00, normal port operation
+    // TCCR0A |= _BV(WGM01);
+    // // CS0 = 0b011, prescaler 64
+    // // each tick is 4 us
+    // TCCR0B |= _BV(CS01) | _BV(CS00);
+    // // TCNT0 counts from 0 to 249 (restart every 250 counts)
+    // OCR0A = 249;
+    // // OCR0B = 125;
+    // // OCIE0B = 0b1, OCIE0A = 0b1
+    // TIMSK0 |= _BV(OCIE0A);
+    // // TIMSK0 |= _BV(OCIE0B);
+    // // TIMSK0
+    // // TIFR0
+    // sei();
 }
 
 /**

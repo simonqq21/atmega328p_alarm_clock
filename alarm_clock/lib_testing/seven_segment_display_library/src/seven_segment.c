@@ -34,14 +34,27 @@ void seven_segment_init()
         segment_pins[i].pin_num = i;
         gpio_set_pin_output(&segment_pins[i]);
     }
-    for (int i = DIGITS_START_INDEX; i < 4; i++)
+    int i1 = 0;
+    for (int i = 0; i < 5; i++)
     {
-        digit_pins[i].ddr = &DIGITS_DDR;
-        digit_pins[i].port = &DIGITS_PORT;
-        // digit_pins[i].pin = &PINB;
-        digit_pins[i].pin_num = i;
-        gpio_set_pin_output(&digit_pins[i]);
+        // digit_pins[i].ddr = &DIGITS_DDR;
+        // digit_pins[i].port = &DIGITS_PORT;
+        // // digit_pins[i].pin = &PINB;
+        // digit_pins[i].pin_num = i;
+        // gpio_set_pin_output(&digit_pins[i]);
+
+        // skip PB1
+        if (i != 1)
+        {
+            digit_pins[i1].ddr = &DIGITS_DDR;
+            digit_pins[i1].port = &DIGITS_PORT;
+            // digit_pins[i].pin = &PINB;
+            digit_pins[i1].pin_num = i;
+            gpio_set_pin_output(&digit_pins[i1]);
+            i1++;
+        }
     }
+
     colon_pin.ddr = &COLON_DDR;
     colon_pin.port = &COLON_PORT;
     colon_pin.pin_num = COLON_PIN_NUM;
@@ -50,11 +63,12 @@ void seven_segment_init()
 
 void seven_segment_loop_isr(void)
 {
-    gpio_set_pin_val(&colon_pin, display_data.colon);
 
-    DIGITS_PORT |= 0x0F;
-    // PORTB &= ~0x08;
-    DIGITS_PORT &= ~_BV(3 - display_data.cur_digit_index);
+    gpio_set_pin_val(&colon_pin, display_data.colon);
+    // DIGITS_PORT |= 0x0F;
+    DIGITS_PORT |= 0x1D; // skip PB1
+    // DIGITS_PORT &= ~(_BV(3 - display_data.cur_digit_index));
+    DIGITS_PORT &= ~(_BV(digit_pins[3 - display_data.cur_digit_index].pin_num));
     SEGMENTS_PORT = ~display_data.display_digits[display_data.cur_digit_index];
     display_data.cur_digit_index++;
     if (display_data.cur_digit_index > 3)
