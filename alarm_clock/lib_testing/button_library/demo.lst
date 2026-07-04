@@ -1,0 +1,1501 @@
+
+demo.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         00000010  00800100  00000790  00000824  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         00000790  00000000  00000000  00000094  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .bss          000000b1  00800110  00800110  00000834  2**0
+                  ALLOC
+  3 .stab         000020f4  00000000  00000000  00000834  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  4 .stabstr      000014d3  00000000  00000000  00002928  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .comment      00000011  00000000  00000000  00003dfb  2**0
+                  CONTENTS, READONLY
+  6 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00003e0c  2**2
+                  CONTENTS, READONLY
+  7 .debug_info   000005f4  00000000  00000000  00003e4c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_abbrev 000005a2  00000000  00000000  00004440  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_line   0000001a  00000000  00000000  000049e2  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_str    00000208  00000000  00000000  000049fc  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 34 00 	jmp	0x68	; 0x68 <__ctors_end>
+   4:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+   8:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+   c:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  10:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  14:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  18:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  1c:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  20:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  24:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  28:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  2c:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  30:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  34:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  38:	0c 94 69 00 	jmp	0xd2	; 0xd2 <__vector_14>
+  3c:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  40:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  44:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  48:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  4c:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  50:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  54:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  58:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  5c:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  60:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+  64:	0c 94 51 00 	jmp	0xa2	; 0xa2 <__bad_interrupt>
+
+00000068 <__ctors_end>:
+  68:	11 24       	eor	r1, r1
+  6a:	1f be       	out	0x3f, r1	; 63
+  6c:	cf ef       	ldi	r28, 0xFF	; 255
+  6e:	d8 e0       	ldi	r29, 0x08	; 8
+  70:	de bf       	out	0x3e, r29	; 62
+  72:	cd bf       	out	0x3d, r28	; 61
+
+00000074 <__do_copy_data>:
+  74:	11 e0       	ldi	r17, 0x01	; 1
+  76:	a0 e0       	ldi	r26, 0x00	; 0
+  78:	b1 e0       	ldi	r27, 0x01	; 1
+  7a:	e0 e9       	ldi	r30, 0x90	; 144
+  7c:	f7 e0       	ldi	r31, 0x07	; 7
+  7e:	02 c0       	rjmp	.+4      	; 0x84 <__do_copy_data+0x10>
+  80:	05 90       	lpm	r0, Z+
+  82:	0d 92       	st	X+, r0
+  84:	a0 31       	cpi	r26, 0x10	; 16
+  86:	b1 07       	cpc	r27, r17
+  88:	d9 f7       	brne	.-10     	; 0x80 <__do_copy_data+0xc>
+
+0000008a <__do_clear_bss>:
+  8a:	21 e0       	ldi	r18, 0x01	; 1
+  8c:	a0 e1       	ldi	r26, 0x10	; 16
+  8e:	b1 e0       	ldi	r27, 0x01	; 1
+  90:	01 c0       	rjmp	.+2      	; 0x94 <.do_clear_bss_start>
+
+00000092 <.do_clear_bss_loop>:
+  92:	1d 92       	st	X+, r1
+
+00000094 <.do_clear_bss_start>:
+  94:	a1 3c       	cpi	r26, 0xC1	; 193
+  96:	b2 07       	cpc	r27, r18
+  98:	e1 f7       	brne	.-8      	; 0x92 <.do_clear_bss_loop>
+  9a:	0e 94 73 03 	call	0x6e6	; 0x6e6 <main>
+  9e:	0c 94 c6 03 	jmp	0x78c	; 0x78c <_exit>
+
+000000a2 <__bad_interrupt>:
+  a2:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+000000a6 <btn1_1click_func>:
+}
+
+void btn1_1click_func()
+{
+    // gpio_toggle_pin_output(&segment_pins[0]);
+    cur_digit--;
+  a6:	80 91 17 01 	lds	r24, 0x0117	; 0x800117 <cur_digit>
+  aa:	81 50       	subi	r24, 0x01	; 1
+    if (cur_digit < 0)
+  ac:	87 fd       	sbrc	r24, 7
+    {
+        cur_digit = 15;
+  ae:	8f e0       	ldi	r24, 0x0F	; 15
+  b0:	80 93 17 01 	sts	0x0117, r24	; 0x800117 <cur_digit>
+    }
+}
+  b4:	08 95       	ret
+
+000000b6 <btn2_1click_func>:
+
+void btn2_1click_func()
+{
+    // gpio_toggle_pin_output(&segment_pins[1]);
+    cur_digit = 0;
+  b6:	10 92 17 01 	sts	0x0117, r1	; 0x800117 <cur_digit>
+}
+  ba:	08 95       	ret
+
+000000bc <btn3_1click_func>:
+
+void btn3_1click_func()
+{
+    // gpio_toggle_pin_output(&segment_pins[2]);
+    cur_digit++;
+  bc:	80 91 17 01 	lds	r24, 0x0117	; 0x800117 <cur_digit>
+  c0:	8f 5f       	subi	r24, 0xFF	; 255
+    if (cur_digit > 15)
+  c2:	80 31       	cpi	r24, 0x10	; 16
+  c4:	1c f0       	brlt	.+6      	; 0xcc <btn3_1click_func+0x10>
+    {
+        cur_digit = 0;
+  c6:	10 92 17 01 	sts	0x0117, r1	; 0x800117 <cur_digit>
+    }
+}
+  ca:	08 95       	ret
+}
+
+void btn3_1click_func()
+{
+    // gpio_toggle_pin_output(&segment_pins[2]);
+    cur_digit++;
+  cc:	80 93 17 01 	sts	0x0117, r24	; 0x800117 <cur_digit>
+  d0:	08 95       	ret
+
+000000d2 <__vector_14>:
+    0b01110001, // F
+};
+int8_t cur_digit;
+
+ISR(TIMER0_COMPA_vect)
+{
+  d2:	1f 92       	push	r1
+  d4:	0f 92       	push	r0
+  d6:	0f b6       	in	r0, 0x3f	; 63
+  d8:	0f 92       	push	r0
+  da:	11 24       	eor	r1, r1
+  dc:	2f 93       	push	r18
+  de:	3f 93       	push	r19
+  e0:	4f 93       	push	r20
+  e2:	5f 93       	push	r21
+  e4:	6f 93       	push	r22
+  e6:	7f 93       	push	r23
+  e8:	8f 93       	push	r24
+  ea:	9f 93       	push	r25
+  ec:	af 93       	push	r26
+  ee:	bf 93       	push	r27
+  f0:	ef 93       	push	r30
+  f2:	ff 93       	push	r31
+    millis_timer_ISR_loop();
+  f4:	0e 94 0d 03 	call	0x61a	; 0x61a <millis_timer_ISR_loop>
+}
+  f8:	ff 91       	pop	r31
+  fa:	ef 91       	pop	r30
+  fc:	bf 91       	pop	r27
+  fe:	af 91       	pop	r26
+ 100:	9f 91       	pop	r25
+ 102:	8f 91       	pop	r24
+ 104:	7f 91       	pop	r23
+ 106:	6f 91       	pop	r22
+ 108:	5f 91       	pop	r21
+ 10a:	4f 91       	pop	r20
+ 10c:	3f 91       	pop	r19
+ 10e:	2f 91       	pop	r18
+ 110:	0f 90       	pop	r0
+ 112:	0f be       	out	0x3f, r0	; 63
+ 114:	0f 90       	pop	r0
+ 116:	1f 90       	pop	r1
+ 118:	18 95       	reti
+
+0000011a <ioinit>:
+
+void ioinit()
+{
+ 11a:	cf 92       	push	r12
+ 11c:	df 92       	push	r13
+ 11e:	ef 92       	push	r14
+ 120:	ff 92       	push	r15
+ 122:	1f 93       	push	r17
+ 124:	cf 93       	push	r28
+ 126:	df 93       	push	r29
+ 128:	c5 e8       	ldi	r28, 0x85	; 133
+ 12a:	d1 e0       	ldi	r29, 0x01	; 1
+ 12c:	10 e0       	ldi	r17, 0x00	; 0
+    for (int i = 0; i < 8; i++)
+    {
+        segment_pins[i].ddr = &LEDS_DDR;
+ 12e:	8a e2       	ldi	r24, 0x2A	; 42
+ 130:	c8 2e       	mov	r12, r24
+ 132:	d1 2c       	mov	r13, r1
+        segment_pins[i].port = &LEDS_PORT;
+ 134:	9b e2       	ldi	r25, 0x2B	; 43
+ 136:	e9 2e       	mov	r14, r25
+ 138:	f1 2c       	mov	r15, r1
+
+void ioinit()
+{
+    for (int i = 0; i < 8; i++)
+    {
+        segment_pins[i].ddr = &LEDS_DDR;
+ 13a:	d9 82       	std	Y+1, r13	; 0x01
+ 13c:	c8 82       	st	Y, r12
+        segment_pins[i].port = &LEDS_PORT;
+ 13e:	fb 82       	std	Y+3, r15	; 0x03
+ 140:	ea 82       	std	Y+2, r14	; 0x02
+        segment_pins[i].pin_num = i;
+ 142:	1e 83       	std	Y+6, r17	; 0x06
+        gpio_set_pin_output(&segment_pins[i]);
+ 144:	ce 01       	movw	r24, r28
+ 146:	0e 94 61 02 	call	0x4c2	; 0x4c2 <gpio_set_pin_output>
+ 14a:	27 96       	adiw	r28, 0x07	; 7
+ 14c:	1f 5f       	subi	r17, 0xFF	; 255
+    millis_timer_ISR_loop();
+}
+
+void ioinit()
+{
+    for (int i = 0; i < 8; i++)
+ 14e:	18 30       	cpi	r17, 0x08	; 8
+ 150:	a1 f7       	brne	.-24     	; 0x13a <ioinit+0x20>
+        segment_pins[i].port = &LEDS_PORT;
+        segment_pins[i].pin_num = i;
+        gpio_set_pin_output(&segment_pins[i]);
+    }
+
+    common_pin.ddr = &COMMON_LED_DDR;
+ 152:	84 e2       	ldi	r24, 0x24	; 36
+ 154:	90 e0       	ldi	r25, 0x00	; 0
+ 156:	90 93 11 01 	sts	0x0111, r25	; 0x800111 <__data_end+0x1>
+ 15a:	80 93 10 01 	sts	0x0110, r24	; 0x800110 <__data_end>
+    common_pin.port = &COMMON_LED_PORT;
+ 15e:	85 e2       	ldi	r24, 0x25	; 37
+ 160:	90 e0       	ldi	r25, 0x00	; 0
+ 162:	90 93 13 01 	sts	0x0113, r25	; 0x800113 <__data_end+0x3>
+ 166:	80 93 12 01 	sts	0x0112, r24	; 0x800112 <__data_end+0x2>
+    common_pin.pin_num = COMMON_LED_PIN;
+ 16a:	10 92 16 01 	sts	0x0116, r1	; 0x800116 <__data_end+0x6>
+
+    btns[0].button_pin.ddr = &BTNS_DDR;
+ 16e:	47 e2       	ldi	r20, 0x27	; 39
+ 170:	50 e0       	ldi	r21, 0x00	; 0
+ 172:	50 93 1a 01 	sts	0x011A, r21	; 0x80011a <btns+0x1>
+ 176:	40 93 19 01 	sts	0x0119, r20	; 0x800119 <btns>
+    btns[0].button_pin.port = &BTNS_PORT;
+ 17a:	28 e2       	ldi	r18, 0x28	; 40
+ 17c:	30 e0       	ldi	r19, 0x00	; 0
+ 17e:	30 93 1c 01 	sts	0x011C, r19	; 0x80011c <btns+0x3>
+ 182:	20 93 1b 01 	sts	0x011B, r18	; 0x80011b <btns+0x2>
+    btns[0].button_pin.pin = &BTNS_PIN;
+ 186:	86 e2       	ldi	r24, 0x26	; 38
+ 188:	90 e0       	ldi	r25, 0x00	; 0
+ 18a:	90 93 1e 01 	sts	0x011E, r25	; 0x80011e <btns+0x5>
+ 18e:	80 93 1d 01 	sts	0x011D, r24	; 0x80011d <btns+0x4>
+    btns[0].button_pin.pin_num = BTN_1_PIN_NUM;
+ 192:	61 e0       	ldi	r22, 0x01	; 1
+ 194:	60 93 1f 01 	sts	0x011F, r22	; 0x80011f <btns+0x6>
+    btns[1].button_pin.ddr = &BTNS_DDR;
+ 198:	50 93 3e 01 	sts	0x013E, r21	; 0x80013e <btns+0x25>
+ 19c:	40 93 3d 01 	sts	0x013D, r20	; 0x80013d <btns+0x24>
+    btns[1].button_pin.port = &BTNS_PORT;
+ 1a0:	30 93 40 01 	sts	0x0140, r19	; 0x800140 <btns+0x27>
+ 1a4:	20 93 3f 01 	sts	0x013F, r18	; 0x80013f <btns+0x26>
+    btns[1].button_pin.pin = &BTNS_PIN;
+ 1a8:	90 93 42 01 	sts	0x0142, r25	; 0x800142 <btns+0x29>
+ 1ac:	80 93 41 01 	sts	0x0141, r24	; 0x800141 <btns+0x28>
+    btns[1].button_pin.pin_num = BTN_2_PIN_NUM;
+ 1b0:	62 e0       	ldi	r22, 0x02	; 2
+ 1b2:	60 93 43 01 	sts	0x0143, r22	; 0x800143 <btns+0x2a>
+    btns[2].button_pin.ddr = &BTNS_DDR;
+ 1b6:	50 93 62 01 	sts	0x0162, r21	; 0x800162 <btns+0x49>
+ 1ba:	40 93 61 01 	sts	0x0161, r20	; 0x800161 <btns+0x48>
+    btns[2].button_pin.port = &BTNS_PORT;
+ 1be:	30 93 64 01 	sts	0x0164, r19	; 0x800164 <btns+0x4b>
+ 1c2:	20 93 63 01 	sts	0x0163, r18	; 0x800163 <btns+0x4a>
+    btns[2].button_pin.pin = &BTNS_PIN;
+ 1c6:	90 93 66 01 	sts	0x0166, r25	; 0x800166 <btns+0x4d>
+ 1ca:	80 93 65 01 	sts	0x0165, r24	; 0x800165 <btns+0x4c>
+    btns[2].button_pin.pin_num = BTN_3_PIN_NUM;
+ 1ce:	83 e0       	ldi	r24, 0x03	; 3
+ 1d0:	80 93 67 01 	sts	0x0167, r24	; 0x800167 <btns+0x4e>
+
+    gpio_set_pin_output(&segment_pins[0]);
+ 1d4:	85 e8       	ldi	r24, 0x85	; 133
+ 1d6:	91 e0       	ldi	r25, 0x01	; 1
+ 1d8:	0e 94 61 02 	call	0x4c2	; 0x4c2 <gpio_set_pin_output>
+    gpio_set_pin_output(&segment_pins[1]);
+ 1dc:	8c e8       	ldi	r24, 0x8C	; 140
+ 1de:	91 e0       	ldi	r25, 0x01	; 1
+ 1e0:	0e 94 61 02 	call	0x4c2	; 0x4c2 <gpio_set_pin_output>
+    gpio_set_pin_output(&segment_pins[2]);
+ 1e4:	83 e9       	ldi	r24, 0x93	; 147
+ 1e6:	91 e0       	ldi	r25, 0x01	; 1
+ 1e8:	0e 94 61 02 	call	0x4c2	; 0x4c2 <gpio_set_pin_output>
+    gpio_set_pin_output(&common_pin);
+ 1ec:	80 e1       	ldi	r24, 0x10	; 16
+ 1ee:	91 e0       	ldi	r25, 0x01	; 1
+ 1f0:	0e 94 61 02 	call	0x4c2	; 0x4c2 <gpio_set_pin_output>
+    button_setup(&btns[0]);
+ 1f4:	89 e1       	ldi	r24, 0x19	; 25
+ 1f6:	91 e0       	ldi	r25, 0x01	; 1
+ 1f8:	0e 94 19 01 	call	0x232	; 0x232 <button_setup>
+    button_setup(&btns[1]);
+ 1fc:	8d e3       	ldi	r24, 0x3D	; 61
+ 1fe:	91 e0       	ldi	r25, 0x01	; 1
+ 200:	0e 94 19 01 	call	0x232	; 0x232 <button_setup>
+    button_setup(&btns[2]);
+ 204:	81 e6       	ldi	r24, 0x61	; 97
+ 206:	91 e0       	ldi	r25, 0x01	; 1
+ 208:	0e 94 19 01 	call	0x232	; 0x232 <button_setup>
+    // gpio_set_pin_input(&btn_pin);
+    // gpio_set_pin_high(&btn_pin);
+
+    gpio_set_pin_low(&common_pin);
+ 20c:	80 e1       	ldi	r24, 0x10	; 16
+ 20e:	91 e0       	ldi	r25, 0x01	; 1
+}
+ 210:	df 91       	pop	r29
+ 212:	cf 91       	pop	r28
+ 214:	1f 91       	pop	r17
+ 216:	ff 90       	pop	r15
+ 218:	ef 90       	pop	r14
+ 21a:	df 90       	pop	r13
+ 21c:	cf 90       	pop	r12
+    button_setup(&btns[1]);
+    button_setup(&btns[2]);
+    // gpio_set_pin_input(&btn_pin);
+    // gpio_set_pin_high(&btn_pin);
+
+    gpio_set_pin_low(&common_pin);
+ 21e:	0c 94 e9 02 	jmp	0x5d2	; 0x5d2 <gpio_set_pin_low>
+
+00000222 <f1>:
+    }
+}
+
+void f1()
+{
+    gpio_set_pin_high(&common_pin);
+ 222:	80 e1       	ldi	r24, 0x10	; 16
+ 224:	91 e0       	ldi	r25, 0x01	; 1
+ 226:	0c 94 d7 02 	jmp	0x5ae	; 0x5ae <gpio_set_pin_high>
+
+0000022a <f2>:
+}
+
+void f2()
+{
+    gpio_set_pin_low(&common_pin);
+ 22a:	80 e1       	ldi	r24, 0x10	; 16
+ 22c:	91 e0       	ldi	r25, 0x01	; 1
+ 22e:	0c 94 e9 02 	jmp	0x5d2	; 0x5d2 <gpio_set_pin_low>
+
+00000232 <button_setup>:
+#include "button.h"
+
+void button_setup(Button *btn)
+{
+ 232:	cf 93       	push	r28
+ 234:	df 93       	push	r29
+ 236:	ec 01       	movw	r28, r24
+    /*
+    default time values
+    */
+    gpio_set_pin_input(&btn->button_pin);
+ 238:	0e 94 72 02 	call	0x4e4	; 0x4e4 <gpio_set_pin_input>
+    gpio_set_pin_high(&btn->button_pin);
+ 23c:	ce 01       	movw	r24, r28
+ 23e:	0e 94 d7 02 	call	0x5ae	; 0x5ae <gpio_set_pin_high>
+    btn->debounce_ms = 50;
+ 242:	82 e3       	ldi	r24, 0x32	; 50
+ 244:	90 e0       	ldi	r25, 0x00	; 0
+ 246:	98 87       	std	Y+8, r25	; 0x08
+ 248:	8f 83       	std	Y+7, r24	; 0x07
+    btn->click_period_timeout_ms = 400;
+ 24a:	80 e9       	ldi	r24, 0x90	; 144
+ 24c:	91 e0       	ldi	r25, 0x01	; 1
+ 24e:	9a 87       	std	Y+10, r25	; 0x0a
+ 250:	89 87       	std	Y+9, r24	; 0x09
+    btn->longpress_ms = 1000;
+ 252:	88 ee       	ldi	r24, 0xE8	; 232
+ 254:	93 e0       	ldi	r25, 0x03	; 3
+ 256:	9c 87       	std	Y+12, r25	; 0x0c
+ 258:	8b 87       	std	Y+11, r24	; 0x0b
+    btn->_state = BUTTON_STATE_INIT;
+ 25a:	1a a2       	std	Y+34, r1	; 0x22
+ 25c:	19 a2       	std	Y+33, r1	; 0x21
+    btn->num_clicks = 0;
+ 25e:	1b a2       	std	Y+35, r1	; 0x23
+    btn->_debouncedBState = 1;
+ 260:	81 e0       	ldi	r24, 0x01	; 1
+ 262:	8c 8b       	std	Y+20, r24	; 0x14
+}
+ 264:	df 91       	pop	r29
+ 266:	cf 91       	pop	r28
+ 268:	08 95       	ret
+
+0000026a <button_set_debounce_ms>:
+    button_fsm(btn, button_debounce(btn));
+}
+
+void button_set_debounce_ms(Button *btn, uint16_t ms)
+{
+    btn->debounce_ms = ms;
+ 26a:	fc 01       	movw	r30, r24
+ 26c:	70 87       	std	Z+8, r23	; 0x08
+ 26e:	67 83       	std	Z+7, r22	; 0x07
+}
+ 270:	08 95       	ret
+
+00000272 <button_set_click_ms>:
+
+void button_set_click_ms(Button *btn, uint16_t ms)
+{
+    btn->click_period_timeout_ms = ms;
+ 272:	fc 01       	movw	r30, r24
+ 274:	72 87       	std	Z+10, r23	; 0x0a
+ 276:	61 87       	std	Z+9, r22	; 0x09
+}
+ 278:	08 95       	ret
+
+0000027a <button_set_press_ms>:
+
+void button_set_press_ms(Button *btn, uint16_t ms)
+{
+    btn->longpress_ms = ms;
+ 27a:	fc 01       	movw	r30, r24
+ 27c:	74 87       	std	Z+12, r23	; 0x0c
+ 27e:	63 87       	std	Z+11, r22	; 0x0b
+}
+ 280:	08 95       	ret
+
+00000282 <button_attach_single_click>:
+
+void button_attach_single_click(Button *btn,
+                                button_action_t action)
+{
+    btn->single_click_action = action;
+ 282:	fc 01       	movw	r30, r24
+ 284:	76 87       	std	Z+14, r23	; 0x0e
+ 286:	65 87       	std	Z+13, r22	; 0x0d
+}
+ 288:	08 95       	ret
+
+0000028a <button_attach_double_click>:
+
+void button_attach_double_click(Button *btn,
+                                button_action_t action)
+{
+    btn->double_click_action = action;
+ 28a:	fc 01       	movw	r30, r24
+ 28c:	70 8b       	std	Z+16, r23	; 0x10
+ 28e:	67 87       	std	Z+15, r22	; 0x0f
+}
+ 290:	08 95       	ret
+
+00000292 <button_attach_long_press>:
+
+void button_attach_long_press(Button *btn,
+                              button_action_t action)
+{
+    btn->long_press_action = action;
+ 292:	fc 01       	movw	r30, r24
+ 294:	72 8b       	std	Z+18, r23	; 0x12
+ 296:	61 8b       	std	Z+17, r22	; 0x11
+}
+ 298:	08 95       	ret
+
+0000029a <button_debounce>:
+
+// , button_action_t f1, button_action_t f2
+uint8_t button_debounce(Button *btn)
+{
+ 29a:	0f 93       	push	r16
+ 29c:	1f 93       	push	r17
+ 29e:	cf 93       	push	r28
+ 2a0:	df 93       	push	r29
+ 2a2:	ec 01       	movw	r28, r24
+    btn->now = get_millis();
+ 2a4:	0e 94 3b 03 	call	0x676	; 0x676 <get_millis>
+ 2a8:	6d 8b       	std	Y+21, r22	; 0x15
+ 2aa:	7e 8b       	std	Y+22, r23	; 0x16
+ 2ac:	8f 8b       	std	Y+23, r24	; 0x17
+ 2ae:	98 8f       	std	Y+24, r25	; 0x18
+    uint8_t rawState = gpio_read_pin(&btn->button_pin);
+ 2b0:	ce 01       	movw	r24, r28
+ 2b2:	0e 94 ae 02 	call	0x55c	; 0x55c <gpio_read_pin>
+    if (btn->_lastDebouncedBState == rawState)
+ 2b6:	9b 89       	ldd	r25, Y+19	; 0x13
+ 2b8:	98 17       	cp	r25, r24
+ 2ba:	79 f0       	breq	.+30     	; 0x2da <button_debounce+0x40>
+            btn->_debouncedBState = rawState;
+        }
+    }
+    else
+    {
+        btn->_lastDebouncedTime = btn->now;
+ 2bc:	4d 89       	ldd	r20, Y+21	; 0x15
+ 2be:	5e 89       	ldd	r21, Y+22	; 0x16
+ 2c0:	6f 89       	ldd	r22, Y+23	; 0x17
+ 2c2:	78 8d       	ldd	r23, Y+24	; 0x18
+ 2c4:	49 8f       	std	Y+25, r20	; 0x19
+ 2c6:	5a 8f       	std	Y+26, r21	; 0x1a
+ 2c8:	6b 8f       	std	Y+27, r22	; 0x1b
+ 2ca:	7c 8f       	std	Y+28, r23	; 0x1c
+        btn->_lastDebouncedBState = rawState;
+ 2cc:	8b 8b       	std	Y+19, r24	; 0x13
+ 2ce:	8c 89       	ldd	r24, Y+20	; 0x14
+    }
+    return btn->_debouncedBState;
+}
+ 2d0:	df 91       	pop	r29
+ 2d2:	cf 91       	pop	r28
+ 2d4:	1f 91       	pop	r17
+ 2d6:	0f 91       	pop	r16
+ 2d8:	08 95       	ret
+{
+    btn->now = get_millis();
+    uint8_t rawState = gpio_read_pin(&btn->button_pin);
+    if (btn->_lastDebouncedBState == rawState)
+    {
+        if ((btn->now - btn->_lastDebouncedTime) > btn->debounce_ms)
+ 2da:	0d 89       	ldd	r16, Y+21	; 0x15
+ 2dc:	1e 89       	ldd	r17, Y+22	; 0x16
+ 2de:	2f 89       	ldd	r18, Y+23	; 0x17
+ 2e0:	38 8d       	ldd	r19, Y+24	; 0x18
+ 2e2:	49 8d       	ldd	r20, Y+25	; 0x19
+ 2e4:	5a 8d       	ldd	r21, Y+26	; 0x1a
+ 2e6:	6b 8d       	ldd	r22, Y+27	; 0x1b
+ 2e8:	7c 8d       	ldd	r23, Y+28	; 0x1c
+ 2ea:	04 1b       	sub	r16, r20
+ 2ec:	15 0b       	sbc	r17, r21
+ 2ee:	26 0b       	sbc	r18, r22
+ 2f0:	37 0b       	sbc	r19, r23
+ 2f2:	4f 81       	ldd	r20, Y+7	; 0x07
+ 2f4:	58 85       	ldd	r21, Y+8	; 0x08
+ 2f6:	70 e0       	ldi	r23, 0x00	; 0
+ 2f8:	60 e0       	ldi	r22, 0x00	; 0
+ 2fa:	40 17       	cp	r20, r16
+ 2fc:	51 07       	cpc	r21, r17
+ 2fe:	62 07       	cpc	r22, r18
+ 300:	73 07       	cpc	r23, r19
+ 302:	28 f7       	brcc	.-54     	; 0x2ce <button_debounce+0x34>
+        {
+            btn->_debouncedBState = rawState;
+ 304:	8c 8b       	std	Y+20, r24	; 0x14
+    {
+        btn->_lastDebouncedTime = btn->now;
+        btn->_lastDebouncedBState = rawState;
+    }
+    return btn->_debouncedBState;
+}
+ 306:	df 91       	pop	r29
+ 308:	cf 91       	pop	r28
+ 30a:	1f 91       	pop	r17
+ 30c:	0f 91       	pop	r16
+ 30e:	08 95       	ret
+
+00000310 <_newState>:
+
+void _newState(Button *btn, enum button_state state)
+{
+ 310:	cf 93       	push	r28
+ 312:	df 93       	push	r29
+ 314:	ec 01       	movw	r28, r24
+    btn->_state = state;
+ 316:	7a a3       	std	Y+34, r23	; 0x22
+ 318:	69 a3       	std	Y+33, r22	; 0x21
+    btn->_startTime = get_millis();
+ 31a:	0e 94 3b 03 	call	0x676	; 0x676 <get_millis>
+ 31e:	6d 8f       	std	Y+29, r22	; 0x1d
+ 320:	7e 8f       	std	Y+30, r23	; 0x1e
+ 322:	8f 8f       	std	Y+31, r24	; 0x1f
+ 324:	98 a3       	std	Y+32, r25	; 0x20
+}
+ 326:	df 91       	pop	r29
+ 328:	cf 91       	pop	r28
+ 32a:	08 95       	ret
+
+0000032c <button_reset>:
+
+void button_reset(Button *btn)
+{
+ 32c:	cf 93       	push	r28
+ 32e:	df 93       	push	r29
+ 330:	ec 01       	movw	r28, r24
+    btn->_state = BUTTON_STATE_INIT;
+ 332:	1a a2       	std	Y+34, r1	; 0x22
+ 334:	19 a2       	std	Y+33, r1	; 0x21
+    btn->num_clicks = 0;
+ 336:	1b a2       	std	Y+35, r1	; 0x23
+    btn->_startTime = get_millis();
+ 338:	0e 94 3b 03 	call	0x676	; 0x676 <get_millis>
+ 33c:	6d 8f       	std	Y+29, r22	; 0x1d
+ 33e:	7e 8f       	std	Y+30, r23	; 0x1e
+ 340:	8f 8f       	std	Y+31, r24	; 0x1f
+ 342:	98 a3       	std	Y+32, r25	; 0x20
+}
+ 344:	df 91       	pop	r29
+ 346:	cf 91       	pop	r28
+ 348:	08 95       	ret
+
+0000034a <button_fsm>:
+
+void button_fsm(Button *btn, uint8_t debouncedBState)
+{
+ 34a:	cf 93       	push	r28
+ 34c:	df 93       	push	r29
+ 34e:	ec 01       	movw	r28, r24
+ 350:	26 2f       	mov	r18, r22
+    uint32_t waitTime = btn->now - btn->_startTime;
+ 352:	8d 89       	ldd	r24, Y+21	; 0x15
+ 354:	9e 89       	ldd	r25, Y+22	; 0x16
+ 356:	af 89       	ldd	r26, Y+23	; 0x17
+ 358:	b8 8d       	ldd	r27, Y+24	; 0x18
+ 35a:	4d 8d       	ldd	r20, Y+29	; 0x1d
+ 35c:	5e 8d       	ldd	r21, Y+30	; 0x1e
+ 35e:	6f 8d       	ldd	r22, Y+31	; 0x1f
+ 360:	78 a1       	ldd	r23, Y+32	; 0x20
+ 362:	84 1b       	sub	r24, r20
+ 364:	95 0b       	sbc	r25, r21
+ 366:	a6 0b       	sbc	r26, r22
+ 368:	b7 0b       	sbc	r27, r23
+    switch (btn->_state)
+ 36a:	49 a1       	ldd	r20, Y+33	; 0x21
+ 36c:	5a a1       	ldd	r21, Y+34	; 0x22
+ 36e:	42 30       	cpi	r20, 0x02	; 2
+ 370:	51 05       	cpc	r21, r1
+ 372:	09 f4       	brne	.+2      	; 0x376 <button_fsm+0x2c>
+ 374:	6a c0       	rjmp	.+212    	; 0x44a <__EEPROM_REGION_LENGTH__+0x4a>
+ 376:	98 f0       	brcs	.+38     	; 0x39e <button_fsm+0x54>
+ 378:	43 30       	cpi	r20, 0x03	; 3
+ 37a:	51 05       	cpc	r21, r1
+ 37c:	09 f4       	brne	.+2      	; 0x380 <button_fsm+0x36>
+ 37e:	3f c0       	rjmp	.+126    	; 0x3fe <button_fsm+0xb4>
+ 380:	44 30       	cpi	r20, 0x04	; 4
+ 382:	51 05       	cpc	r21, r1
+ 384:	79 f1       	breq	.+94     	; 0x3e4 <button_fsm+0x9a>
+    btn->_startTime = get_millis();
+}
+
+void button_reset(Button *btn)
+{
+    btn->_state = BUTTON_STATE_INIT;
+ 386:	1a a2       	std	Y+34, r1	; 0x22
+ 388:	19 a2       	std	Y+33, r1	; 0x21
+    btn->num_clicks = 0;
+ 38a:	1b a2       	std	Y+35, r1	; 0x23
+    btn->_startTime = get_millis();
+ 38c:	0e 94 3b 03 	call	0x676	; 0x676 <get_millis>
+ 390:	6d 8f       	std	Y+29, r22	; 0x1d
+ 392:	7e 8f       	std	Y+30, r23	; 0x1e
+ 394:	8f 8f       	std	Y+31, r24	; 0x1f
+ 396:	98 a3       	std	Y+32, r25	; 0x20
+     */
+    default:
+        button_reset(btn);
+        break;
+    }
+}
+ 398:	df 91       	pop	r29
+ 39a:	cf 91       	pop	r28
+ 39c:	08 95       	ret
+}
+
+void button_fsm(Button *btn, uint8_t debouncedBState)
+{
+    uint32_t waitTime = btn->now - btn->_startTime;
+    switch (btn->_state)
+ 39e:	41 15       	cp	r20, r1
+ 3a0:	51 05       	cpc	r21, r1
+ 3a2:	09 f4       	brne	.+2      	; 0x3a6 <button_fsm+0x5c>
+ 3a4:	44 c0       	rjmp	.+136    	; 0x42e <__EEPROM_REGION_LENGTH__+0x2e>
+ 3a6:	41 30       	cpi	r20, 0x01	; 1
+ 3a8:	51 05       	cpc	r21, r1
+ 3aa:	69 f7       	brne	.-38     	; 0x386 <button_fsm+0x3c>
+    case BUTTON_STATE_DOWN:
+        /**
+         * if in BUTTON_STATE_DOWN and button debounced state is HIGH,
+         * change state to BUTTON_STATE_UP
+         */
+        if (debouncedBState)
+ 3ac:	21 11       	cpse	r18, r1
+ 3ae:	64 c0       	rjmp	.+200    	; 0x478 <__EEPROM_REGION_LENGTH__+0x78>
+        /**
+         * if in BUTTON_STATE_DOWN and the waiting time exceeds the long press time,
+         * run button long press function
+         * change button state to BUTTON_STATE_PRESS
+         */
+        else if (waitTime > btn->longpress_ms)
+ 3b0:	2b 85       	ldd	r18, Y+11	; 0x0b
+ 3b2:	3c 85       	ldd	r19, Y+12	; 0x0c
+ 3b4:	a9 01       	movw	r20, r18
+ 3b6:	70 e0       	ldi	r23, 0x00	; 0
+ 3b8:	60 e0       	ldi	r22, 0x00	; 0
+ 3ba:	48 17       	cp	r20, r24
+ 3bc:	59 07       	cpc	r21, r25
+ 3be:	6a 07       	cpc	r22, r26
+ 3c0:	7b 07       	cpc	r23, r27
+ 3c2:	50 f7       	brcc	.-44     	; 0x398 <button_fsm+0x4e>
+        {
+            if (btn->long_press_action)
+ 3c4:	e9 89       	ldd	r30, Y+17	; 0x11
+ 3c6:	fa 89       	ldd	r31, Y+18	; 0x12
+ 3c8:	30 97       	sbiw	r30, 0x00	; 0
+ 3ca:	09 f0       	breq	.+2      	; 0x3ce <button_fsm+0x84>
+                btn->long_press_action();
+ 3cc:	09 95       	icall
+    return btn->_debouncedBState;
+}
+
+void _newState(Button *btn, enum button_state state)
+{
+    btn->_state = state;
+ 3ce:	84 e0       	ldi	r24, 0x04	; 4
+ 3d0:	90 e0       	ldi	r25, 0x00	; 0
+ 3d2:	9a a3       	std	Y+34, r25	; 0x22
+ 3d4:	89 a3       	std	Y+33, r24	; 0x21
+    btn->_startTime = get_millis();
+ 3d6:	0e 94 3b 03 	call	0x676	; 0x676 <get_millis>
+ 3da:	6d 8f       	std	Y+29, r22	; 0x1d
+ 3dc:	7e 8f       	std	Y+30, r23	; 0x1e
+ 3de:	8f 8f       	std	Y+31, r24	; 0x1f
+ 3e0:	98 a3       	std	Y+32, r25	; 0x20
+ 3e2:	da cf       	rjmp	.-76     	; 0x398 <button_fsm+0x4e>
+     */
+    case BUTTON_STATE_PRESS:
+        /**
+         * if button has been released, change state to BUTTON_STATE_PRESSEND.
+         */
+        if (debouncedBState)
+ 3e4:	22 23       	and	r18, r18
+ 3e6:	c1 f2       	breq	.-80     	; 0x398 <button_fsm+0x4e>
+    return btn->_debouncedBState;
+}
+
+void _newState(Button *btn, enum button_state state)
+{
+    btn->_state = state;
+ 3e8:	85 e0       	ldi	r24, 0x05	; 5
+ 3ea:	90 e0       	ldi	r25, 0x00	; 0
+ 3ec:	9a a3       	std	Y+34, r25	; 0x22
+ 3ee:	89 a3       	std	Y+33, r24	; 0x21
+    btn->_startTime = get_millis();
+ 3f0:	0e 94 3b 03 	call	0x676	; 0x676 <get_millis>
+ 3f4:	6d 8f       	std	Y+29, r22	; 0x1d
+ 3f6:	7e 8f       	std	Y+30, r23	; 0x1e
+ 3f8:	8f 8f       	std	Y+31, r24	; 0x1f
+ 3fa:	98 a3       	std	Y+32, r25	; 0x20
+ 3fc:	cd cf       	rjmp	.-102    	; 0x398 <button_fsm+0x4e>
+         * else if in BUTTON_STATE_COUNT and the waiting time exceeded the
+         * click time,
+         * execute the appropriate callback based on the number of clicks.
+         *
+         */
+        if (!debouncedBState)
+ 3fe:	22 23       	and	r18, r18
+ 400:	09 f4       	brne	.+2      	; 0x404 <__EEPROM_REGION_LENGTH__+0x4>
+ 402:	45 c0       	rjmp	.+138    	; 0x48e <__EEPROM_REGION_LENGTH__+0x8e>
+        {
+            _newState(btn, BUTTON_STATE_DOWN);
+            btn->_startTime = btn->now;
+        }
+        else if (waitTime > btn->click_period_timeout_ms)
+ 404:	29 85       	ldd	r18, Y+9	; 0x09
+ 406:	3a 85       	ldd	r19, Y+10	; 0x0a
+ 408:	a9 01       	movw	r20, r18
+ 40a:	70 e0       	ldi	r23, 0x00	; 0
+ 40c:	60 e0       	ldi	r22, 0x00	; 0
+ 40e:	48 17       	cp	r20, r24
+ 410:	59 07       	cpc	r21, r25
+ 412:	6a 07       	cpc	r22, r26
+ 414:	7b 07       	cpc	r23, r27
+ 416:	08 f0       	brcs	.+2      	; 0x41a <__EEPROM_REGION_LENGTH__+0x1a>
+ 418:	bf cf       	rjmp	.-130    	; 0x398 <button_fsm+0x4e>
+        {
+            switch (btn->num_clicks)
+ 41a:	8b a1       	ldd	r24, Y+35	; 0x23
+ 41c:	81 30       	cpi	r24, 0x01	; 1
+ 41e:	29 f5       	brne	.+74     	; 0x46a <__EEPROM_REGION_LENGTH__+0x6a>
+            {
+            case 1:
+                if (btn->single_click_action)
+ 420:	ed 85       	ldd	r30, Y+13	; 0x0d
+ 422:	fe 85       	ldd	r31, Y+14	; 0x0e
+ 424:	30 97       	sbiw	r30, 0x00	; 0
+ 426:	09 f4       	brne	.+2      	; 0x42a <__EEPROM_REGION_LENGTH__+0x2a>
+ 428:	ae cf       	rjmp	.-164    	; 0x386 <button_fsm+0x3c>
+                    btn->single_click_action();
+                break;
+            default:
+                if (btn->double_click_action)
+                    btn->double_click_action();
+ 42a:	09 95       	icall
+ 42c:	ac cf       	rjmp	.-168    	; 0x386 <button_fsm+0x3c>
+        /**
+         * if in BUTTON_STATE_INIT and button debounced state is LOW,
+         * save the time to _startTime
+         * change state to BUTTON_STATE_DOWN
+         */
+        if (!debouncedBState)
+ 42e:	21 11       	cpse	r18, r1
+ 430:	b3 cf       	rjmp	.-154    	; 0x398 <button_fsm+0x4e>
+        {
+            btn->num_clicks = 0;
+ 432:	1b a2       	std	Y+35, r1	; 0x23
+    return btn->_debouncedBState;
+}
+
+void _newState(Button *btn, enum button_state state)
+{
+    btn->_state = state;
+ 434:	81 e0       	ldi	r24, 0x01	; 1
+ 436:	90 e0       	ldi	r25, 0x00	; 0
+ 438:	9a a3       	std	Y+34, r25	; 0x22
+ 43a:	89 a3       	std	Y+33, r24	; 0x21
+    btn->_startTime = get_millis();
+ 43c:	0e 94 3b 03 	call	0x676	; 0x676 <get_millis>
+ 440:	6d 8f       	std	Y+29, r22	; 0x1d
+ 442:	7e 8f       	std	Y+30, r23	; 0x1e
+ 444:	8f 8f       	std	Y+31, r24	; 0x1f
+ 446:	98 a3       	std	Y+32, r25	; 0x20
+ 448:	a7 cf       	rjmp	.-178    	; 0x398 <button_fsm+0x4e>
+    case BUTTON_STATE_UP:
+        /**
+         * If in BUTTON_STATE_UP, increment button click counter then
+         * change button state to BUTTON_STATE_COUNT
+         */
+        btn->num_clicks++;
+ 44a:	8b a1       	ldd	r24, Y+35	; 0x23
+ 44c:	8f 5f       	subi	r24, 0xFF	; 255
+ 44e:	8b a3       	std	Y+35, r24	; 0x23
+    return btn->_debouncedBState;
+}
+
+void _newState(Button *btn, enum button_state state)
+{
+    btn->_state = state;
+ 450:	83 e0       	ldi	r24, 0x03	; 3
+ 452:	90 e0       	ldi	r25, 0x00	; 0
+ 454:	9a a3       	std	Y+34, r25	; 0x22
+ 456:	89 a3       	std	Y+33, r24	; 0x21
+    btn->_startTime = get_millis();
+ 458:	0e 94 3b 03 	call	0x676	; 0x676 <get_millis>
+ 45c:	6d 8f       	std	Y+29, r22	; 0x1d
+ 45e:	7e 8f       	std	Y+30, r23	; 0x1e
+ 460:	8f 8f       	std	Y+31, r24	; 0x1f
+ 462:	98 a3       	std	Y+32, r25	; 0x20
+     */
+    default:
+        button_reset(btn);
+        break;
+    }
+}
+ 464:	df 91       	pop	r29
+ 466:	cf 91       	pop	r28
+ 468:	08 95       	ret
+            case 1:
+                if (btn->single_click_action)
+                    btn->single_click_action();
+                break;
+            default:
+                if (btn->double_click_action)
+ 46a:	ef 85       	ldd	r30, Y+15	; 0x0f
+ 46c:	f8 89       	ldd	r31, Y+16	; 0x10
+ 46e:	30 97       	sbiw	r30, 0x00	; 0
+ 470:	09 f4       	brne	.+2      	; 0x474 <__EEPROM_REGION_LENGTH__+0x74>
+ 472:	89 cf       	rjmp	.-238    	; 0x386 <button_fsm+0x3c>
+                    btn->double_click_action();
+ 474:	09 95       	icall
+ 476:	87 cf       	rjmp	.-242    	; 0x386 <button_fsm+0x3c>
+    return btn->_debouncedBState;
+}
+
+void _newState(Button *btn, enum button_state state)
+{
+    btn->_state = state;
+ 478:	82 e0       	ldi	r24, 0x02	; 2
+ 47a:	90 e0       	ldi	r25, 0x00	; 0
+ 47c:	9a a3       	std	Y+34, r25	; 0x22
+ 47e:	89 a3       	std	Y+33, r24	; 0x21
+    btn->_startTime = get_millis();
+ 480:	0e 94 3b 03 	call	0x676	; 0x676 <get_millis>
+ 484:	6d 8f       	std	Y+29, r22	; 0x1d
+ 486:	7e 8f       	std	Y+30, r23	; 0x1e
+ 488:	8f 8f       	std	Y+31, r24	; 0x1f
+ 48a:	98 a3       	std	Y+32, r25	; 0x20
+ 48c:	85 cf       	rjmp	.-246    	; 0x398 <button_fsm+0x4e>
+    return btn->_debouncedBState;
+}
+
+void _newState(Button *btn, enum button_state state)
+{
+    btn->_state = state;
+ 48e:	81 e0       	ldi	r24, 0x01	; 1
+ 490:	90 e0       	ldi	r25, 0x00	; 0
+ 492:	9a a3       	std	Y+34, r25	; 0x22
+ 494:	89 a3       	std	Y+33, r24	; 0x21
+    btn->_startTime = get_millis();
+ 496:	0e 94 3b 03 	call	0x676	; 0x676 <get_millis>
+         *
+         */
+        if (!debouncedBState)
+        {
+            _newState(btn, BUTTON_STATE_DOWN);
+            btn->_startTime = btn->now;
+ 49a:	8d 89       	ldd	r24, Y+21	; 0x15
+ 49c:	9e 89       	ldd	r25, Y+22	; 0x16
+ 49e:	af 89       	ldd	r26, Y+23	; 0x17
+ 4a0:	b8 8d       	ldd	r27, Y+24	; 0x18
+ 4a2:	8d 8f       	std	Y+29, r24	; 0x1d
+ 4a4:	9e 8f       	std	Y+30, r25	; 0x1e
+ 4a6:	af 8f       	std	Y+31, r26	; 0x1f
+ 4a8:	b8 a3       	std	Y+32, r27	; 0x20
+ 4aa:	76 cf       	rjmp	.-276    	; 0x398 <button_fsm+0x4e>
+
+000004ac <button_ISR_tick>:
+    btn->num_clicks = 0;
+    btn->_debouncedBState = 1;
+}
+
+void button_ISR_tick(Button *btn)
+{
+ 4ac:	cf 93       	push	r28
+ 4ae:	df 93       	push	r29
+ 4b0:	ec 01       	movw	r28, r24
+    button_fsm(btn, button_debounce(btn));
+ 4b2:	0e 94 4d 01 	call	0x29a	; 0x29a <button_debounce>
+ 4b6:	68 2f       	mov	r22, r24
+ 4b8:	ce 01       	movw	r24, r28
+}
+ 4ba:	df 91       	pop	r29
+ 4bc:	cf 91       	pop	r28
+    btn->_debouncedBState = 1;
+}
+
+void button_ISR_tick(Button *btn)
+{
+    button_fsm(btn, button_debounce(btn));
+ 4be:	0c 94 a5 01 	jmp	0x34a	; 0x34a <button_fsm>
+
+000004c2 <gpio_set_pin_output>:
+#include "gpio.h"
+
+void gpio_set_pin_output(Pin *pin)
+{
+ 4c2:	dc 01       	movw	r26, r24
+    *pin->ddr |= _BV(pin->pin_num);
+ 4c4:	ed 91       	ld	r30, X+
+ 4c6:	fc 91       	ld	r31, X
+ 4c8:	11 97       	sbiw	r26, 0x01	; 1
+ 4ca:	90 81       	ld	r25, Z
+ 4cc:	16 96       	adiw	r26, 0x06	; 6
+ 4ce:	8c 91       	ld	r24, X
+ 4d0:	21 e0       	ldi	r18, 0x01	; 1
+ 4d2:	30 e0       	ldi	r19, 0x00	; 0
+ 4d4:	01 c0       	rjmp	.+2      	; 0x4d8 <gpio_set_pin_output+0x16>
+ 4d6:	22 0f       	add	r18, r18
+ 4d8:	8a 95       	dec	r24
+ 4da:	ea f7       	brpl	.-6      	; 0x4d6 <gpio_set_pin_output+0x14>
+ 4dc:	89 2f       	mov	r24, r25
+ 4de:	82 2b       	or	r24, r18
+ 4e0:	80 83       	st	Z, r24
+}
+ 4e2:	08 95       	ret
+
+000004e4 <gpio_set_pin_input>:
+
+void gpio_set_pin_input(Pin *pin)
+{
+ 4e4:	dc 01       	movw	r26, r24
+    *pin->ddr &= ~_BV(pin->pin_num);
+ 4e6:	ed 91       	ld	r30, X+
+ 4e8:	fc 91       	ld	r31, X
+ 4ea:	11 97       	sbiw	r26, 0x01	; 1
+ 4ec:	20 81       	ld	r18, Z
+ 4ee:	16 96       	adiw	r26, 0x06	; 6
+ 4f0:	3c 91       	ld	r19, X
+ 4f2:	81 e0       	ldi	r24, 0x01	; 1
+ 4f4:	90 e0       	ldi	r25, 0x00	; 0
+ 4f6:	01 c0       	rjmp	.+2      	; 0x4fa <gpio_set_pin_input+0x16>
+ 4f8:	88 0f       	add	r24, r24
+ 4fa:	3a 95       	dec	r19
+ 4fc:	ea f7       	brpl	.-6      	; 0x4f8 <gpio_set_pin_input+0x14>
+ 4fe:	80 95       	com	r24
+ 500:	82 23       	and	r24, r18
+ 502:	80 83       	st	Z, r24
+}
+ 504:	08 95       	ret
+
+00000506 <gpio_set_pin_input_pullup>:
+
+void gpio_set_pin_input_pullup(Pin *pin)
+{
+ 506:	fc 01       	movw	r30, r24
+    *pin->ddr |= _BV(pin->pin_num);
+}
+
+void gpio_set_pin_input(Pin *pin)
+{
+    *pin->ddr &= ~_BV(pin->pin_num);
+ 508:	a0 81       	ld	r26, Z
+ 50a:	b1 81       	ldd	r27, Z+1	; 0x01
+ 50c:	8c 91       	ld	r24, X
+ 50e:	96 81       	ldd	r25, Z+6	; 0x06
+ 510:	41 e0       	ldi	r20, 0x01	; 1
+ 512:	50 e0       	ldi	r21, 0x00	; 0
+ 514:	9a 01       	movw	r18, r20
+ 516:	01 c0       	rjmp	.+2      	; 0x51a <gpio_set_pin_input_pullup+0x14>
+ 518:	22 0f       	add	r18, r18
+ 51a:	9a 95       	dec	r25
+ 51c:	ea f7       	brpl	.-6      	; 0x518 <gpio_set_pin_input_pullup+0x12>
+ 51e:	20 95       	com	r18
+ 520:	28 23       	and	r18, r24
+ 522:	2c 93       	st	X, r18
+    }
+}
+
+void gpio_set_pin_high(Pin *pin)
+{
+    *pin->port |= _BV(pin->pin_num);
+ 524:	a2 81       	ldd	r26, Z+2	; 0x02
+ 526:	b3 81       	ldd	r27, Z+3	; 0x03
+ 528:	8c 91       	ld	r24, X
+ 52a:	96 81       	ldd	r25, Z+6	; 0x06
+ 52c:	01 c0       	rjmp	.+2      	; 0x530 <gpio_set_pin_input_pullup+0x2a>
+ 52e:	44 0f       	add	r20, r20
+ 530:	9a 95       	dec	r25
+ 532:	ea f7       	brpl	.-6      	; 0x52e <gpio_set_pin_input_pullup+0x28>
+ 534:	48 2b       	or	r20, r24
+ 536:	4c 93       	st	X, r20
+
+void gpio_set_pin_input_pullup(Pin *pin)
+{
+    gpio_set_pin_input(pin);
+    gpio_set_pin_high(pin);
+}
+ 538:	08 95       	ret
+
+0000053a <gpio_toggle_pin_mode>:
+
+void gpio_toggle_pin_mode(Pin *pin)
+{
+ 53a:	dc 01       	movw	r26, r24
+    *pin->ddr ^= _BV(pin->pin_num);
+ 53c:	ed 91       	ld	r30, X+
+ 53e:	fc 91       	ld	r31, X
+ 540:	11 97       	sbiw	r26, 0x01	; 1
+ 542:	90 81       	ld	r25, Z
+ 544:	16 96       	adiw	r26, 0x06	; 6
+ 546:	8c 91       	ld	r24, X
+ 548:	21 e0       	ldi	r18, 0x01	; 1
+ 54a:	30 e0       	ldi	r19, 0x00	; 0
+ 54c:	01 c0       	rjmp	.+2      	; 0x550 <gpio_toggle_pin_mode+0x16>
+ 54e:	22 0f       	add	r18, r18
+ 550:	8a 95       	dec	r24
+ 552:	ea f7       	brpl	.-6      	; 0x54e <gpio_toggle_pin_mode+0x14>
+ 554:	89 2f       	mov	r24, r25
+ 556:	82 27       	eor	r24, r18
+ 558:	80 83       	st	Z, r24
+}
+ 55a:	08 95       	ret
+
+0000055c <gpio_read_pin>:
+
+uint8_t gpio_read_pin(Pin *pin)
+{
+    if (*pin->pin & _BV(pin->pin_num))
+ 55c:	dc 01       	movw	r26, r24
+ 55e:	14 96       	adiw	r26, 0x04	; 4
+ 560:	ed 91       	ld	r30, X+
+ 562:	fc 91       	ld	r31, X
+ 564:	15 97       	sbiw	r26, 0x05	; 5
+ 566:	20 81       	ld	r18, Z
+ 568:	30 e0       	ldi	r19, 0x00	; 0
+ 56a:	16 96       	adiw	r26, 0x06	; 6
+ 56c:	8c 91       	ld	r24, X
+ 56e:	f9 01       	movw	r30, r18
+ 570:	02 c0       	rjmp	.+4      	; 0x576 <gpio_read_pin+0x1a>
+ 572:	f5 95       	asr	r31
+ 574:	e7 95       	ror	r30
+ 576:	8a 95       	dec	r24
+ 578:	e2 f7       	brpl	.-8      	; 0x572 <gpio_read_pin+0x16>
+ 57a:	cf 01       	movw	r24, r30
+    }
+    else
+    {
+        return 0;
+    }
+}
+ 57c:	81 70       	andi	r24, 0x01	; 1
+ 57e:	08 95       	ret
+
+00000580 <gpio_set_pin_val>:
+void gpio_set_pin_val(Pin *pin, uint8_t value)
+{
+ 580:	dc 01       	movw	r26, r24
+ 582:	12 96       	adiw	r26, 0x02	; 2
+ 584:	ed 91       	ld	r30, X+
+ 586:	fc 91       	ld	r31, X
+ 588:	13 97       	sbiw	r26, 0x03	; 3
+ 58a:	16 96       	adiw	r26, 0x06	; 6
+ 58c:	2c 91       	ld	r18, X
+ 58e:	81 e0       	ldi	r24, 0x01	; 1
+ 590:	90 e0       	ldi	r25, 0x00	; 0
+ 592:	01 c0       	rjmp	.+2      	; 0x596 <gpio_set_pin_val+0x16>
+ 594:	88 0f       	add	r24, r24
+ 596:	2a 95       	dec	r18
+ 598:	ea f7       	brpl	.-6      	; 0x594 <gpio_set_pin_val+0x14>
+    }
+}
+
+void gpio_set_pin_high(Pin *pin)
+{
+    *pin->port |= _BV(pin->pin_num);
+ 59a:	90 81       	ld	r25, Z
+        return 0;
+    }
+}
+void gpio_set_pin_val(Pin *pin, uint8_t value)
+{
+    if (value)
+ 59c:	61 11       	cpse	r22, r1
+ 59e:	04 c0       	rjmp	.+8      	; 0x5a8 <gpio_set_pin_val+0x28>
+    *pin->port |= _BV(pin->pin_num);
+}
+
+void gpio_set_pin_low(Pin *pin)
+{
+    *pin->port &= ~_BV(pin->pin_num);
+ 5a0:	80 95       	com	r24
+ 5a2:	89 23       	and	r24, r25
+ 5a4:	80 83       	st	Z, r24
+    }
+    else
+    {
+        gpio_set_pin_low(pin);
+    }
+}
+ 5a6:	08 95       	ret
+
+void gpio_set_pin_high(Pin *pin)
+{
+    *pin->port |= _BV(pin->pin_num);
+ 5a8:	89 2b       	or	r24, r25
+ 5aa:	80 83       	st	Z, r24
+ 5ac:	08 95       	ret
+
+000005ae <gpio_set_pin_high>:
+        gpio_set_pin_low(pin);
+    }
+}
+
+void gpio_set_pin_high(Pin *pin)
+{
+ 5ae:	dc 01       	movw	r26, r24
+    *pin->port |= _BV(pin->pin_num);
+ 5b0:	12 96       	adiw	r26, 0x02	; 2
+ 5b2:	ed 91       	ld	r30, X+
+ 5b4:	fc 91       	ld	r31, X
+ 5b6:	13 97       	sbiw	r26, 0x03	; 3
+ 5b8:	90 81       	ld	r25, Z
+ 5ba:	16 96       	adiw	r26, 0x06	; 6
+ 5bc:	8c 91       	ld	r24, X
+ 5be:	21 e0       	ldi	r18, 0x01	; 1
+ 5c0:	30 e0       	ldi	r19, 0x00	; 0
+ 5c2:	01 c0       	rjmp	.+2      	; 0x5c6 <gpio_set_pin_high+0x18>
+ 5c4:	22 0f       	add	r18, r18
+ 5c6:	8a 95       	dec	r24
+ 5c8:	ea f7       	brpl	.-6      	; 0x5c4 <gpio_set_pin_high+0x16>
+ 5ca:	89 2f       	mov	r24, r25
+ 5cc:	82 2b       	or	r24, r18
+ 5ce:	80 83       	st	Z, r24
+}
+ 5d0:	08 95       	ret
+
+000005d2 <gpio_set_pin_low>:
+
+void gpio_set_pin_low(Pin *pin)
+{
+ 5d2:	dc 01       	movw	r26, r24
+    *pin->port &= ~_BV(pin->pin_num);
+ 5d4:	12 96       	adiw	r26, 0x02	; 2
+ 5d6:	ed 91       	ld	r30, X+
+ 5d8:	fc 91       	ld	r31, X
+ 5da:	13 97       	sbiw	r26, 0x03	; 3
+ 5dc:	20 81       	ld	r18, Z
+ 5de:	16 96       	adiw	r26, 0x06	; 6
+ 5e0:	3c 91       	ld	r19, X
+ 5e2:	81 e0       	ldi	r24, 0x01	; 1
+ 5e4:	90 e0       	ldi	r25, 0x00	; 0
+ 5e6:	01 c0       	rjmp	.+2      	; 0x5ea <gpio_set_pin_low+0x18>
+ 5e8:	88 0f       	add	r24, r24
+ 5ea:	3a 95       	dec	r19
+ 5ec:	ea f7       	brpl	.-6      	; 0x5e8 <gpio_set_pin_low+0x16>
+ 5ee:	80 95       	com	r24
+ 5f0:	82 23       	and	r24, r18
+ 5f2:	80 83       	st	Z, r24
+}
+ 5f4:	08 95       	ret
+
+000005f6 <gpio_toggle_pin_output>:
+
+void gpio_toggle_pin_output(Pin *pin)
+{
+ 5f6:	dc 01       	movw	r26, r24
+    *pin->port ^= _BV(pin->pin_num);
+ 5f8:	12 96       	adiw	r26, 0x02	; 2
+ 5fa:	ed 91       	ld	r30, X+
+ 5fc:	fc 91       	ld	r31, X
+ 5fe:	13 97       	sbiw	r26, 0x03	; 3
+ 600:	90 81       	ld	r25, Z
+ 602:	16 96       	adiw	r26, 0x06	; 6
+ 604:	8c 91       	ld	r24, X
+ 606:	21 e0       	ldi	r18, 0x01	; 1
+ 608:	30 e0       	ldi	r19, 0x00	; 0
+ 60a:	01 c0       	rjmp	.+2      	; 0x60e <gpio_toggle_pin_output+0x18>
+ 60c:	22 0f       	add	r18, r18
+ 60e:	8a 95       	dec	r24
+ 610:	ea f7       	brpl	.-6      	; 0x60c <gpio_toggle_pin_output+0x16>
+ 612:	89 2f       	mov	r24, r25
+ 614:	82 27       	eor	r24, r18
+ 616:	80 83       	st	Z, r24
+ 618:	08 95       	ret
+
+0000061a <millis_timer_ISR_loop>:
+/**
+ * ISR TIMER0_COMPA_VECT runs every 1ms
+ */
+void millis_timer_ISR_loop(void)
+{
+    millis++;
+ 61a:	80 91 bd 01 	lds	r24, 0x01BD	; 0x8001bd <millis>
+ 61e:	90 91 be 01 	lds	r25, 0x01BE	; 0x8001be <millis+0x1>
+ 622:	a0 91 bf 01 	lds	r26, 0x01BF	; 0x8001bf <millis+0x2>
+ 626:	b0 91 c0 01 	lds	r27, 0x01C0	; 0x8001c0 <millis+0x3>
+ 62a:	01 96       	adiw	r24, 0x01	; 1
+ 62c:	a1 1d       	adc	r26, r1
+ 62e:	b1 1d       	adc	r27, r1
+ 630:	80 93 bd 01 	sts	0x01BD, r24	; 0x8001bd <millis>
+ 634:	90 93 be 01 	sts	0x01BE, r25	; 0x8001be <millis+0x1>
+ 638:	a0 93 bf 01 	sts	0x01BF, r26	; 0x8001bf <millis+0x2>
+ 63c:	b0 93 c0 01 	sts	0x01C0, r27	; 0x8001c0 <millis+0x3>
+}
+ 640:	08 95       	ret
+
+00000642 <millis_timer_init>:
+    // TCCR0A = 0x00;
+    // TCCR0B = 0x00;
+    // TCCR0B |= _BV(CS01) | _BV(CS00);
+    // TIMSK0 |= _BV(TOIE0);
+    // sei();
+    millis = 0;
+ 642:	10 92 bd 01 	sts	0x01BD, r1	; 0x8001bd <millis>
+ 646:	10 92 be 01 	sts	0x01BE, r1	; 0x8001be <millis+0x1>
+ 64a:	10 92 bf 01 	sts	0x01BF, r1	; 0x8001bf <millis+0x2>
+ 64e:	10 92 c0 01 	sts	0x01C0, r1	; 0x8001c0 <millis+0x3>
+
+    TCCR0A = 0x00;
+ 652:	14 bc       	out	0x24, r1	; 36
+    TCCR0B = 0x00;
+ 654:	15 bc       	out	0x25, r1	; 37
+    // WGM0 = 0b010, CTC mode
+    // COM0A = 0b00, COM0B = 0b00, normal port operation
+    TCCR0A |= _BV(WGM01);
+ 656:	84 b5       	in	r24, 0x24	; 36
+ 658:	82 60       	ori	r24, 0x02	; 2
+ 65a:	84 bd       	out	0x24, r24	; 36
+    // CS0 = 0b011, prescaler 64
+    // each tick is 4 us
+    TCCR0B |= _BV(CS01) | _BV(CS00);
+ 65c:	85 b5       	in	r24, 0x25	; 37
+ 65e:	83 60       	ori	r24, 0x03	; 3
+ 660:	85 bd       	out	0x25, r24	; 37
+    // TCNT0 counts from 0 to 249 (restart every 250 counts)
+    OCR0A = 249;
+ 662:	89 ef       	ldi	r24, 0xF9	; 249
+ 664:	87 bd       	out	0x27, r24	; 39
+    OCR0B = 0;
+ 666:	18 bc       	out	0x28, r1	; 40
+    // OCIE0B = 0b1, OCIE0A = 0b1
+    TIMSK0 |= _BV(OCIE0A);
+ 668:	ee e6       	ldi	r30, 0x6E	; 110
+ 66a:	f0 e0       	ldi	r31, 0x00	; 0
+ 66c:	80 81       	ld	r24, Z
+ 66e:	82 60       	ori	r24, 0x02	; 2
+ 670:	80 83       	st	Z, r24
+    // TIMSK0 |= _BV(OCIE0B);
+    // TIMSK0
+    // TIFR0
+    sei();
+ 672:	78 94       	sei
+}
+ 674:	08 95       	ret
+
+00000676 <get_millis>:
+ * @brief get current milliseconds since boot
+ */
+uint32_t get_millis(void)
+{
+    uint32_t m;
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+ 676:	2f b7       	in	r18, 0x3f	; 63
+    return 1;
+}
+
+static __inline__ uint8_t __iCliRetVal(void)
+{
+    cli();
+ 678:	f8 94       	cli
+    {
+        m = millis;
+ 67a:	60 91 bd 01 	lds	r22, 0x01BD	; 0x8001bd <millis>
+ 67e:	70 91 be 01 	lds	r23, 0x01BE	; 0x8001be <millis+0x1>
+ 682:	80 91 bf 01 	lds	r24, 0x01BF	; 0x8001bf <millis+0x2>
+ 686:	90 91 c0 01 	lds	r25, 0x01C0	; 0x8001c0 <millis+0x3>
+    (void)__s;
+}
+
+static __inline__ void __iRestore(const  uint8_t *__s)
+{
+    SREG = *__s;
+ 68a:	2f bf       	out	0x3f, r18	; 63
+    }
+    return m;
+}
+ 68c:	08 95       	ret
+
+0000068e <get_micros>:
+ 68e:	0f 93       	push	r16
+ 690:	1f 93       	push	r17
+ 692:	8f b7       	in	r24, 0x3f	; 63
+ 694:	f8 94       	cli
+ 696:	20 91 bd 01 	lds	r18, 0x01BD	; 0x8001bd <millis>
+ 69a:	30 91 be 01 	lds	r19, 0x01BE	; 0x8001be <millis+0x1>
+ 69e:	40 91 bf 01 	lds	r20, 0x01BF	; 0x8001bf <millis+0x2>
+ 6a2:	50 91 c0 01 	lds	r21, 0x01C0	; 0x8001c0 <millis+0x3>
+ 6a6:	e6 b5       	in	r30, 0x26	; 38
+ 6a8:	a9 9b       	sbis	0x15, 1	; 21
+ 6aa:	06 c0       	rjmp	.+12     	; 0x6b8 <get_micros+0x2a>
+ 6ac:	e9 3f       	cpi	r30, 0xF9	; 249
+ 6ae:	20 f4       	brcc	.+8      	; 0x6b8 <get_micros+0x2a>
+ 6b0:	2f 5f       	subi	r18, 0xFF	; 255
+ 6b2:	3f 4f       	sbci	r19, 0xFF	; 255
+ 6b4:	4f 4f       	sbci	r20, 0xFF	; 255
+ 6b6:	5f 4f       	sbci	r21, 0xFF	; 255
+ 6b8:	78 94       	sei
+ 6ba:	8f bf       	out	0x3f, r24	; 63
+ 6bc:	a8 ee       	ldi	r26, 0xE8	; 232
+ 6be:	b3 e0       	ldi	r27, 0x03	; 3
+ 6c0:	0e 94 ac 03 	call	0x758	; 0x758 <__muluhisi3>
+ 6c4:	2e 2f       	mov	r18, r30
+ 6c6:	30 e0       	ldi	r19, 0x00	; 0
+ 6c8:	22 0f       	add	r18, r18
+ 6ca:	33 1f       	adc	r19, r19
+ 6cc:	22 0f       	add	r18, r18
+ 6ce:	33 1f       	adc	r19, r19
+ 6d0:	89 01       	movw	r16, r18
+ 6d2:	33 0f       	add	r19, r19
+ 6d4:	22 0b       	sbc	r18, r18
+ 6d6:	33 0b       	sbc	r19, r19
+ 6d8:	60 0f       	add	r22, r16
+ 6da:	71 1f       	adc	r23, r17
+ 6dc:	82 1f       	adc	r24, r18
+ 6de:	93 1f       	adc	r25, r19
+ 6e0:	1f 91       	pop	r17
+ 6e2:	0f 91       	pop	r16
+ 6e4:	08 95       	ret
+
+000006e6 <main>:
+
+uint8_t reading;
+
+int main(void)
+{
+    ioinit();
+ 6e6:	0e 94 8d 00 	call	0x11a	; 0x11a <ioinit>
+    millis_timer_init();
+ 6ea:	0e 94 21 03 	call	0x642	; 0x642 <millis_timer_init>
+    button_attach_single_click(&btns[0], btn1_1click_func);
+ 6ee:	63 e5       	ldi	r22, 0x53	; 83
+ 6f0:	70 e0       	ldi	r23, 0x00	; 0
+ 6f2:	89 e1       	ldi	r24, 0x19	; 25
+ 6f4:	91 e0       	ldi	r25, 0x01	; 1
+ 6f6:	0e 94 41 01 	call	0x282	; 0x282 <button_attach_single_click>
+    button_attach_single_click(&btns[1], btn2_1click_func);
+ 6fa:	6b e5       	ldi	r22, 0x5B	; 91
+ 6fc:	70 e0       	ldi	r23, 0x00	; 0
+ 6fe:	8d e3       	ldi	r24, 0x3D	; 61
+ 700:	91 e0       	ldi	r25, 0x01	; 1
+ 702:	0e 94 41 01 	call	0x282	; 0x282 <button_attach_single_click>
+    button_attach_single_click(&btns[2], btn3_1click_func);
+ 706:	6e e5       	ldi	r22, 0x5E	; 94
+ 708:	70 e0       	ldi	r23, 0x00	; 0
+ 70a:	81 e6       	ldi	r24, 0x61	; 97
+ 70c:	91 e0       	ldi	r25, 0x01	; 1
+ 70e:	0e 94 41 01 	call	0x282	; 0x282 <button_attach_single_click>
+    button_attach_double_click(&btns[0], btn3_1click_func);
+ 712:	6e e5       	ldi	r22, 0x5E	; 94
+ 714:	70 e0       	ldi	r23, 0x00	; 0
+ 716:	89 e1       	ldi	r24, 0x19	; 25
+ 718:	91 e0       	ldi	r25, 0x01	; 1
+ 71a:	0e 94 45 01 	call	0x28a	; 0x28a <button_attach_double_click>
+    button_attach_long_press(&btns[0], btn2_1click_func);
+ 71e:	6b e5       	ldi	r22, 0x5B	; 91
+ 720:	70 e0       	ldi	r23, 0x00	; 0
+ 722:	89 e1       	ldi	r24, 0x19	; 25
+ 724:	91 e0       	ldi	r25, 0x01	; 1
+ 726:	0e 94 49 01 	call	0x292	; 0x292 <button_attach_long_press>
+        // }
+        // else
+        // {
+        //     gpio_set_pin_low(&common_pin);
+        // }
+        button_ISR_tick(&btns[0]);
+ 72a:	89 e1       	ldi	r24, 0x19	; 25
+ 72c:	91 e0       	ldi	r25, 0x01	; 1
+ 72e:	0e 94 56 02 	call	0x4ac	; 0x4ac <button_ISR_tick>
+        button_ISR_tick(&btns[1]);
+ 732:	8d e3       	ldi	r24, 0x3D	; 61
+ 734:	91 e0       	ldi	r25, 0x01	; 1
+ 736:	0e 94 56 02 	call	0x4ac	; 0x4ac <button_ISR_tick>
+        button_ISR_tick(&btns[2]);
+ 73a:	81 e6       	ldi	r24, 0x61	; 97
+ 73c:	91 e0       	ldi	r25, 0x01	; 1
+ 73e:	0e 94 56 02 	call	0x4ac	; 0x4ac <button_ISR_tick>
+        // button_debounce(&btns[0], f1, f2);
+        //)
+        PORTD = ~digit_values[cur_digit];
+ 742:	e0 91 17 01 	lds	r30, 0x0117	; 0x800117 <cur_digit>
+ 746:	0e 2e       	mov	r0, r30
+ 748:	00 0c       	add	r0, r0
+ 74a:	ff 0b       	sbc	r31, r31
+ 74c:	e0 50       	subi	r30, 0x00	; 0
+ 74e:	ff 4f       	sbci	r31, 0xFF	; 255
+ 750:	80 81       	ld	r24, Z
+ 752:	80 95       	com	r24
+ 754:	8b b9       	out	0x0b, r24	; 11
+ 756:	e9 cf       	rjmp	.-46     	; 0x72a <main+0x44>
+
+00000758 <__muluhisi3>:
+ 758:	0e 94 b7 03 	call	0x76e	; 0x76e <__umulhisi3>
+ 75c:	a5 9f       	mul	r26, r21
+ 75e:	90 0d       	add	r25, r0
+ 760:	b4 9f       	mul	r27, r20
+ 762:	90 0d       	add	r25, r0
+ 764:	a4 9f       	mul	r26, r20
+ 766:	80 0d       	add	r24, r0
+ 768:	91 1d       	adc	r25, r1
+ 76a:	11 24       	eor	r1, r1
+ 76c:	08 95       	ret
+
+0000076e <__umulhisi3>:
+ 76e:	a2 9f       	mul	r26, r18
+ 770:	b0 01       	movw	r22, r0
+ 772:	b3 9f       	mul	r27, r19
+ 774:	c0 01       	movw	r24, r0
+ 776:	a3 9f       	mul	r26, r19
+ 778:	70 0d       	add	r23, r0
+ 77a:	81 1d       	adc	r24, r1
+ 77c:	11 24       	eor	r1, r1
+ 77e:	91 1d       	adc	r25, r1
+ 780:	b2 9f       	mul	r27, r18
+ 782:	70 0d       	add	r23, r0
+ 784:	81 1d       	adc	r24, r1
+ 786:	11 24       	eor	r1, r1
+ 788:	91 1d       	adc	r25, r1
+ 78a:	08 95       	ret
+
+0000078c <_exit>:
+ 78c:	f8 94       	cli
+
+0000078e <__stop_program>:
+ 78e:	ff cf       	rjmp	.-2      	; 0x78e <__stop_program>
