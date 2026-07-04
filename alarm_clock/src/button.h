@@ -1,12 +1,8 @@
 #ifndef BUTTON_H
 #define BUTTON_H
 
-#ifndef F_CPU
-#define F_CPU 16000000UL
-#endif
-#ifndef __AVR_ATmega328P__
-#define __AVR_ATmega328P__
-#endif
+#include "config.h"
+
 /*
 button_ISR_tick is placed inside the ISR
 button_debounce and fsm called by button_ISR_tick
@@ -14,6 +10,8 @@ button_debounce and fsm called by button_ISR_tick
 */
 #include "gpio.h"
 #include "millis_micros.h"
+
+// callback function typedef
 typedef void (*button_action_t)(void);
 
 /*

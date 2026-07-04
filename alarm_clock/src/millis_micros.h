@@ -1,6 +1,7 @@
 #ifndef TIMELIB_H
 #define TIMELIB_H
 
+#include "config.h"
 #include <avr/interrupt.h>
 #include <util/atomic.h>
 
