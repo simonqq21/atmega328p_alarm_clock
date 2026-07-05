@@ -52,7 +52,7 @@ int main()
     // gpio_set_pin_output(&cathode_pin);
     // gpio_set_pin_low(&common_pin);
 
-    piezo_init(50);
+    piezo_init(10);
     // Note note = {.ocr1a_value = 8000, .duration = 100};
     // piezo_add_note(&note);
     // note.ocr1a_value = OCR1A_NOTE_REST;
@@ -77,72 +77,146 @@ int main()
     //     piezo_add_note(&notes[i]);
     // }
 
+    // // twinkle2 little star
+    // Note notes[] = {
+    //     {.ocr1a_value = OCR1A_NOTE_C5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_C5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_A5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_A5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_REST, .duration = 500},
+
+    //     {.ocr1a_value = OCR1A_NOTE_F5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_F5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_E5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_E5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_D5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_D5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_C5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_REST, .duration = 500},
+
+    //     {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_F5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_F5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_E5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_E5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_D5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_REST, .duration = 500},
+
+    //     {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_F5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_F5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_E5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_E5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_D5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_REST, .duration = 500},
+
+    //     {.ocr1a_value = OCR1A_NOTE_C5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_C5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_A5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_A5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_REST, .duration = 500},
+
+    //     {.ocr1a_value = OCR1A_NOTE_F5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_F5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_E5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_E5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_D5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_D5, .duration = 500},
+    //     {.ocr1a_value = OCR1A_NOTE_C5, .duration = 100},
+    //     {.ocr1a_value = OCR1A_NOTE_C6, .duration = 1000},
+    //     {.ocr1a_value = OCR1A_NOTE_REST, .duration = 500},
+    // };
+
+    // // 49 notes
+    // for (int i = 0; i < 50; i++)
+    // {
+    //     piezo_add_note(&notes[i]);
+    // }
+
+    uint16_t note_ms = 120;
+
     Note notes[] = {
-        {.ocr1a_value = OCR1A_NOTE_C5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_C5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_A5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_A5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_REST, .duration = 500},
+        {.ocr1a_value = OCR1A_NOTE_AS5, .duration = note_ms},
+        {.ocr1a_value = OCR1A_NOTE_CS6, .duration = note_ms},
+        {.ocr1a_value = OCR1A_NOTE_CS6, .duration = note_ms},
+        {.ocr1a_value = OCR1A_NOTE_AS5, .duration = note_ms},
+        {.ocr1a_value = OCR1A_NOTE_F6, .duration = note_ms * 3},
+        {.ocr1a_value = OCR1A_NOTE_F6, .duration = note_ms * 3},
+        {.ocr1a_value = OCR1A_NOTE_DS6, .duration = note_ms * 4},
+        {.ocr1a_value = OCR1A_NOTE_REST, .duration = note_ms * 2},
 
-        {.ocr1a_value = OCR1A_NOTE_F5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_F5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_E5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_E5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_D5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_D5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_C5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_REST, .duration = 500},
+        {.ocr1a_value = OCR1A_NOTE_GS5, .duration = note_ms},
+        {.ocr1a_value = OCR1A_NOTE_C6, .duration = note_ms},
+        {.ocr1a_value = OCR1A_NOTE_C6, .duration = note_ms},
+        {.ocr1a_value = OCR1A_NOTE_GS5, .duration = note_ms},
+        {.ocr1a_value = OCR1A_NOTE_DS6, .duration = note_ms * 3},
+        {.ocr1a_value = OCR1A_NOTE_DS6, .duration = note_ms * 3},
+        {.ocr1a_value = OCR1A_NOTE_CS6, .duration = note_ms * 3},
+        {.ocr1a_value = OCR1A_NOTE_C6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_AS5, .duration = note_ms * 2}, // 17
 
-        {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_F5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_F5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_E5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_E5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_D5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_REST, .duration = 500},
+        {.ocr1a_value = OCR1A_NOTE_AS5, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_CS6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_CS6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_AS5, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_CS6, .duration = note_ms * 4},
+        {.ocr1a_value = OCR1A_NOTE_DS6, .duration = note_ms * 2},
+        {.ocr1a_value = OCR1A_NOTE_C6, .duration = note_ms * 4},
+        {.ocr1a_value = OCR1A_NOTE_AS5, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_GS5, .duration = note_ms * 4},
+        {.ocr1a_value = OCR1A_NOTE_GS5, .duration = note_ms * 2},
+        {.ocr1a_value = OCR1A_NOTE_DS6, .duration = note_ms * 4},
+        {.ocr1a_value = OCR1A_NOTE_CS6, .duration = note_ms * 8}, // 29
 
-        {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_F5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_F5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_E5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_E5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_D5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_REST, .duration = 500},
+        {.ocr1a_value = OCR1A_NOTE_AS5, .duration = note_ms},
+        {.ocr1a_value = OCR1A_NOTE_CS6, .duration = note_ms},
+        {.ocr1a_value = OCR1A_NOTE_CS6, .duration = note_ms},
+        {.ocr1a_value = OCR1A_NOTE_AS5, .duration = note_ms},
+        {.ocr1a_value = OCR1A_NOTE_F6, .duration = note_ms * 3},
+        {.ocr1a_value = OCR1A_NOTE_F6, .duration = note_ms * 3},
+        {.ocr1a_value = OCR1A_NOTE_DS6, .duration = note_ms * 4},
+        {.ocr1a_value = OCR1A_NOTE_REST, .duration = note_ms * 2}, // 37
 
-        {.ocr1a_value = OCR1A_NOTE_C5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_C5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_A5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_A5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_G5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_REST, .duration = 500},
+        {.ocr1a_value = OCR1A_NOTE_GS5, .duration = note_ms},
+        {.ocr1a_value = OCR1A_NOTE_C6, .duration = note_ms},
+        {.ocr1a_value = OCR1A_NOTE_C6, .duration = note_ms},
+        {.ocr1a_value = OCR1A_NOTE_GS5, .duration = note_ms},
+        {.ocr1a_value = OCR1A_NOTE_GS6, .duration = note_ms * 4},
+        {.ocr1a_value = OCR1A_NOTE_C6, .duration = note_ms * 2},
+        {.ocr1a_value = OCR1A_NOTE_CS6, .duration = note_ms * 4},
+        {.ocr1a_value = OCR1A_NOTE_C6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_AS5, .duration = note_ms * 2}, // 46
 
-        {.ocr1a_value = OCR1A_NOTE_F5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_F5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_E5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_E5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_D5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_D5, .duration = 500},
-        {.ocr1a_value = OCR1A_NOTE_C5, .duration = 100},
-        {.ocr1a_value = OCR1A_NOTE_C6, .duration = 1000},
-        {.ocr1a_value = OCR1A_NOTE_REST, .duration = 500},
+        {.ocr1a_value = OCR1A_NOTE_AS5, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_CS6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_CS6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_AS5, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_CS6, .duration = note_ms * 4},
+        {.ocr1a_value = OCR1A_NOTE_DS6, .duration = note_ms * 2},
+        {.ocr1a_value = OCR1A_NOTE_C6, .duration = note_ms * 4},
+        {.ocr1a_value = OCR1A_NOTE_AS5, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_GS5, .duration = note_ms * 4},
+        {.ocr1a_value = OCR1A_NOTE_GS5, .duration = note_ms * 2},
+        {.ocr1a_value = OCR1A_NOTE_DS6, .duration = note_ms * 4},
+        {.ocr1a_value = OCR1A_NOTE_CS6, .duration = note_ms * 8},
+        {.ocr1a_value = OCR1A_NOTE_REST, .duration = note_ms * 6}, // 59
+
     };
-
-    // 49 notes
-    for (int i = 0; i < 50; i++)
+    // 59 notes
+    for (int i = 0; i < 59 + 1; i++)
     {
         piezo_add_note(&notes[i]);
     }
 
     piezo_play_sequence();
-    // _delay_ms(200);
-    // piezo_stop_sequence();
 
     while (1)
     {

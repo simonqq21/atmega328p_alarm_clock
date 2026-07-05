@@ -14,11 +14,11 @@
 // };
 
 Note *note_sequence;
-uint8_t note_sequence_len = 0;
-volatile uint8_t last_note_idx = 0;
+uint16_t note_sequence_len = 0;
+volatile uint16_t last_note_idx = 0;
 volatile uint16_t note_sequence_idx = 0;
 volatile uint8_t is_playing;
-
+volatile uint8_t note_paused = false;
 volatile uint32_t millis = 0;
 volatile uint32_t last_millis = 0;
 
@@ -62,8 +62,6 @@ void piezo_init(uint8_t note_buf_len)
     is_playing = false;
 }
 
-volatile uint8_t note_paused = false;
-
 void piezo_loop_ISR(void)
 {
     millis++;
@@ -72,6 +70,7 @@ void piezo_loop_ISR(void)
     if (is_playing)
     {
         // gpio_set_pin_high(&cathode_pin);
+        // after pause period
         if (note_paused && (millis - last_millis) > 20)
         {
             last_millis = millis;
@@ -82,6 +81,7 @@ void piezo_loop_ISR(void)
             note_paused = false;
         }
 
+        // pause the note for a very short duration after playing the note
         if ((millis - last_millis) > note_sequence[note_sequence_idx].duration - 20)
         {
             last_millis = millis;
@@ -91,6 +91,7 @@ void piezo_loop_ISR(void)
             note_sequence_idx++;
         }
 
+        // play the current note in the sequence
         if (is_playing && !note_paused && OCR1A != note_sequence[note_sequence_idx].ocr1a_value)
         {
             piezo_play_cur_note();
@@ -146,4 +147,9 @@ void piezo_stop_sequence(void)
     piezo_off();
     DDRB &= ~_BV(PB1);
     is_playing = false;
+}
+
+uint8_t piezo_is_playing(void)
+{
+    return is_playing;
 }

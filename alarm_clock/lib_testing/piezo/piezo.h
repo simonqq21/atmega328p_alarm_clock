@@ -18,6 +18,18 @@
 #define NOTE_AS5 932
 #define NOTE_B5 988
 #define NOTE_C6 1047
+#define NOTE_CS6 1109
+#define NOTE_D6 1175
+#define NOTE_DS6 1245
+#define NOTE_E6 1319
+#define NOTE_F6 1397
+#define NOTE_FS6 1480
+#define NOTE_G6 1568
+#define NOTE_GS6 1661
+#define NOTE_A6 1760
+#define NOTE_AS6 1865
+#define NOTE_B6 1976
+#define NOTE_C7 2093
 
 // defined note OCRNA values
 // if OCR1A value is 0, disable the piezo output because that
@@ -36,6 +48,18 @@
 #define OCR1A_NOTE_AS5 1072
 #define OCR1A_NOTE_B5 1011
 #define OCR1A_NOTE_C6 954
+#define OCR1A_NOTE_CS6 901
+#define OCR1A_NOTE_D6 850
+#define OCR1A_NOTE_DS6 802
+#define OCR1A_NOTE_E6 757
+#define OCR1A_NOTE_F6 715
+#define OCR1A_NOTE_FS6 675
+#define OCR1A_NOTE_G6 637
+#define OCR1A_NOTE_GS6 601
+#define OCR1A_NOTE_A6 567
+#define OCR1A_NOTE_AS6 535
+#define OCR1A_NOTE_B6 505
+#define OCR1A_NOTE_C7 477
 
 typedef struct
 {
@@ -75,7 +99,7 @@ void piezo_add_note(Note *note);
 void piezo_play_cur_note(void);
 
 /**
- * @brief
+ * @brief play a sequence of notes with a sequence of durations
  *
  */
 void piezo_play_sequence(void);
@@ -89,6 +113,8 @@ void piezo_off(void);
 void piezo_stop_sequence(void);
 
 /**
- * @brief play a sequence of notes with a sequence of durations
+ * @brief
  */
+uint8_t piezo_is_playing(void);
+
 #endif
