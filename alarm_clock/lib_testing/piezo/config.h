@@ -5,8 +5,12 @@
 #define F_CPU 16000000UL
 #endif
 
+#include <stdlib.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
 #include "avr/io.h"
-#include "stdint.h"
 #include "avr/interrupt.h"
 #include "util/atomic.h"
 
