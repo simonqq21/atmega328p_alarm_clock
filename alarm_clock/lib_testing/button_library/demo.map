@@ -7,7 +7,7 @@ Archive member included to satisfy reference by file (symbol)
 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_clear_bss.o)
                               demo.o (__do_clear_bss)
 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_muluhisi3.o)
-                              /tmp/ccV7UGt7.o (__muluhisi3)
+                              /tmp/ccXcmqmB.o (__muluhisi3)
 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_umulhisi3.o)
                               /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_muluhisi3.o) (__umulhisi3)
 
@@ -19,7 +19,7 @@ cur_digit           0x1               demo.o
 reading             0x1               demo.o
 btns                0x6c              demo.o
 segment_pins        0x38              demo.o
-millis              0x4               /tmp/ccV7UGt7.o
+millis              0x4               /tmp/ccXcmqmB.o
 
 Memory Configuration
 
@@ -38,9 +38,9 @@ Linker script and memory map
 Address of section .data set to 0x800100
 LOAD /usr/lib/gcc/avr/7.3.0/../../../avr/lib/avr5/crtatmega328p.o
 LOAD demo.o
-LOAD /tmp/cc1hNzBo.o
-LOAD /tmp/cc4tKIXG.o
-LOAD /tmp/ccV7UGt7.o
+LOAD /tmp/cczSo1Nl.o
+LOAD /tmp/ccZ6juxC.o
+LOAD /tmp/ccXcmqmB.o
 START GROUP
 LOAD /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a
 LOAD /usr/lib/gcc/avr/7.3.0/../../../avr/lib/avr5/libm.a
@@ -239,7 +239,7 @@ END GROUP
                 0x000000000000011a                ioinit
                 0x0000000000000222                f1
                 0x000000000000022a                f2
- .text          0x0000000000000232      0x290 /tmp/cc1hNzBo.o
+ .text          0x0000000000000232      0x290 /tmp/cczSo1Nl.o
                 0x0000000000000232                button_setup
                 0x000000000000026a                button_set_debounce_ms
                 0x0000000000000272                button_set_click_ms
@@ -252,7 +252,7 @@ END GROUP
                 0x000000000000032c                button_reset
                 0x000000000000034a                button_fsm
                 0x00000000000004ac                button_ISR_tick
- .text          0x00000000000004c2      0x158 /tmp/cc4tKIXG.o
+ .text          0x00000000000004c2      0x158 /tmp/ccZ6juxC.o
                 0x00000000000004c2                gpio_set_pin_output
                 0x00000000000004e4                gpio_set_pin_input
                 0x0000000000000506                gpio_set_pin_input_pullup
@@ -262,7 +262,7 @@ END GROUP
                 0x00000000000005ae                gpio_set_pin_high
                 0x00000000000005d2                gpio_set_pin_low
                 0x00000000000005f6                gpio_toggle_pin_output
- .text          0x000000000000061a       0xcc /tmp/ccV7UGt7.o
+ .text          0x000000000000061a       0xcc /tmp/ccXcmqmB.o
                 0x000000000000061a                millis_timer_ISR_loop
                 0x0000000000000642                millis_timer_init
                 0x0000000000000676                get_millis
@@ -375,9 +375,9 @@ END GROUP
  *(.data)
  .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/7.3.0/../../../avr/lib/avr5/crtatmega328p.o
  .data          0x0000000000800100        0x0 demo.o
- .data          0x0000000000800100        0x0 /tmp/cc1hNzBo.o
- .data          0x0000000000800100        0x0 /tmp/cc4tKIXG.o
- .data          0x0000000000800100        0x0 /tmp/ccV7UGt7.o
+ .data          0x0000000000800100        0x0 /tmp/cczSo1Nl.o
+ .data          0x0000000000800100        0x0 /tmp/ccZ6juxC.o
+ .data          0x0000000000800100        0x0 /tmp/ccXcmqmB.o
  .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
  .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_copy_data.o)
  .data          0x0000000000800100        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_clear_bss.o)
@@ -399,9 +399,9 @@ END GROUP
  *(.bss)
  .bss           0x0000000000800110        0x0 /usr/lib/gcc/avr/7.3.0/../../../avr/lib/avr5/crtatmega328p.o
  .bss           0x0000000000800110        0x0 demo.o
- .bss           0x0000000000800110        0x0 /tmp/cc1hNzBo.o
- .bss           0x0000000000800110        0x0 /tmp/cc4tKIXG.o
- .bss           0x0000000000800110        0x0 /tmp/ccV7UGt7.o
+ .bss           0x0000000000800110        0x0 /tmp/cczSo1Nl.o
+ .bss           0x0000000000800110        0x0 /tmp/ccZ6juxC.o
+ .bss           0x0000000000800110        0x0 /tmp/ccXcmqmB.o
  .bss           0x0000000000800110        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_exit.o)
  .bss           0x0000000000800110        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_copy_data.o)
  .bss           0x0000000000800110        0x0 /usr/lib/gcc/avr/7.3.0/avr5/libgcc.a(_clear_bss.o)
@@ -415,7 +415,7 @@ END GROUP
                 0x0000000000800118                reading
                 0x0000000000800119                btns
                 0x0000000000800185                segment_pins
- COMMON         0x00000000008001bd        0x4 /tmp/ccV7UGt7.o
+ COMMON         0x00000000008001bd        0x4 /tmp/ccXcmqmB.o
                 0x00000000008001bd                millis
                 0x00000000008001c1                PROVIDE (__bss_end, .)
                 0x0000000000000790                __data_load_start = LOADADDR (.data)
@@ -450,11 +450,11 @@ END GROUP
 .stab           0x0000000000000000     0x20f4
  *(.stab)
  .stab          0x0000000000000000      0x9e4 demo.o
- .stab          0x00000000000009e4      0xa80 /tmp/cc1hNzBo.o
+ .stab          0x00000000000009e4      0xa80 /tmp/cczSo1Nl.o
                                         0xc90 (size before relaxing)
- .stab          0x0000000000001464      0x678 /tmp/cc4tKIXG.o
+ .stab          0x0000000000001464      0x678 /tmp/ccZ6juxC.o
                                         0x858 (size before relaxing)
- .stab          0x0000000000001adc      0x618 /tmp/ccV7UGt7.o
+ .stab          0x0000000000001adc      0x618 /tmp/ccXcmqmB.o
                                         0x7e0 (size before relaxing)
 
 .stabstr        0x0000000000000000     0x14d3
@@ -477,9 +477,9 @@ END GROUP
  *(.comment)
  .comment       0x0000000000000000       0x11 demo.o
                                          0x12 (size before relaxing)
- .comment       0x0000000000000011       0x12 /tmp/cc1hNzBo.o
- .comment       0x0000000000000011       0x12 /tmp/cc4tKIXG.o
- .comment       0x0000000000000011       0x12 /tmp/ccV7UGt7.o
+ .comment       0x0000000000000011       0x12 /tmp/cczSo1Nl.o
+ .comment       0x0000000000000011       0x12 /tmp/ccZ6juxC.o
+ .comment       0x0000000000000011       0x12 /tmp/ccXcmqmB.o
 
 .note.gnu.avr.deviceinfo
                 0x0000000000000000       0x40

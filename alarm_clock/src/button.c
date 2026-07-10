@@ -7,8 +7,8 @@ void button_setup(Button *btn)
     */
     gpio_set_pin_input(&btn->button_pin);
     gpio_set_pin_high(&btn->button_pin);
-    btn->debounce_ms = 50;
-    btn->click_period_timeout_ms = 400;
+    btn->debounce_ms = 10;
+    btn->click_period_timeout_ms = 60;
     btn->longpress_ms = 1000;
     btn->_state = BUTTON_STATE_INIT;
     btn->num_clicks = 0;

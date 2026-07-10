@@ -20,7 +20,7 @@ float temperature_celsius, humidity;
 ISR(TIMER0_COMPA_vect)
 {
     millis_timer_ISR_loop();
-    // seven_segment_loop_isr();
+    seven_segment_loop_isr();
 }
 
 // ISR(TIMER0_COMPB_vect)
@@ -74,7 +74,7 @@ int main()
     seven_segment_clear_all();
     // DDRB |= _BV(1);
 
-    timer2_init();
+    // timer2_init();
 
     // uint8_t byte_arr[] = {
     //     digit_values[10],

@@ -394,14 +394,14 @@ void button_setup(Button *btn)
     gpio_set_pin_high(&btn->button_pin);
  23c:	ce 01       	movw	r24, r28
  23e:	0e 94 d7 02 	call	0x5ae	; 0x5ae <gpio_set_pin_high>
-    btn->debounce_ms = 50;
- 242:	82 e3       	ldi	r24, 0x32	; 50
+    btn->debounce_ms = 20;
+ 242:	84 e1       	ldi	r24, 0x14	; 20
  244:	90 e0       	ldi	r25, 0x00	; 0
  246:	98 87       	std	Y+8, r25	; 0x08
  248:	8f 83       	std	Y+7, r24	; 0x07
-    btn->click_period_timeout_ms = 400;
- 24a:	80 e9       	ldi	r24, 0x90	; 144
- 24c:	91 e0       	ldi	r25, 0x01	; 1
+    btn->click_period_timeout_ms = 100;
+ 24a:	84 e6       	ldi	r24, 0x64	; 100
+ 24c:	90 e0       	ldi	r25, 0x00	; 0
  24e:	9a 87       	std	Y+10, r25	; 0x0a
  250:	89 87       	std	Y+9, r24	; 0x09
     btn->longpress_ms = 1000;
