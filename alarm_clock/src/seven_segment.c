@@ -24,6 +24,7 @@ display_data_t display_data;
 Pin segment_pins[8];
 Pin digit_pins[4];
 Pin colon_pin;
+uint32_t prev_millis_colon_flash;
 
 void seven_segment_init()
 {
@@ -130,6 +131,23 @@ void seven_segment_write_digit_vals(uint8_t digit_indices[4])
 void seven_segment_set_colon(uint8_t state)
 {
     display_data.colon = state;
+}
+
+void flash_colon_loop(uint32_t t_millis)
+{
+    if (t_millis - prev_millis_colon_flash > 500)
+    {
+        prev_millis_colon_flash = t_millis;
+        if (display_data.colon)
+        {
+            seven_segment_set_colon(1);
+        }
+        else
+        {
+            seven_segment_set_colon(0);
+        }
+        display_data.colon = !display_data.colon;
+    }
 }
 
 void seven_segment_set_decimal_point(uint8_t digit)

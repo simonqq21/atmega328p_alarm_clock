@@ -37,6 +37,9 @@ void seven_segment_write_byte_to_digit(uint8_t byte, uint8_t digit);
 void seven_segment_write_bytes(uint8_t bytes[4]);
 /* write the colon */
 void seven_segment_set_colon(uint8_t state);
+/* flash the colon */
+void flash_colon_loop(uint32_t t_millis);
+
 /* enable the decimal point in a digit*/
 void seven_segment_set_decimal_point(uint8_t digit);
 // ******************************************************************

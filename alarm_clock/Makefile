@@ -59,7 +59,7 @@ AVRDUDE_TARGET = m328pb
 
 OPTIMIZE	   = -O2
 DEFS		   =
-LIBS		   =  src/millis_micros.c src/gpio.c src/button.c src/seven_segment.c
+LIBS		   =  src/millis_micros.c src/gpio.c src/button.c src/seven_segment.c 
 # You should not have to change anything below here.
 CC			 = avr-gcc
 # Override is only needed by avr-lib build system.
@@ -71,6 +71,8 @@ OBJDUMP		= avr-objdump
 all: $(PRG).elf lst text eeprom
 $(PRG).elf: $(PRG).o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
+	avr-size $@
+
 # dependency:
 # demo.o: demo.c iocompat.h
 
