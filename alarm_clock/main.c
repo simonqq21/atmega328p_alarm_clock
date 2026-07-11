@@ -12,12 +12,15 @@
 #include "src/button.h"
 // #include "src/piezo.h"
 #include "src/seven_segment.h"
-// #include "src/rtc.h"
+#include "src/rtc.h"
 // #include "src/serial.h"
 #include "src/states.h"
 /*
 src/rtc.c src/twi.c src/twi-lowlevel.c
 */
+
+#define MIN_YEAR 2000
+#define MAX_YEAR 2099
 
 // buttons
 #define BTNS_PORT PORTC
@@ -29,6 +32,7 @@ src/rtc.c src/twi.c src/twi-lowlevel.c
 
 uint32_t t_millis;
 Button minus_button, adjust_button, plus_button;
+struct tm clock_time;
 
 // interrupts
 ISR(TIMER0_COMPA_vect)
@@ -38,30 +42,30 @@ ISR(TIMER0_COMPA_vect)
     seven_segment_loop_isr();
 }
 
-ISR(TIMER2_COMPA_vect)
-{
-}
+// ISR(TIMER2_COMPA_vect)
+// {
+// }
 
-// initialize Time2 to trigger a CTC every 4ms
-void timer2_init(void)
-{
-    // WGM = 010, CTC mode
-    // COM2A = 00, OC2A disconnected
-    // CS2 = 100, prescaler 1/256, 16us per increment
-    // OCR2A = 250 - 1 = 249, 250 * 16us = 4ms
-    // enable OCIE2A, output compare match A interrupt handle
-    TCCR2A = 0;
-    TCCR2B = 0;
-    TCCR2A |= _BV(WGM21);
-    TCCR2B |= _BV(CS22) | _BV(CS21);
-    TIMSK2 |= _BV(OCIE2A);
-    OCR2A = 249;
-    sei();
-}
+// // initialize Time2 to trigger a CTC every 4ms
+// void timer2_init(void)
+// {
+//     // WGM = 010, CTC mode
+//     // COM2A = 00, OC2A disconnected
+//     // CS2 = 100, prescaler 1/256, 16us per increment
+//     // OCR2A = 250 - 1 = 249, 250 * 16us = 4ms
+//     // enable OCIE2A, output compare match A interrupt handle
+//     TCCR2A = 0;
+//     TCCR2B = 0;
+//     TCCR2A |= _BV(WGM21);
+//     TCCR2B |= _BV(CS22) | _BV(CS21);
+//     TIMSK2 |= _BV(OCIE2A);
+//     OCR2A = 249;
+//     sei();
+// }
 
 // state updated variable used to run code when switching to a new state
 volatile uint8_t state_start;
-
+volatile uint8_t main_state_swapped;
 volatile uint8_t display_updated;
 volatile alarm_clock_main_state_t main_state;
 
@@ -73,12 +77,15 @@ void new_state_start()
 {
     state_start = false;
     display_updated = false;
+    seven_segment_flash_colon(0);
+    seven_segment_flash_digits_hours(0);
+    seven_segment_flash_digits_minutes(0);
 }
 
 /**
  * button callback to increment through all main alarm clock FSM states.
  */
-void increment_alarm_clock_state(void)
+void increment_main_state(void)
 {
     if (main_state == MAIN_STATE_TESTING)
     {
@@ -88,13 +95,14 @@ void increment_alarm_clock_state(void)
     {
         main_state++;
     }
+    main_state_swapped = true;
     new_state_start();
 }
 
 /**
  * button callback to decrement through all main alarm clock FSM states.
  */
-void decrement_alarm_clock_state(void)
+void decrement_main_state(void)
 {
     if (main_state == MAIN_STATE_HOUR_MIN)
     {
@@ -104,6 +112,7 @@ void decrement_alarm_clock_state(void)
     {
         main_state--;
     }
+    main_state_swapped = true;
     new_state_start();
 }
 
@@ -126,7 +135,7 @@ void swap_hour_min_state(void)
     {
         hour_min_state = HOUR_MIN_STATE_DISPLAY;
     }
-    display_updated = false;
+    new_state_start();
 }
 
 /* swap through the different states in the alarm state */
@@ -137,7 +146,7 @@ void swap_alarm_state(void)
     {
         alarm_state = ALARM_STATE_DISPLAY;
     }
-    display_updated = false;
+    new_state_start();
 }
 
 /* swap through the different states in the month day state */
@@ -148,7 +157,7 @@ void swap_month_day_state(void)
     {
         month_day_state = MONTH_DAY_STATE_DISPLAY;
     }
-    display_updated = false;
+    new_state_start();
 }
 
 /* swap through the different states in the year state */
@@ -159,7 +168,7 @@ void swap_year_state(void)
     {
         year_state = YEAR_STATE_DISPLAY;
     }
-    display_updated = false;
+    new_state_start();
 }
 
 /* swap through the different states in the temperature state */
@@ -170,7 +179,7 @@ void swap_temperature_state(void)
     {
         temperature_state = TEMPERATURE_STATE_DISPLAY_TEMPERATURE;
     }
-    display_updated = false;
+    new_state_start();
 }
 
 /* swap through the different states in the humidity state */
@@ -181,7 +190,7 @@ void swap_humidity_state(void)
     {
         humidity_state = HUMIDITY_STATE_DISPLAY_HUMIDITY;
     }
-    display_updated = false;
+    new_state_start();
 }
 
 /* swap through the different states in the display testing state */
@@ -192,7 +201,127 @@ void swap_testing_state(void)
     {
         testing_state = TESTING_STATE_ALL_OFF;
     }
-    display_updated = false;
+    new_state_start();
+}
+// ************************************************************************************************
+void increment_hour(void)
+{
+    if (clock_time.hour < 23)
+    {
+        clock_time.hour++;
+    }
+    else
+    {
+        clock_time.hour = 0;
+    }
+}
+
+void decrement_hour(void)
+{
+    if (clock_time.hour > 0)
+    {
+        clock_time.hour--;
+    }
+    else
+    {
+        clock_time.hour = 23;
+    }
+}
+
+void increment_minute(void)
+{
+    if (clock_time.min < 59)
+    {
+        clock_time.min++;
+    }
+    else
+    {
+        clock_time.min = 0;
+    }
+}
+
+void decrement_minute(void)
+{
+    if (clock_time.min > 0)
+    {
+        clock_time.min--;
+    }
+    else
+    {
+        clock_time.min = 59;
+    }
+}
+
+void increment_month(void)
+{
+    if (clock_time.mon < 12)
+    {
+        clock_time.mon++;
+    }
+    else
+    {
+        clock_time.mon = 1;
+    }
+}
+
+void decrement_month(void)
+{
+    if (clock_time.mon > 1)
+    {
+        clock_time.mon--;
+    }
+    else
+    {
+        clock_time.mon = 12;
+    }
+}
+
+void increment_day(void)
+{
+    if (clock_time.mday < 31)
+    {
+        clock_time.mday++;
+    }
+    else
+    {
+        clock_time.mday = 1;
+    }
+}
+
+void decrement_day(void)
+{
+    if (clock_time.mday > 1)
+    {
+        clock_time.mday--;
+    }
+    else
+    {
+        clock_time.mday = 31;
+    }
+}
+
+void increment_year(void)
+{
+    if (clock_time.year < MAX_YEAR)
+    {
+        clock_time.year++;
+    }
+    else
+    {
+        clock_time.year = MIN_YEAR;
+    }
+}
+
+void decrement_year(void)
+{
+    if (clock_time.year > MIN_YEAR)
+    {
+        clock_time.year--;
+    }
+    else
+    {
+        clock_time.year = MAX_YEAR;
+    }
 }
 
 // ************************************************************************************************
@@ -232,8 +361,8 @@ int main()
     in time mode,
 
     */
-    button_attach_single_click(&minus_button, decrement_alarm_clock_state);
-    button_attach_single_click(&plus_button, increment_alarm_clock_state);
+    button_attach_single_click(&minus_button, decrement_main_state);
+    button_attach_single_click(&plus_button, increment_main_state);
 
     // initialize seven segment
     seven_segment_init();
@@ -244,7 +373,7 @@ int main()
     // rtc_init();
     // initialize piezo
     // piezo_init(10);
-
+    main_state_swapped = true;
     // ************************************************************************************************
 
     while (1)
@@ -252,44 +381,119 @@ int main()
         /*
         main FSM
         */
+        t_millis = get_millis();
         switch (main_state)
         {
         case MAIN_STATE_HOUR_MIN:
+            // run once
             if (state_start == false)
             {
                 state_start = true;
+
+                // run only when changing main state
+                if (main_state_swapped == true)
+                {
+                    main_state_swapped = false;
+
+                    // test
+                    clock_time.hour = 14;
+                    clock_time.min = 20;
+
+                    hour_min_state = HOUR_MIN_STATE_DISPLAY;
+                }
+                // set button callbacks
+                switch (hour_min_state)
+                {
+                /*
+                +- buttons switch between main states
+                adjust button long press would go into adjust hour mode
+                */
+                case HOUR_MIN_STATE_DISPLAY:
+                    button_attach_single_click(&minus_button, decrement_main_state);
+                    button_attach_single_click(&plus_button, increment_main_state);
+                    button_attach_long_press(&adjust_button, swap_hour_min_state);
+                    break;
+                /*
+                +- buttons adjust the hour
+                adjust button short press goes into adjust minute mode
+                */
+                case HOUR_MIN_STATE_ADJUST_HOUR:
+                    button_attach_single_click(&minus_button, decrement_hour);
+                    button_attach_single_click(&plus_button, increment_hour);
+                    button_attach_single_click(&adjust_button, swap_hour_min_state);
+                    break;
+                /*
+                +- buttons adjust the minute
+                adjust button short press goes back to hour min display mode
+                 */
+                case HOUR_MIN_STATE_ADJUST_MIN:
+                    button_attach_single_click(&minus_button, decrement_minute);
+                    button_attach_single_click(&plus_button, increment_minute);
+                    button_attach_single_click(&adjust_button, swap_hour_min_state);
+                    break;
+                default:
+                    break;
+                }
             }
+            // run forever
             switch (hour_min_state)
             {
                 /*
                 the current time is displayed with a blinking colon.
-                +- buttons do nothing
-                adjust button long press would go into adjust hour mode
+
                 */
             case HOUR_MIN_STATE_DISPLAY:
+                seven_segment_show_hour_minute(clock_time.hour, clock_time.min);
+                seven_segment_flash_colon(1);
                 break;
                 /*
                 the current time is displayed with a steady colon, but the hour portion is blinking.
-                +- buttons adjust the hour
-                adjust button short press goes into adjust minute mode
+
                 */
             case HOUR_MIN_STATE_ADJUST_HOUR:
+                seven_segment_show_hour_minute(clock_time.hour, clock_time.min);
+                seven_segment_flash_digits_hours(1);
+
                 break;
                 /*
                 the current time is displayed with a steady colon, but the minute portion is blinking.
-                +- buttons adjust the minute
-                adjust button short press goes back to hour min display mode
+
                  */
             case HOUR_MIN_STATE_ADJUST_MIN:
+                seven_segment_show_hour_minute(clock_time.hour, clock_time.min);
+                seven_segment_flash_digits_minutes(1);
                 break;
             default:
                 break;
             }
             break;
         case MAIN_STATE_ALARM:
+            // run once
+            if (state_start == false)
+            {
+                state_start = true;
+                // run only when changing main state
+                if (main_state_swapped == true)
+                {
+
+                    main_state_swapped = false;
+                }
+                // set button callbacks
+                switch (alarm_state)
+                {
+                case ALARM_STATE_DISPLAY:
+                    break;
+                case ALARM_STATE_ADJUST_HOUR:
+                    break;
+                case ALARM_STATE_ADJUST_MIN:
+                    break;
+                default:
+                    break;
+                }
+            }
+            // run forever
             switch (alarm_state)
             {
-
             case ALARM_STATE_DISPLAY:
                 break;
             case ALARM_STATE_ADJUST_HOUR:
@@ -301,6 +505,30 @@ int main()
             }
             break;
         case MAIN_STATE_MONTH_DAY:
+            // run once
+            if (state_start == false)
+            {
+                state_start = true;
+                // run only when changing main state
+                if (main_state_swapped == true)
+                {
+
+                    main_state_swapped = false;
+                }
+                // set button callbacks
+                switch (alarm_state)
+                {
+                case ALARM_STATE_DISPLAY:
+                    break;
+                case ALARM_STATE_ADJUST_HOUR:
+                    break;
+                case ALARM_STATE_ADJUST_MIN:
+                    break;
+                default:
+                    break;
+                }
+            }
+            // run forever
             switch (month_day_state)
             {
             case MONTH_DAY_STATE_DISPLAY:
@@ -314,6 +542,30 @@ int main()
             }
             break;
         case MAIN_STATE_YEAR:
+            // run once
+            if (state_start == false)
+            {
+                state_start = true;
+                // run only when changing main state
+                if (main_state_swapped == true)
+                {
+
+                    main_state_swapped = false;
+                }
+                // set button callbacks
+                switch (alarm_state)
+                {
+                case ALARM_STATE_DISPLAY:
+                    break;
+                case ALARM_STATE_ADJUST_HOUR:
+                    break;
+                case ALARM_STATE_ADJUST_MIN:
+                    break;
+                default:
+                    break;
+                }
+            }
+            // run forever
             switch (year_state)
             {
             case YEAR_STATE_DISPLAY:
@@ -325,6 +577,30 @@ int main()
             }
             break;
         case MAIN_STATE_TEMPERATURE:
+            // run once
+            if (state_start == false)
+            {
+                state_start = true;
+                // run only when changing main state
+                if (main_state_swapped == true)
+                {
+
+                    main_state_swapped = false;
+                }
+                // set button callbacks
+                switch (alarm_state)
+                {
+                case ALARM_STATE_DISPLAY:
+                    break;
+                case ALARM_STATE_ADJUST_HOUR:
+                    break;
+                case ALARM_STATE_ADJUST_MIN:
+                    break;
+                default:
+                    break;
+                }
+            }
+            // run forever
             switch (temperature_state)
             {
             case TEMPERATURE_STATE_DISPLAY_TEMPERATURE:
@@ -334,6 +610,30 @@ int main()
             }
             break;
         case MAIN_STATE_HUMIDITY:
+            // run once
+            if (state_start == false)
+            {
+                state_start = true;
+                // run only when changing main state
+                if (main_state_swapped == true)
+                {
+
+                    main_state_swapped = false;
+                }
+                // set button callbacks
+                switch (alarm_state)
+                {
+                case ALARM_STATE_DISPLAY:
+                    break;
+                case ALARM_STATE_ADJUST_HOUR:
+                    break;
+                case ALARM_STATE_ADJUST_MIN:
+                    break;
+                default:
+                    break;
+                }
+            }
+            // run forever
             switch (humidity_state)
             {
             case HUMIDITY_STATE_DISPLAY_HUMIDITY:
@@ -344,31 +644,31 @@ int main()
             break;
         // 7 segment test on and off
         case MAIN_STATE_TESTING:
+            // run once
             if (state_start == false)
             {
                 state_start = true;
+                // run only when changing main state
+                if (main_state_swapped == true)
+                {
+                    main_state_swapped = false;
+                    testing_state = TESTING_STATE_ALL_ON;
+                }
                 // attach adjust button
                 button_attach_single_click(&adjust_button, swap_testing_state);
-                testing_state = TESTING_STATE_ALL_ON;
             }
+            // run forever
             switch (testing_state)
             {
             // 7 segment all off
             case TESTING_STATE_ALL_OFF:
-                if (display_updated == false)
-                {
-                    seven_segment_clear_all();
-                    display_updated = true;
-                }
+                seven_segment_clear_all();
+                display_updated = true;
                 break;
             // 7 segment all on
             case TESTING_STATE_ALL_ON:
-
-                if (display_updated == false)
-                {
-                    seven_segment_set_all();
-                    display_updated = true;
-                }
+                seven_segment_set_all();
+                display_updated = true;
                 break;
             default:
                 break;
@@ -378,9 +678,11 @@ int main()
             break;
         }
 
-        // button tick ISRs
-        button_ISR_tick(&minus_button);
-        button_ISR_tick(&adjust_button);
-        button_ISR_tick(&plus_button);
+        // button tick loops
+        button_loop(&minus_button);
+        button_loop(&adjust_button);
+        button_loop(&plus_button);
+        // seven segment flashing loop
+        seven_segment_flashing_loop(t_millis);
     }
 }

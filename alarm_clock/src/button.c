@@ -15,7 +15,7 @@ void button_setup(Button *btn)
     btn->_debouncedBState = 1;
 }
 
-void button_ISR_tick(Button *btn)
+void button_loop(Button *btn)
 {
     button_fsm(btn, button_debounce(btn));
 }
@@ -220,7 +220,7 @@ void button_fsm(Button *btn, uint8_t debouncedBState)
 //     *btn->port |= btn->button_mask;
 // }
 
-// void button_ISR_tick(ButtonBank *btn)
+// void button_loop(ButtonBank *btn)
 // {
 //     buttons_fsm(btn, button_debounce(btn));
 // }

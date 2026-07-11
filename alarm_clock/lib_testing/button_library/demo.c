@@ -153,9 +153,9 @@ int main(void)
         // {
         //     gpio_set_pin_low(&common_pin);
         // }
-        button_ISR_tick(&btns[0]);
-        button_ISR_tick(&btns[1]);
-        button_ISR_tick(&btns[2]);
+        button_loop(&btns[0]);
+        button_loop(&btns[1]);
+        button_loop(&btns[2]);
         // button_debounce(&btns[0], f1, f2);
         //)
         PORTD = ~digit_values[cur_digit];

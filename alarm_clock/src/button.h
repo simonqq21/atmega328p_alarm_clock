@@ -4,8 +4,8 @@
 #include "config.h"
 
 /*
-button_ISR_tick is placed inside the ISR
-button_debounce and fsm called by button_ISR_tick
+button_loop is placed inside the ISR
+button_debounce and fsm called by button_loop
 
 */
 #include "gpio.h"
@@ -64,7 +64,7 @@ void button_setup(Button *btn);
  *
  * @param btn pointer to Button
  */
-void button_ISR_tick(Button *btn);
+void button_loop(Button *btn);
 
 /**
  * @brief button set debounce ms
@@ -147,8 +147,8 @@ void button_fsm(Button *btn, uint8_t debouncedBState);
 // #define __AVR_ATmega328P__
 // #endif
 // /*
-// button_ISR_tick is placed inside the ISR
-// button_debounce and fsm called by button_ISR_tick
+// button_loop is placed inside the ISR
+// button_debounce and fsm called by button_loop
 
 // */
 // #include "../../HAL/src/gpio.h"
@@ -201,7 +201,7 @@ void button_fsm(Button *btn, uint8_t debouncedBState);
 // /**
 //  * @brief button ISR tick function
 //  */
-// void button_ISR_tick(ButtonBank *btn);
+// void button_loop(ButtonBank *btn);
 
 // /**
 //  * @brief button set debounce ms
