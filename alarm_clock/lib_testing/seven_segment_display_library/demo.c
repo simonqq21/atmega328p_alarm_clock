@@ -48,25 +48,6 @@ void timer2_init(void)
     OCR2A = 249;
 }
 
-uint8_t set_clear;
-
-void flash_colon_loop(void)
-{
-    if (t_millis - prev_millis2 > 500)
-    {
-        prev_millis2 = t_millis;
-        if (set_clear)
-        {
-            seven_segment_set_colon(1);
-        }
-        else
-        {
-            seven_segment_set_colon(0);
-        }
-        set_clear = !set_clear;
-    }
-}
-
 int main()
 {
     millis_timer_init();
@@ -96,45 +77,86 @@ int main()
 
     while (1)
     {
-        // PORTB |= _BV(1);
-        // _delay_ms(500);
-        // PORTB &= ~_BV(1);
-        // _delay_ms(500);
         t_millis = get_millis();
-        // flash_colon_loop();
-        // display time with flashing colon for 10 seconds, changing
-        // the time at 5 seconds.
-
+        /*
+        display time with flashing colon for 10 seconds, changing
+        the time at 5 seconds.
+        */
         prev_millis1 = t_millis;
         hour = 19;
         minute = 59;
         seven_segment_show_hour_minute(hour, minute);
-        prev_millis2 = t_millis;
-        while (t_millis - prev_millis1 < 5000)
+        seven_segment_flash_colon(1);
+        while (t_millis - prev_millis1 < 15000)
         {
-            flash_colon_loop();
             t_millis = get_millis();
+            seven_segment_flashing_loop(t_millis);
+            if (t_millis - prev_millis1 > 5000 && t_millis - prev_millis1 < 10000)
+            {
+                hour = 20;
+                minute = 00;
+                seven_segment_show_hour_minute(hour, minute);
+            }
+            if (t_millis - prev_millis1 > 10000 && t_millis - prev_millis1 < 15000)
+            {
+                hour = 23;
+                minute = 30;
+                seven_segment_show_hour_minute(hour, minute);
+            }
         }
+        seven_segment_flash_colon(0);
+        seven_segment_set_colon(0);
 
+        /*
+        flash hour digits
+        */
+        prev_millis1 = t_millis;
+        hour = 19;
+        minute = 59;
+        seven_segment_show_hour_minute(hour, minute);
+        seven_segment_flash_digits_hours(1);
+        seven_segment_set_colon(1);
+        while (t_millis - prev_millis1 < 10000)
+        {
+            t_millis = get_millis();
+            seven_segment_flashing_loop(t_millis);
+            if (t_millis - prev_millis1 > 5000 && t_millis - prev_millis1 < 10000)
+            {
+                hour = 20;
+                minute = 00;
+                seven_segment_show_hour_minute(hour, minute);
+                seven_segment_flash_digits_hours(1);
+            }
+        }
+        seven_segment_flash_digits_hours(0);
+
+        /*
+        flash minute digits
+        */
+        prev_millis1 = t_millis;
         hour = 20;
         minute = 00;
         seven_segment_show_hour_minute(hour, minute);
-        prev_millis1 = t_millis;
-        while (t_millis - prev_millis1 < 5000)
+        seven_segment_flash_digits_minutes(1);
+        while (t_millis - prev_millis1 < 10000)
         {
-
-            flash_colon_loop();
             t_millis = get_millis();
+            seven_segment_flashing_loop(t_millis);
+            if (t_millis - prev_millis1 > 5000 && t_millis - prev_millis1 < 10000)
+            {
+                hour = 23;
+                minute = 30;
+                seven_segment_show_hour_minute(hour, minute);
+                seven_segment_flash_digits_minutes(1);
+            }
         }
+        seven_segment_flash_digits_minutes(0);
+        seven_segment_set_colon(0);
 
         // display month and day for 5 seconds
         month = 7;
         day = 2;
         seven_segment_show_month_day(month, day);
-        // for (int i = 0; i < 4; i++)
-        // {
-        //     seven_segment_set_decimal_point(i);
-        // }
         seven_segment_set_decimal_point(3);
         seven_segment_set_decimal_point(1);
         prev_millis1 = t_millis;
@@ -142,6 +164,40 @@ int main()
         {
             t_millis = get_millis();
         }
+
+        /*
+        flash month digits
+        */
+        month = 7;
+        day = 3;
+        seven_segment_show_month_day(month, day);
+        seven_segment_set_decimal_point(3);
+        seven_segment_set_decimal_point(1);
+        seven_segment_flash_digits_hours(1);
+        prev_millis1 = t_millis;
+        while (t_millis - prev_millis1 < 5000)
+        {
+            t_millis = get_millis();
+            seven_segment_flashing_loop(t_millis);
+        }
+        seven_segment_flash_digits_hours(0);
+
+        /*
+        flash day digits
+        */
+        month = 7;
+        day = 4;
+        seven_segment_show_month_day(month, day);
+        seven_segment_set_decimal_point(3);
+        seven_segment_set_decimal_point(1);
+        seven_segment_flash_digits_minutes(1);
+        prev_millis1 = t_millis;
+        while (t_millis - prev_millis1 < 5000)
+        {
+            t_millis = get_millis();
+            seven_segment_flashing_loop(t_millis);
+        }
+        seven_segment_flash_digits_minutes(0);
 
         // display year for 5 seconds
         year = 2026;
@@ -152,6 +208,21 @@ int main()
         {
             t_millis = get_millis();
         }
+
+        /*
+        flash year digits
+        */
+        year = 2026;
+        seven_segment_show_year(year);
+        seven_segment_set_decimal_point(3);
+        seven_segment_flash_all_digits(1);
+        prev_millis1 = t_millis;
+        while (t_millis - prev_millis1 < 5000)
+        {
+            seven_segment_flashing_loop(t_millis);
+            t_millis = get_millis();
+        }
+        seven_segment_flash_all_digits(0);
 
         // display temperature for 5 seconds
         temperature_celsius = 26.7;

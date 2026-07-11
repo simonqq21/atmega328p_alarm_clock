@@ -12,6 +12,7 @@
 typedef struct
 {
     uint8_t display_digits[4];
+    uint8_t enable_digits[4];
     uint8_t colon;
     uint8_t cur_digit_index;
 } display_data_t;
@@ -37,12 +38,20 @@ void seven_segment_write_byte_to_digit(uint8_t byte, uint8_t digit);
 void seven_segment_write_bytes(uint8_t bytes[4]);
 /* write the colon */
 void seven_segment_set_colon(uint8_t state);
-/* flash the colon */
-void flash_colon_loop(uint32_t t_millis);
-
 /* enable the decimal point in a digit*/
 void seven_segment_set_decimal_point(uint8_t digit);
 // ******************************************************************
+
+/* flashing loop */
+void seven_segment_flashing_loop(uint32_t t_millis);
+/* flash the colon */
+void seven_segment_flash_colon(uint8_t bool_flash);
+/* flash digits 3 and 2 */
+void seven_segment_flash_digits_minutes(uint8_t bool_flash);
+/* flash digits 1 and 0 */
+void seven_segment_flash_digits_hours(uint8_t bool_flash);
+/* flash all digits */
+void seven_segment_flash_all_digits(uint8_t bool_flash);
 
 // write numbers to display
 // ******************************************************************

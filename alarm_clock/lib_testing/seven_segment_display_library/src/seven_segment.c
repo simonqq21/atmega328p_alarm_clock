@@ -24,7 +24,8 @@ display_data_t display_data;
 Pin segment_pins[8];
 Pin digit_pins[4];
 Pin colon_pin;
-uint32_t prev_millis_colon_flash;
+uint32_t prev_millis_flash;
+uint8_t flash_colon, flash_digits_minutes, flash_digits_hours, flash_all_digits;
 
 void seven_segment_init()
 {
@@ -69,8 +70,12 @@ void seven_segment_loop_isr(void)
     // DIGITS_PORT |= 0x0F;
     DIGITS_PORT |= 0x1D; // skip PB1
     // DIGITS_PORT &= ~(_BV(3 - display_data.cur_digit_index));
-    DIGITS_PORT &= ~(_BV(digit_pins[3 - display_data.cur_digit_index].pin_num));
-    SEGMENTS_PORT = ~display_data.display_digits[display_data.cur_digit_index];
+    // if current digit index is enabled, display the digit.
+    if (display_data.enable_digits[display_data.cur_digit_index])
+    {
+        DIGITS_PORT &= ~(_BV(digit_pins[3 - display_data.cur_digit_index].pin_num));
+        SEGMENTS_PORT = ~display_data.display_digits[display_data.cur_digit_index];
+    }
     display_data.cur_digit_index++;
     if (display_data.cur_digit_index > 3)
     {
@@ -89,6 +94,7 @@ void seven_segment_clear_all(void)
     for (int i = 0; i < 4; i++)
     {
         display_data.display_digits[i] = 0;
+        display_data.enable_digits[i] = 0;
     }
     display_data.colon = 0;
 }
@@ -98,6 +104,7 @@ void seven_segment_set_all(void)
     for (int i = 0; i < 4; i++)
     {
         display_data.display_digits[i] = 255;
+        display_data.enable_digits[i] = 1;
     }
     display_data.colon = 1;
 }
@@ -105,6 +112,26 @@ void seven_segment_set_all(void)
 void seven_segment_write_byte_to_digit(uint8_t byte, uint8_t digit)
 {
     display_data.display_digits[digit] = byte;
+    uint8_t is_flashing;
+    switch (digit)
+    {
+    case 3:
+    case 2:
+        is_flashing = flash_all_digits | flash_digits_minutes;
+        if (!is_flashing)
+        {
+            display_data.enable_digits[digit] = 1;
+        }
+        break;
+    case 1:
+    case 0:
+        is_flashing = flash_all_digits | flash_digits_hours;
+        if (!is_flashing)
+        {
+            display_data.enable_digits[digit] = 1;
+        }
+        break;
+    }
 }
 
 void seven_segment_write_bytes(uint8_t bytes[4])
@@ -133,26 +160,99 @@ void seven_segment_set_colon(uint8_t state)
     display_data.colon = state;
 }
 
-void flash_colon_loop(uint32_t t_millis)
-{
-    if (t_millis - prev_millis_colon_flash > 500)
-    {
-        prev_millis_colon_flash = t_millis;
-        if (display_data.colon)
-        {
-            seven_segment_set_colon(1);
-        }
-        else
-        {
-            seven_segment_set_colon(0);
-        }
-        display_data.colon = !display_data.colon;
-    }
-}
-
 void seven_segment_set_decimal_point(uint8_t digit)
 {
     display_data.display_digits[digit] |= _BV(7);
+}
+
+/* flashing loop */
+void seven_segment_flashing_loop(uint32_t t_millis)
+{
+    if (t_millis - prev_millis_flash > 500)
+    {
+        prev_millis_flash = t_millis;
+
+        // flash colon
+        if (flash_colon)
+        {
+            if (display_data.colon)
+            {
+                seven_segment_set_colon(1);
+            }
+            else
+            {
+                seven_segment_set_colon(0);
+            }
+            display_data.colon = !display_data.colon;
+        }
+        // flash digits 32
+        if (flash_digits_minutes)
+        {
+            if (display_data.enable_digits[3])
+            {
+                display_data.enable_digits[3] = 0;
+                display_data.enable_digits[2] = 0;
+            }
+            else
+            {
+                display_data.enable_digits[3] = 1;
+                display_data.enable_digits[2] = 1;
+            }
+        }
+        // flash digits 10
+        if (flash_digits_hours)
+        {
+            if (display_data.enable_digits[1])
+            {
+                display_data.enable_digits[1] = 0;
+                display_data.enable_digits[0] = 0;
+            }
+            else
+            {
+                display_data.enable_digits[1] = 1;
+                display_data.enable_digits[0] = 1;
+            }
+        }
+        // flash all digits
+        if (flash_all_digits)
+        {
+            if (display_data.enable_digits[1])
+            {
+                display_data.enable_digits[3] = 0;
+                display_data.enable_digits[2] = 0;
+                display_data.enable_digits[1] = 0;
+                display_data.enable_digits[0] = 0;
+            }
+            else
+            {
+                display_data.enable_digits[3] = 1;
+                display_data.enable_digits[2] = 1;
+                display_data.enable_digits[1] = 1;
+                display_data.enable_digits[0] = 1;
+            }
+        }
+    }
+}
+/* flash the colon */
+void seven_segment_flash_colon(uint8_t bool_flash)
+{
+    flash_colon = bool_flash;
+}
+
+/* flash digits 3 and 2 */
+void seven_segment_flash_digits_minutes(uint8_t bool_flash)
+{
+    flash_digits_minutes = bool_flash;
+}
+/* flash digits 1 and 0 */
+void seven_segment_flash_digits_hours(uint8_t bool_flash)
+{
+    flash_digits_hours = bool_flash;
+}
+/* flash all digits */
+void seven_segment_flash_all_digits(uint8_t bool_flash)
+{
+    flash_all_digits = bool_flash;
 }
 
 void seven_segment_show_hour_minute(uint8_t hour, uint8_t minute)
