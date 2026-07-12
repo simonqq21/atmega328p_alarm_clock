@@ -32,7 +32,9 @@ src/rtc.c src/twi.c src/twi-lowlevel.c
 
 uint32_t t_millis;
 Button minus_button, adjust_button, plus_button;
-struct tm clock_time;
+struct tm *clock_time;
+
+uint32_t prev_millis_read_rtc;
 
 // interrupts
 ISR(TIMER0_COMPA_vect)
@@ -130,6 +132,16 @@ volatile testing_state_t testing_state;
 /* swap through the different states in the hour minute state */
 void swap_hour_min_state(void)
 {
+    switch (hour_min_state)
+    {
+    case HOUR_MIN_STATE_ADJUST_HOUR:
+
+    case HOUR_MIN_STATE_ADJUST_MIN:
+        rtc_set_time(clock_time);
+        break;
+    default:
+        break;
+    }
     hour_min_state++;
     if (hour_min_state == HOUR_MIN_STATE_END)
     {
@@ -206,121 +218,121 @@ void swap_testing_state(void)
 // ************************************************************************************************
 void increment_hour(void)
 {
-    if (clock_time.hour < 23)
+    if (clock_time->hour < 23)
     {
-        clock_time.hour++;
+        clock_time->hour++;
     }
     else
     {
-        clock_time.hour = 0;
+        clock_time->hour = 0;
     }
 }
 
 void decrement_hour(void)
 {
-    if (clock_time.hour > 0)
+    if (clock_time->hour > 0)
     {
-        clock_time.hour--;
+        clock_time->hour--;
     }
     else
     {
-        clock_time.hour = 23;
+        clock_time->hour = 23;
     }
 }
 
 void increment_minute(void)
 {
-    if (clock_time.min < 59)
+    if (clock_time->min < 59)
     {
-        clock_time.min++;
+        clock_time->min++;
     }
     else
     {
-        clock_time.min = 0;
+        clock_time->min = 0;
     }
 }
 
 void decrement_minute(void)
 {
-    if (clock_time.min > 0)
+    if (clock_time->min > 0)
     {
-        clock_time.min--;
+        clock_time->min--;
     }
     else
     {
-        clock_time.min = 59;
+        clock_time->min = 59;
     }
 }
 
 void increment_month(void)
 {
-    if (clock_time.mon < 12)
+    if (clock_time->mon < 12)
     {
-        clock_time.mon++;
+        clock_time->mon++;
     }
     else
     {
-        clock_time.mon = 1;
+        clock_time->mon = 1;
     }
 }
 
 void decrement_month(void)
 {
-    if (clock_time.mon > 1)
+    if (clock_time->mon > 1)
     {
-        clock_time.mon--;
+        clock_time->mon--;
     }
     else
     {
-        clock_time.mon = 12;
+        clock_time->mon = 12;
     }
 }
 
 void increment_day(void)
 {
-    if (clock_time.mday < 31)
+    if (clock_time->mday < 31)
     {
-        clock_time.mday++;
+        clock_time->mday++;
     }
     else
     {
-        clock_time.mday = 1;
+        clock_time->mday = 1;
     }
 }
 
 void decrement_day(void)
 {
-    if (clock_time.mday > 1)
+    if (clock_time->mday > 1)
     {
-        clock_time.mday--;
+        clock_time->mday--;
     }
     else
     {
-        clock_time.mday = 31;
+        clock_time->mday = 31;
     }
 }
 
 void increment_year(void)
 {
-    if (clock_time.year < MAX_YEAR)
+    if (clock_time->year < MAX_YEAR)
     {
-        clock_time.year++;
+        clock_time->year++;
     }
     else
     {
-        clock_time.year = MIN_YEAR;
+        clock_time->year = MIN_YEAR;
     }
 }
 
 void decrement_year(void)
 {
-    if (clock_time.year > MIN_YEAR)
+    if (clock_time->year > MIN_YEAR)
     {
-        clock_time.year--;
+        clock_time->year--;
     }
     else
     {
-        clock_time.year = MAX_YEAR;
+        clock_time->year = MAX_YEAR;
     }
 }
 
@@ -369,8 +381,8 @@ int main()
     seven_segment_clear_all();
 
     // initialize RTC
-    // twi_init_master();
-    // rtc_init();
+    twi_init_master();
+    rtc_init();
     // initialize piezo
     // piezo_init(10);
     main_state_swapped = true;
@@ -396,8 +408,8 @@ int main()
                     main_state_swapped = false;
 
                     // test
-                    clock_time.hour = 14;
-                    clock_time.min = 20;
+                    clock_time->hour = 14;
+                    clock_time->min = 20;
 
                     hour_min_state = HOUR_MIN_STATE_DISPLAY;
                 }
@@ -440,27 +452,31 @@ int main()
             {
                 /*
                 the current time is displayed with a blinking colon.
-
+                get time from the RTC every 250ms
                 */
             case HOUR_MIN_STATE_DISPLAY:
-                seven_segment_show_hour_minute(clock_time.hour, clock_time.min);
+                seven_segment_show_hour_minute(clock_time->hour, clock_time->min);
                 seven_segment_flash_colon(1);
+                if (t_millis - prev_millis_read_rtc > 250)
+                {
+                    prev_millis_read_rtc = t_millis;
+                    clock_time = rtc_get_time();
+                }
                 break;
                 /*
                 the current time is displayed with a steady colon, but the hour portion is blinking.
 
                 */
             case HOUR_MIN_STATE_ADJUST_HOUR:
-                seven_segment_show_hour_minute(clock_time.hour, clock_time.min);
+                seven_segment_show_hour_minute(clock_time->hour, clock_time->min);
                 seven_segment_flash_digits_hours(1);
-
                 break;
                 /*
                 the current time is displayed with a steady colon, but the minute portion is blinking.
 
                  */
             case HOUR_MIN_STATE_ADJUST_MIN:
-                seven_segment_show_hour_minute(clock_time.hour, clock_time.min);
+                seven_segment_show_hour_minute(clock_time->hour, clock_time->min);
                 seven_segment_flash_digits_minutes(1);
                 break;
             default:
