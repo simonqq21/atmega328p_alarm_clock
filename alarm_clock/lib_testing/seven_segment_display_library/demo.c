@@ -157,8 +157,6 @@ int main()
         month = 7;
         day = 2;
         seven_segment_show_month_day(month, day);
-        seven_segment_set_decimal_point(3);
-        seven_segment_set_decimal_point(1);
         prev_millis1 = t_millis;
         while (t_millis - prev_millis1 < 5000)
         {
@@ -171,8 +169,6 @@ int main()
         month = 7;
         day = 3;
         seven_segment_show_month_day(month, day);
-        seven_segment_set_decimal_point(3);
-        seven_segment_set_decimal_point(1);
         seven_segment_flash_digits_hours(1);
         prev_millis1 = t_millis;
         while (t_millis - prev_millis1 < 5000)
@@ -188,8 +184,6 @@ int main()
         month = 7;
         day = 4;
         seven_segment_show_month_day(month, day);
-        seven_segment_set_decimal_point(3);
-        seven_segment_set_decimal_point(1);
         seven_segment_flash_digits_minutes(1);
         prev_millis1 = t_millis;
         while (t_millis - prev_millis1 < 5000)
@@ -202,7 +196,6 @@ int main()
         // display year for 5 seconds
         year = 2026;
         seven_segment_show_year(year);
-        seven_segment_set_decimal_point(3);
         prev_millis1 = t_millis;
         while (t_millis - prev_millis1 < 5000)
         {
@@ -214,7 +207,6 @@ int main()
         */
         year = 2026;
         seven_segment_show_year(year);
-        seven_segment_set_decimal_point(3);
         seven_segment_flash_all_digits(1);
         prev_millis1 = t_millis;
         while (t_millis - prev_millis1 < 5000)

@@ -19,8 +19,8 @@
 src/rtc.c src/twi.c src/twi-lowlevel.c
 */
 
-#define MIN_YEAR 2000
-#define MAX_YEAR 2099
+#define MIN_YEAR 1900
+#define MAX_YEAR 1999
 
 // buttons
 #define BTNS_PORT PORTC
@@ -82,6 +82,7 @@ void new_state_start()
     seven_segment_flash_colon(0);
     seven_segment_flash_digits_hours(0);
     seven_segment_flash_digits_minutes(0);
+    seven_segment_flash_all_digits(0);
 }
 
 /**
@@ -132,11 +133,13 @@ volatile testing_state_t testing_state;
 /* swap through the different states in the hour minute state */
 void swap_hour_min_state(void)
 {
+    /* update RTC time when exiting the hour and minute adjustment states */
     switch (hour_min_state)
     {
     case HOUR_MIN_STATE_ADJUST_HOUR:
 
     case HOUR_MIN_STATE_ADJUST_MIN:
+        clock_time->sec = 0;
         rtc_set_time(clock_time);
         break;
     default:
@@ -164,6 +167,16 @@ void swap_alarm_state(void)
 /* swap through the different states in the month day state */
 void swap_month_day_state(void)
 {
+    /* update RTC time when exiting the month and day adjustment states */
+    switch (month_day_state)
+    {
+    case MONTH_DAY_STATE_ADJUST_MONTH:
+    case MONTH_DAY_STATE_ADJUST_DAY:
+        rtc_set_time(clock_time);
+        break;
+    default:
+        break;
+    }
     month_day_state++;
     if (month_day_state == MONTH_DAY_STATE_END)
     {
@@ -175,6 +188,15 @@ void swap_month_day_state(void)
 /* swap through the different states in the year state */
 void swap_year_state(void)
 {
+    /* update RTC time when exiting the year adjustment states */
+    switch (year_state)
+    {
+    case YEAR_STATE_ADJUST_YEAR:
+        rtc_set_time(clock_time);
+        break;
+    default:
+        break;
+    }
     year_state++;
     if (year_state == YEAR_STATE_END)
     {
@@ -408,8 +430,8 @@ int main()
                     main_state_swapped = false;
 
                     // test
-                    clock_time->hour = 14;
-                    clock_time->min = 20;
+                    // clock_time->hour = 88;
+                    // clock_time->min = 88;
 
                     hour_min_state = HOUR_MIN_STATE_DISPLAY;
                 }
@@ -448,6 +470,7 @@ int main()
                 }
             }
             // run forever
+            seven_segment_show_hour_minute(clock_time->hour, clock_time->min);
             switch (hour_min_state)
             {
                 /*
@@ -455,7 +478,6 @@ int main()
                 get time from the RTC every 250ms
                 */
             case HOUR_MIN_STATE_DISPLAY:
-                seven_segment_show_hour_minute(clock_time->hour, clock_time->min);
                 seven_segment_flash_colon(1);
                 if (t_millis - prev_millis_read_rtc > 250)
                 {
@@ -468,7 +490,6 @@ int main()
 
                 */
             case HOUR_MIN_STATE_ADJUST_HOUR:
-                seven_segment_show_hour_minute(clock_time->hour, clock_time->min);
                 seven_segment_flash_digits_hours(1);
                 break;
                 /*
@@ -476,7 +497,6 @@ int main()
 
                  */
             case HOUR_MIN_STATE_ADJUST_MIN:
-                seven_segment_show_hour_minute(clock_time->hour, clock_time->min);
                 seven_segment_flash_digits_minutes(1);
                 break;
             default:
@@ -491,7 +511,6 @@ int main()
                 // run only when changing main state
                 if (main_state_swapped == true)
                 {
-
                     main_state_swapped = false;
                 }
                 // set button callbacks
@@ -513,8 +532,10 @@ int main()
             case ALARM_STATE_DISPLAY:
                 break;
             case ALARM_STATE_ADJUST_HOUR:
+
                 break;
             case ALARM_STATE_ADJUST_MIN:
+
                 break;
             default:
                 break;
@@ -530,28 +551,63 @@ int main()
                 {
 
                     main_state_swapped = false;
+
+                    // test
+                    // clock_time->mon = 88;
+                    // clock_time->mday = 88;
+
+                    hour_min_state = MONTH_DAY_STATE_DISPLAY;
                 }
                 // set button callbacks
-                switch (alarm_state)
+                switch (month_day_state)
                 {
-                case ALARM_STATE_DISPLAY:
+                    /*
+                    +- buttons switch between main states
+                    adjust button long press would go into adjust month mode
+                     */
+                case MONTH_DAY_STATE_DISPLAY:
+                    button_attach_single_click(&minus_button, decrement_main_state);
+                    button_attach_single_click(&plus_button, increment_main_state);
+                    button_attach_long_press(&adjust_button, swap_month_day_state);
                     break;
-                case ALARM_STATE_ADJUST_HOUR:
+                    /*
+                +- buttons adjust the month
+                adjust button short press goes into adjust day mode
+                */
+                case MONTH_DAY_STATE_ADJUST_MONTH:
+                    button_attach_single_click(&minus_button, decrement_month);
+                    button_attach_single_click(&plus_button, increment_month);
+                    button_attach_single_click(&adjust_button, swap_month_day_state);
                     break;
-                case ALARM_STATE_ADJUST_MIN:
+                    /*
+                +- buttons adjust the day
+                adjust button short press goes back to month day display mode
+                */
+                case MONTH_DAY_STATE_ADJUST_DAY:
+                    button_attach_single_click(&minus_button, decrement_day);
+                    button_attach_single_click(&plus_button, increment_day);
+                    button_attach_single_click(&adjust_button, swap_month_day_state);
                     break;
                 default:
                     break;
                 }
             }
             // run forever
+            seven_segment_show_month_day(clock_time->mon, clock_time->mday);
             switch (month_day_state)
             {
             case MONTH_DAY_STATE_DISPLAY:
+                if (t_millis - prev_millis_read_rtc > 1000)
+                {
+                    prev_millis_read_rtc = t_millis;
+                    clock_time = rtc_get_time();
+                }
                 break;
             case MONTH_DAY_STATE_ADJUST_MONTH:
+                seven_segment_flash_digits_hours(1);
                 break;
             case MONTH_DAY_STATE_ADJUST_DAY:
+                seven_segment_flash_digits_minutes(1);
                 break;
             default:
                 break;
@@ -565,28 +621,61 @@ int main()
                 // run only when changing main state
                 if (main_state_swapped == true)
                 {
-
                     main_state_swapped = false;
+                    // test
+                    // clock_time->year = 1926;
+                    // rtc_set_time(clock_time);
+                    year_state = YEAR_STATE_DISPLAY;
                 }
                 // set button callbacks
-                switch (alarm_state)
+                switch (year_state)
                 {
-                case ALARM_STATE_DISPLAY:
+                /*
+                +- buttons switch between main states
+                adjust button long press would go into adjust hour mode
+                */
+                case YEAR_STATE_DISPLAY:
+                    button_attach_single_click(&minus_button, decrement_main_state);
+                    button_attach_single_click(&plus_button, increment_main_state);
+                    button_attach_long_press(&adjust_button, swap_year_state);
                     break;
-                case ALARM_STATE_ADJUST_HOUR:
-                    break;
-                case ALARM_STATE_ADJUST_MIN:
+                /*
+                +- buttons adjust the hour
+                adjust button short press goes into adjust minute mode
+                */
+                case YEAR_STATE_ADJUST_YEAR:
+                    button_attach_single_click(&minus_button, decrement_year);
+                    button_attach_single_click(&plus_button, increment_year);
+                    button_attach_single_click(&adjust_button, swap_year_state);
                     break;
                 default:
                     break;
                 }
             }
             // run forever
+            seven_segment_show_year(100 + clock_time->year);
             switch (year_state)
             {
             case YEAR_STATE_DISPLAY:
+
+                if (t_millis - prev_millis_read_rtc > 1000)
+                {
+                    prev_millis_read_rtc = t_millis;
+                    clock_time = rtc_get_time();
+                    // if (clock_time->year < MIN_YEAR)
+                    // {
+                    //     clock_time->year = MIN_YEAR;
+                    //     rtc_set_time(clock_time);
+                    // }
+                    // if (clock_time->year > MAX_YEAR - 1)
+                    // {
+                    //     clock_time->year = MAX_YEAR - 1;
+                    //     rtc_set_time(clock_time);
+                    // }
+                }
                 break;
             case YEAR_STATE_ADJUST_YEAR:
+                seven_segment_flash_all_digits(1);
                 break;
             default:
                 break;
@@ -604,14 +693,11 @@ int main()
                     main_state_swapped = false;
                 }
                 // set button callbacks
-                switch (alarm_state)
+                switch (temperature_state)
                 {
-                case ALARM_STATE_DISPLAY:
+                case TEMPERATURE_STATE_DISPLAY_TEMPERATURE:
                     break;
-                case ALARM_STATE_ADJUST_HOUR:
-                    break;
-                case ALARM_STATE_ADJUST_MIN:
-                    break;
+
                 default:
                     break;
                 }

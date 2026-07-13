@@ -15,6 +15,7 @@ typedef struct
     uint8_t enable_digits[4];
     uint8_t colon;
     uint8_t cur_digit_index;
+    uint8_t enable_decimal_points[4];
 } display_data_t;
 
 // function definitions
@@ -39,7 +40,7 @@ void seven_segment_write_bytes(uint8_t bytes[4]);
 /* write the colon */
 void seven_segment_set_colon(uint8_t state);
 /* enable the decimal point in a digit*/
-void seven_segment_set_decimal_point(uint8_t digit);
+void seven_segment_set_decimal_point(uint8_t digit, uint8_t state);
 // ******************************************************************
 
 /* flashing loop */

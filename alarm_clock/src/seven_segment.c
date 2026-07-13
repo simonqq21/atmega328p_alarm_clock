@@ -74,7 +74,8 @@ void seven_segment_loop_isr(void)
     if (display_data.enable_digits[display_data.cur_digit_index])
     {
         DIGITS_PORT &= ~(_BV(digit_pins[3 - display_data.cur_digit_index].pin_num));
-        SEGMENTS_PORT = ~display_data.display_digits[display_data.cur_digit_index];
+        SEGMENTS_PORT = ~(display_data.display_digits[display_data.cur_digit_index] |
+                          display_data.enable_decimal_points[display_data.cur_digit_index] << 7);
     }
     display_data.cur_digit_index++;
     if (display_data.cur_digit_index > 3)
@@ -105,6 +106,7 @@ void seven_segment_set_all(void)
     {
         display_data.display_digits[i] = 255;
         display_data.enable_digits[i] = 1;
+        display_data.enable_decimal_points[i] = 1;
     }
     display_data.colon = 1;
 }
@@ -160,9 +162,16 @@ void seven_segment_set_colon(uint8_t state)
     display_data.colon = state;
 }
 
-void seven_segment_set_decimal_point(uint8_t digit)
+void seven_segment_set_decimal_point(uint8_t digit, uint8_t state)
 {
-    display_data.display_digits[digit] |= _BV(7);
+    if (state)
+    {
+        display_data.enable_decimal_points[digit] = 1;
+    }
+    else
+    {
+        display_data.enable_decimal_points[digit] = 0;
+    }
 }
 
 /* flashing loop */
@@ -287,6 +296,12 @@ void seven_segment_show_hour_minute(uint8_t hour, uint8_t minute)
     // get minute ones digit
     digit_indices[3] = minute % 10;
 
+    // decimal points
+    seven_segment_set_decimal_point(3, 0);
+    seven_segment_set_decimal_point(2, 0);
+    seven_segment_set_decimal_point(1, 0);
+    seven_segment_set_decimal_point(0, 0);
+
     // write to display
     seven_segment_write_digit_vals(digit_indices);
 }
@@ -323,6 +338,12 @@ void seven_segment_show_month_day(uint8_t month, uint8_t day)
     // get minute ones digit
     digit_indices[3] = day % 10;
 
+    // decimal points
+    seven_segment_set_decimal_point(3, 1);
+    seven_segment_set_decimal_point(2, 0);
+    seven_segment_set_decimal_point(1, 1);
+    seven_segment_set_decimal_point(0, 0);
+
     // write to display
     seven_segment_write_digit_vals(digit_indices);
 }
@@ -342,6 +363,12 @@ void seven_segment_show_year(uint16_t year)
     digit_indices[1] = (year % 1000) / 100;
     digit_indices[2] = (year % 100) / 10;
     digit_indices[3] = year % 10;
+
+    // decimal points
+    seven_segment_set_decimal_point(3, 1);
+    seven_segment_set_decimal_point(2, 0);
+    seven_segment_set_decimal_point(1, 0);
+    seven_segment_set_decimal_point(0, 0);
     seven_segment_write_digit_vals(digit_indices);
 }
 
@@ -377,13 +404,22 @@ void seven_segment_show_temperature(float temperature_celsius)
     // ones digit gets decimal point
     // last digit get C for celsius
     digit_indices[3] = 0xc;
-    seven_segment_write_digit_vals(digit_indices);
-    seven_segment_set_decimal_point(1);
+
+    // decimal points
+    seven_segment_set_decimal_point(3, 0);
+    seven_segment_set_decimal_point(2, 0);
+    seven_segment_set_decimal_point(1, 1);
     // if temperature sub zero, light up the 0th decimal point
     if (temperature_celsius < 0.)
     {
-        seven_segment_set_decimal_point(0);
+        seven_segment_set_decimal_point(0, 1);
     }
+    else
+    {
+        seven_segment_set_decimal_point(0, 0);
+    }
+
+    seven_segment_write_digit_vals(digit_indices);
 }
 
 void seven_segment_show_humidity(float humidity)
@@ -409,6 +445,12 @@ void seven_segment_show_humidity(float humidity)
     // ones digit gets decimal point
     // last digit get C for celsius
     digit_indices[3] = 0x10;
+
+    // decimal points
+    seven_segment_set_decimal_point(3, 1);
+    seven_segment_set_decimal_point(2, 0);
+    seven_segment_set_decimal_point(1, 1);
+    seven_segment_set_decimal_point(0, 0);
+
     seven_segment_write_digit_vals(digit_indices);
-    seven_segment_set_decimal_point(1);
 }
