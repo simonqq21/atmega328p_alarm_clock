@@ -297,10 +297,10 @@ void seven_segment_show_hour_minute(uint8_t hour, uint8_t minute)
     digit_indices[3] = minute % 10;
 
     // decimal points
-    for (int i = 0; i < 4; i++)
-    {
-        seven_segment_set_decimal_point(i, 0);
-    }
+    seven_segment_set_decimal_point(3, 0);
+    seven_segment_set_decimal_point(2, 0);
+    seven_segment_set_decimal_point(1, 0);
+    seven_segment_set_decimal_point(0, 0);
 
     // write to display
     seven_segment_write_digit_vals(digit_indices);
@@ -406,15 +406,17 @@ void seven_segment_show_temperature(float temperature_celsius)
     digit_indices[3] = 0xc;
 
     // decimal points
-    for (int i = 0; i < 4; i++)
-    {
-        seven_segment_set_decimal_point(i, 0);
-    }
+    seven_segment_set_decimal_point(3, 0);
+    seven_segment_set_decimal_point(2, 0);
     seven_segment_set_decimal_point(1, 1);
     // if temperature sub zero, light up the 0th decimal point
     if (temperature_celsius < 0.)
     {
         seven_segment_set_decimal_point(0, 1);
+    }
+    else
+    {
+        seven_segment_set_decimal_point(0, 0);
     }
 
     seven_segment_write_digit_vals(digit_indices);
@@ -445,10 +447,10 @@ void seven_segment_show_humidity(float humidity)
     digit_indices[3] = 0x10;
 
     // decimal points
-    for (int i = 0; i < 4; i++)
-    {
-        seven_segment_set_decimal_point(i, 0);
-    }
+    seven_segment_set_decimal_point(3, 1);
+    seven_segment_set_decimal_point(2, 0);
     seven_segment_set_decimal_point(1, 1);
+    seven_segment_set_decimal_point(0, 0);
+
     seven_segment_write_digit_vals(digit_indices);
 }
