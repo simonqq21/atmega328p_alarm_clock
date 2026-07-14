@@ -17,6 +17,8 @@
 #include "src/DHT.h"
 #include "src/states.h"
 
+extern const uint8_t digit_values[17];
+
 /*
 src/rtc.c src/twi.c src/twi-lowlevel.c
 */
@@ -40,6 +42,17 @@ uint32_t prev_millis_read_rtc;
 
 // DHT11
 double humidity, temperature;
+
+// alarm settings struct
+typedef struct
+{
+    uint8_t enabled;
+    uint8_t alarm_hour;
+    uint8_t alarm_min;
+} alarm_settings_t;
+#define EEPROM_ALARM_SETTINGS_ADDR (0x0)
+alarm_settings_t *alarm_settings;
+uint8_t ALARM_OFF_DISPLAY_VALUE[4];
 
 // interrupts
 ISR(TIMER0_COMPA_vect)
@@ -76,12 +89,16 @@ volatile uint8_t main_state_swapped;
 volatile uint8_t display_updated;
 volatile alarm_clock_main_state_t main_state;
 
+void load_alarm_settings(void);
+void update_alarm_settings(void);
+
 /**
  * set the state_start and display_updated flags false when a new main FSM state
  * is entered.
  */
 void new_state_start()
 {
+    update_alarm_settings();
     state_start = false;
     display_updated = false;
     seven_segment_flash_colon(0);
@@ -142,7 +159,6 @@ void swap_hour_min_state(void)
     switch (hour_min_state)
     {
     case HOUR_MIN_STATE_ADJUST_HOUR:
-
     case HOUR_MIN_STATE_ADJUST_MIN:
         clock_time->sec = 0;
         rtc_set_time(clock_time);
@@ -161,6 +177,17 @@ void swap_hour_min_state(void)
 /* swap through the different states in the alarm state */
 void swap_alarm_state(void)
 {
+    update_alarm_settings();
+    // switch (alarm_state)
+    // {
+    // case ALARM_STATE_ADJUST_HOUR:
+    // case ALARM_STATE_ADJUST_MIN:
+    //     update_alarm_settings();
+    //     break;
+
+    // default:
+    //     break;
+    // }
     alarm_state++;
     if (alarm_state == ALARM_STATE_END)
     {
@@ -242,6 +269,7 @@ void swap_testing_state(void)
     }
     new_state_start();
 }
+
 // ************************************************************************************************
 void increment_hour(void)
 {
@@ -288,6 +316,87 @@ void decrement_minute(void)
     else
     {
         clock_time->min = 59;
+    }
+}
+
+/*
+alarm functions
+*/
+
+void trim_alarm_values(void)
+{
+    if (alarm_settings->alarm_hour > 23)
+    {
+        alarm_settings->alarm_hour = 0;
+    }
+    if (alarm_settings->alarm_min > 59)
+    {
+        alarm_settings->alarm_min = 0;
+    }
+}
+
+void load_alarm_settings(void)
+{
+    eeprom_read_block((void *)alarm_settings, (const void *)EEPROM_ALARM_SETTINGS_ADDR, sizeof(alarm_settings_t));
+    trim_alarm_values();
+}
+
+void update_alarm_settings(void)
+{
+    trim_alarm_values();
+    eeprom_update_block((const void *)alarm_settings, (void *)EEPROM_ALARM_SETTINGS_ADDR, sizeof(alarm_settings_t));
+}
+
+void toggle_alarm_on_off(void)
+{
+    alarm_settings->enabled = !alarm_settings->enabled;
+}
+
+void increment_alarm_hour(void)
+{
+    if (alarm_settings->alarm_hour < 23)
+    {
+        alarm_settings->alarm_hour++;
+    }
+    else
+    {
+        alarm_settings->alarm_hour = 0;
+    }
+}
+
+void decrement_alarm_hour(void)
+{
+    if (alarm_settings->alarm_hour > 0)
+    {
+        alarm_settings->alarm_hour--;
+    }
+    else
+    {
+        alarm_settings->alarm_hour = 23;
+    }
+}
+
+void increment_alarm_min(void)
+{
+    if (alarm_settings->alarm_min < 59)
+    {
+        alarm_settings->alarm_min++;
+    }
+    else
+    {
+        alarm_settings->alarm_min = 0;
+    }
+}
+
+void decrement_alarm_min(void)
+{
+    if (alarm_settings->alarm_min > 0)
+    {
+        alarm_settings->alarm_min--;
+    }
+    else
+    {
+        alarm_settings->alarm_min = 59;
     }
 }
 
@@ -367,6 +476,12 @@ void decrement_year(void)
 
 int main()
 {
+
+    ALARM_OFF_DISPLAY_VALUE[0] = 0;
+    ALARM_OFF_DISPLAY_VALUE[1] = digit_values[0x0];
+    ALARM_OFF_DISPLAY_VALUE[2] = digit_values[0xf];
+    ALARM_OFF_DISPLAY_VALUE[3] = digit_values[0xf];
+
     // initialize timers
     millis_timer_init();
     // timer2_init
@@ -413,6 +528,9 @@ int main()
     // initialize piezo
     // piezo_init(10);
     main_state_swapped = true;
+
+    alarm_settings = (alarm_settings_t *)malloc(sizeof(alarm_settings_t));
+    load_alarm_settings();
     // ************************************************************************************************
 
     while (1)
@@ -508,6 +626,7 @@ int main()
                 break;
             }
             break;
+
         case MAIN_STATE_ALARM:
             // run once
             if (state_start == false)
@@ -516,31 +635,68 @@ int main()
                 // run only when changing main state
                 if (main_state_swapped == true)
                 {
+                    load_alarm_settings();
                     main_state_swapped = false;
+                    // alarm_state = ALARM_STATE_DISPLAY;
                 }
                 // set button callbacks
                 switch (alarm_state)
                 {
+                /*
+                +- buttons switch between main states
+                adjust button short press toggles the alarm on/off.
+                adjust button long press would go into adjust alarm hour mode
+                */
                 case ALARM_STATE_DISPLAY:
+                    button_attach_single_click(&minus_button, decrement_main_state);
+                    button_attach_single_click(&plus_button, increment_main_state);
+                    button_attach_single_click(&adjust_button, toggle_alarm_on_off);
+                    button_attach_long_press(&adjust_button, swap_alarm_state);
                     break;
+                /*
+                +- buttons adjust the alarm hour
+                adjust button short press goes into adjust alarm minute mode
+                */
                 case ALARM_STATE_ADJUST_HOUR:
+                    button_attach_single_click(&minus_button, decrement_alarm_hour);
+                    button_attach_single_click(&plus_button, increment_alarm_hour);
+                    button_attach_single_click(&adjust_button, swap_alarm_state);
                     break;
+                /*
+                +- buttons adjust the alarm minute
+                adjust button short press goes back to alarm hour min display mode
+                 */
                 case ALARM_STATE_ADJUST_MIN:
+                    button_attach_single_click(&minus_button, decrement_alarm_min);
+                    button_attach_single_click(&plus_button, increment_alarm_min);
+                    button_attach_single_click(&adjust_button, swap_alarm_state);
                     break;
                 default:
                     break;
                 }
             }
             // run forever
+
             switch (alarm_state)
             {
             case ALARM_STATE_DISPLAY:
+                if (alarm_settings->enabled == 0)
+                {
+                    seven_segment_write_bytes(ALARM_OFF_DISPLAY_VALUE);
+                }
+                else
+                {
+                    seven_segment_show_hour_minute(alarm_settings->alarm_hour, alarm_settings->alarm_min);
+                }
+                // seven_segment_show_hour_minute(alarm_settings->enabled, 0);
                 break;
             case ALARM_STATE_ADJUST_HOUR:
-
+                seven_segment_show_hour_minute(alarm_settings->alarm_hour, alarm_settings->alarm_min);
+                seven_segment_flash_digits_hours(1);
                 break;
             case ALARM_STATE_ADJUST_MIN:
-
+                seven_segment_show_hour_minute(alarm_settings->alarm_hour, alarm_settings->alarm_min);
+                seven_segment_flash_digits_minutes(1);
                 break;
             default:
                 break;

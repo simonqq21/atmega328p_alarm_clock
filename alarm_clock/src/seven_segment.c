@@ -1,5 +1,12 @@
 #include "seven_segment.h"
 
+display_data_t display_data;
+Pin segment_pins[8];
+Pin digit_pins[4];
+Pin colon_pin;
+uint32_t prev_millis_flash;
+uint8_t flash_colon, flash_digits_minutes, flash_digits_hours, flash_all_digits;
+
 const uint8_t digit_values[17] = {
     0b00111111, // 0
     0b00000110, // 1
@@ -19,13 +26,6 @@ const uint8_t digit_values[17] = {
     0b01110001, // F
     0b01110110, // H (for humidity)
 };
-
-display_data_t display_data;
-Pin segment_pins[8];
-Pin digit_pins[4];
-Pin colon_pin;
-uint32_t prev_millis_flash;
-uint8_t flash_colon, flash_digits_minutes, flash_digits_hours, flash_all_digits;
 
 void seven_segment_init()
 {
