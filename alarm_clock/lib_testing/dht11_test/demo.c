@@ -16,7 +16,7 @@
 // #include "../DHT_Sensor_AVR_Library/DHT.h"
 #include "../avrSerial/serial.h"
 
-double humidity, temp;
+double humidity, temperature;
 char buf[30];
 char temp_str[6];
 char humidity_str[6];
@@ -31,9 +31,9 @@ int main(void)
     // DHT_Setup();
     snprintf(buf, 20, "DHT11 example\n");
     serialWriteString(0, buf);
-    temp = 30.0;
+    temperature = 30.0;
     humidity = 50.0;
-    dtostrf(temp, 6, 2, temp_str);
+    dtostrf(temperature, 6, 2, temp_str);
     dtostrf(humidity, 6, 2, humidity_str);
     snprintf(buf, 30, "%s, %s\n", temp_str, humidity_str);
     serialWriteString(0, buf);
@@ -57,7 +57,7 @@ int main(void)
         // _delay_ms(1500);
 
         // Read from sensor
-        DHT_Read(&temp, &humidity);
+        DHT_Read(&temperature, &humidity);
         // DHT_ReadRaw(raw_data);
         // snprintf(buf, 30, "raw: %d, %d, %d, %d\n", raw_data[0], raw_data[1], raw_data[2], raw_data[3]);
         // serialWriteString(0, buf);
@@ -69,7 +69,7 @@ int main(void)
         {
         case (DHT_Ok):
         case (DHT_Error_Humidity):
-            dtostrf(temp, 6, 2, temp_str);
+            dtostrf(temperature, 6, 2, temp_str);
             dtostrf(humidity, 6, 2, humidity_str);
             snprintf(buf, 20, "%s, %s\n", temp_str, humidity_str);
             serialWriteString(0, buf);

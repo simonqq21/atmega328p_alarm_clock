@@ -12,6 +12,7 @@
 #include <stdbool.h>
 #include "avr/io.h"
 #include "avr/interrupt.h"
+#include "avr/eeprom.h"
 #include "util/atomic.h"
 
 #define SEGMENTS_DDR DDRD

@@ -14,7 +14,9 @@
 #include "src/seven_segment.h"
 #include "src/rtc.h"
 // #include "src/serial.h"
+#include "src/DHT.h"
 #include "src/states.h"
+
 /*
 src/rtc.c src/twi.c src/twi-lowlevel.c
 */
@@ -35,6 +37,9 @@ Button minus_button, adjust_button, plus_button;
 struct tm *clock_time;
 
 uint32_t prev_millis_read_rtc;
+
+// DHT11
+double humidity, temperature;
 
 // interrupts
 ISR(TIMER0_COMPA_vect)
@@ -624,7 +629,17 @@ int main()
                     main_state_swapped = false;
                     // test
                     // clock_time->year = 1926;
-                    // rtc_set_time(clock_time);
+                    clock_time = rtc_get_time();
+                    if (clock_time->year < MIN_YEAR)
+                    {
+                        clock_time->year = MIN_YEAR;
+                        rtc_set_time(clock_time);
+                    }
+                    if (clock_time->year > MAX_YEAR)
+                    {
+                        clock_time->year = MAX_YEAR;
+                        rtc_set_time(clock_time);
+                    }
                     year_state = YEAR_STATE_DISPLAY;
                 }
                 // set button callbacks
@@ -662,16 +677,6 @@ int main()
                 {
                     prev_millis_read_rtc = t_millis;
                     clock_time = rtc_get_time();
-                    // if (clock_time->year < MIN_YEAR)
-                    // {
-                    //     clock_time->year = MIN_YEAR;
-                    //     rtc_set_time(clock_time);
-                    // }
-                    // if (clock_time->year > MAX_YEAR - 1)
-                    // {
-                    //     clock_time->year = MAX_YEAR - 1;
-                    //     rtc_set_time(clock_time);
-                    // }
                 }
                 break;
             case YEAR_STATE_ADJUST_YEAR:
@@ -689,26 +694,33 @@ int main()
                 // run only when changing main state
                 if (main_state_swapped == true)
                 {
-
+                    temperature = 67.7;
                     main_state_swapped = false;
                 }
                 // set button callbacks
                 switch (temperature_state)
                 {
+                    /*
+                    +- buttons switch between main states
+                    */
                 case TEMPERATURE_STATE_DISPLAY_TEMPERATURE:
+                    button_attach_single_click(&minus_button, decrement_main_state);
+                    button_attach_single_click(&plus_button, increment_main_state);
+                    button_attach_single_click(&adjust_button, NULL);
+                    button_attach_long_press(&adjust_button, NULL);
                     break;
-
                 default:
                     break;
                 }
             }
             // run forever
+            // Read from sensor
+            DHT_Read(&temperature, &humidity);
             switch (temperature_state)
             {
             case TEMPERATURE_STATE_DISPLAY_TEMPERATURE:
-                break;
             default:
-                break;
+                seven_segment_show_temperature(temperature);
             }
             break;
         case MAIN_STATE_HUMIDITY:
@@ -719,29 +731,32 @@ int main()
                 // run only when changing main state
                 if (main_state_swapped == true)
                 {
-
+                    humidity = 67.7;
                     main_state_swapped = false;
                 }
                 // set button callbacks
-                switch (alarm_state)
+                switch (humidity_state)
                 {
-                case ALARM_STATE_DISPLAY:
-                    break;
-                case ALARM_STATE_ADJUST_HOUR:
-                    break;
-                case ALARM_STATE_ADJUST_MIN:
+                /*
+                +- buttons switch between main states
+                */
+                case HUMIDITY_STATE_DISPLAY_HUMIDITY:
+                    button_attach_single_click(&minus_button, decrement_main_state);
+                    button_attach_single_click(&plus_button, increment_main_state);
+                    button_attach_single_click(&adjust_button, NULL);
+                    button_attach_long_press(&adjust_button, NULL);
                     break;
                 default:
                     break;
                 }
             }
             // run forever
+            DHT_Read(&temperature, &humidity);
             switch (humidity_state)
             {
             case HUMIDITY_STATE_DISPLAY_HUMIDITY:
-                break;
             default:
-                break;
+                seven_segment_show_humidity(humidity);
             }
             break;
         // 7 segment test on and off
@@ -756,6 +771,8 @@ int main()
                     main_state_swapped = false;
                     testing_state = TESTING_STATE_ALL_ON;
                 }
+                button_attach_single_click(&minus_button, decrement_main_state);
+                button_attach_single_click(&plus_button, increment_main_state);
                 // attach adjust button
                 button_attach_single_click(&adjust_button, swap_testing_state);
             }

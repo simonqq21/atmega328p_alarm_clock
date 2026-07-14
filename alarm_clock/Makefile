@@ -59,7 +59,7 @@ AVRDUDE_TARGET = m328pb
 
 OPTIMIZE	   = -O2
 DEFS		   =
-LIBS		   =  src/millis_micros.c src/gpio.c src/button.c src/seven_segment.c src/rtc.c src/twi.c src/twi-lowlevel.c
+LIBS		   =  src/millis_micros.c src/gpio.c src/button.c src/seven_segment.c src/rtc.c src/twi.c src/twi-lowlevel.c src/DHT.c
 # You should not have to change anything below here.
 CC			 = avr-gcc
 # Override is only needed by avr-lib build system.
