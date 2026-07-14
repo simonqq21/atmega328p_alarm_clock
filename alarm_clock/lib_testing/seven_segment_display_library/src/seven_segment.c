@@ -17,7 +17,7 @@ const uint8_t digit_values[17] = {
     0b01011110, // d
     0b01111001, // E
     0b01110001, // F
-    0b01110100, // h (for humidity)
+    0b01110101, // H (for humidity)
 };
 
 display_data_t display_data;
@@ -406,7 +406,7 @@ void seven_segment_show_temperature(float temperature_celsius)
     digit_indices[3] = 0xc;
 
     // decimal points
-    seven_segment_set_decimal_point(3, 0);
+    seven_segment_set_decimal_point(3, 1);
     seven_segment_set_decimal_point(2, 0);
     seven_segment_set_decimal_point(1, 1);
     // if temperature sub zero, light up the 0th decimal point
