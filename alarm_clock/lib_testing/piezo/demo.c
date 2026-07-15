@@ -143,6 +143,7 @@ int main()
 
     uint16_t note_ms = 120;
 
+    // never gonna give you up
     Note notes[] = {
         {.ocr1a_value = OCR1A_NOTE_AS5, .duration = note_ms},
         {.ocr1a_value = OCR1A_NOTE_CS6, .duration = note_ms},
@@ -215,6 +216,8 @@ int main()
     {
         piezo_add_note(&notes[i]);
     }
+
+    // the maiden's prayer
 
     piezo_play_sequence();
 

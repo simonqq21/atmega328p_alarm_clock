@@ -35,14 +35,20 @@ src/rtc.c src/twi.c src/twi-lowlevel.c
 #define BTN_3_PIN_NUM PC3 // up
 
 uint32_t t_millis;
+uint32_t prev_millis_read_rtc;
+
 Button minus_button, adjust_button, plus_button;
 struct tm *clock_time;
 
-uint32_t prev_millis_read_rtc;
-
 // DHT11
-double humidity, temperature;
+typedef struct
+{
+    double humidity, temperature;
+} sensor_values_t;
+sensor_values_t *sensor_values;
 
+#define EEPROM_ALARM_SETTINGS_ADDR (0x0)
+#define ALARM_DURATION_MINS 5
 // alarm settings struct
 typedef struct
 {
@@ -50,8 +56,23 @@ typedef struct
     uint8_t alarm_hour;
     uint8_t alarm_min;
 } alarm_settings_t;
-#define EEPROM_ALARM_SETTINGS_ADDR (0x0)
 alarm_settings_t *alarm_settings;
+typedef struct
+{
+    uint8_t start_hour;
+    uint8_t start_min;
+    uint16_t start_mins_since_midnight;
+    uint8_t duration_mins;
+    uint8_t end_hour;
+    uint8_t end_min;
+    uint16_t end_mins_since_midnight;
+    uint16_t cur_mins_since_midnight;
+    uint8_t triggered;
+    uint8_t dismissed;
+
+} alarm_memory_t;
+alarm_memory_t *alarm_memory;
+
 uint8_t ALARM_OFF_DISPLAY_VALUE[4];
 
 // interrupts
@@ -84,10 +105,22 @@ ISR(TIMER0_COMPA_vect)
 // }
 
 // state updated variable used to run code when switching to a new state
-volatile uint8_t state_start;
-volatile uint8_t main_state_swapped;
-volatile uint8_t display_updated;
-volatile alarm_clock_main_state_t main_state;
+typedef struct
+{
+    volatile uint8_t state_start;
+    volatile uint8_t main_state_swapped;
+    volatile uint8_t display_updated;
+    volatile alarm_clock_main_state_t main_state;
+    // Variables for switching the substates of each main FSM state
+    volatile hour_min_state_t hour_min_state;
+    volatile alarm_state_t alarm_state;
+    volatile month_day_state_t month_day_state;
+    volatile year_state_t year_state;
+    volatile temperature_state_t temperature_state;
+    volatile humidity_state_t humidity_state;
+    volatile testing_state_t testing_state;
+} fsm_variables_t;
+fsm_variables_t *fsm_variables;
 
 void load_alarm_settings(void);
 void update_alarm_settings(void);
@@ -99,8 +132,8 @@ void update_alarm_settings(void);
 void new_state_start()
 {
     update_alarm_settings();
-    state_start = false;
-    display_updated = false;
+    fsm_variables->state_start = false;
+    fsm_variables->display_updated = false;
     seven_segment_flash_colon(0);
     seven_segment_flash_digits_hours(0);
     seven_segment_flash_digits_minutes(0);
@@ -112,15 +145,15 @@ void new_state_start()
  */
 void increment_main_state(void)
 {
-    if (main_state == MAIN_STATE_TESTING)
+    if (fsm_variables->main_state == MAIN_STATE_TESTING)
     {
-        main_state = MAIN_STATE_HOUR_MIN;
+        fsm_variables->main_state = MAIN_STATE_HOUR_MIN;
     }
     else
     {
-        main_state++;
+        fsm_variables->main_state++;
     }
-    main_state_swapped = true;
+    fsm_variables->main_state_swapped = true;
     new_state_start();
 }
 
@@ -129,34 +162,23 @@ void increment_main_state(void)
  */
 void decrement_main_state(void)
 {
-    if (main_state == MAIN_STATE_HOUR_MIN)
+    if (fsm_variables->main_state == MAIN_STATE_HOUR_MIN)
     {
-        main_state = MAIN_STATE_TESTING;
+        fsm_variables->main_state = MAIN_STATE_TESTING;
     }
     else
     {
-        main_state--;
+        fsm_variables->main_state--;
     }
-    main_state_swapped = true;
+    fsm_variables->main_state_swapped = true;
     new_state_start();
 }
-
-/**
- * Variables for switching the substates of each main FSM state
- */
-volatile hour_min_state_t hour_min_state;
-volatile alarm_state_t alarm_state;
-volatile month_day_state_t month_day_state;
-volatile year_state_t year_state;
-volatile temperature_state_t temperature_state;
-volatile humidity_state_t humidity_state;
-volatile testing_state_t testing_state;
 
 /* swap through the different states in the hour minute state */
 void swap_hour_min_state(void)
 {
     /* update RTC time when exiting the hour and minute adjustment states */
-    switch (hour_min_state)
+    switch (fsm_variables->hour_min_state)
     {
     case HOUR_MIN_STATE_ADJUST_HOUR:
     case HOUR_MIN_STATE_ADJUST_MIN:
@@ -166,10 +188,10 @@ void swap_hour_min_state(void)
     default:
         break;
     }
-    hour_min_state++;
-    if (hour_min_state == HOUR_MIN_STATE_END)
+    fsm_variables->hour_min_state++;
+    if (fsm_variables->hour_min_state == HOUR_MIN_STATE_END)
     {
-        hour_min_state = HOUR_MIN_STATE_DISPLAY;
+        fsm_variables->hour_min_state = HOUR_MIN_STATE_DISPLAY;
     }
     new_state_start();
 }
@@ -178,20 +200,10 @@ void swap_hour_min_state(void)
 void swap_alarm_state(void)
 {
     update_alarm_settings();
-    // switch (alarm_state)
-    // {
-    // case ALARM_STATE_ADJUST_HOUR:
-    // case ALARM_STATE_ADJUST_MIN:
-    //     update_alarm_settings();
-    //     break;
-
-    // default:
-    //     break;
-    // }
-    alarm_state++;
-    if (alarm_state == ALARM_STATE_END)
+    fsm_variables->alarm_state++;
+    if (fsm_variables->alarm_state == ALARM_STATE_END)
     {
-        alarm_state = ALARM_STATE_DISPLAY;
+        fsm_variables->alarm_state = ALARM_STATE_DISPLAY;
     }
     new_state_start();
 }
@@ -200,7 +212,7 @@ void swap_alarm_state(void)
 void swap_month_day_state(void)
 {
     /* update RTC time when exiting the month and day adjustment states */
-    switch (month_day_state)
+    switch (fsm_variables->month_day_state)
     {
     case MONTH_DAY_STATE_ADJUST_MONTH:
     case MONTH_DAY_STATE_ADJUST_DAY:
@@ -209,10 +221,10 @@ void swap_month_day_state(void)
     default:
         break;
     }
-    month_day_state++;
-    if (month_day_state == MONTH_DAY_STATE_END)
+    fsm_variables->month_day_state++;
+    if (fsm_variables->month_day_state == MONTH_DAY_STATE_END)
     {
-        month_day_state = MONTH_DAY_STATE_DISPLAY;
+        fsm_variables->month_day_state = MONTH_DAY_STATE_DISPLAY;
     }
     new_state_start();
 }
@@ -221,7 +233,7 @@ void swap_month_day_state(void)
 void swap_year_state(void)
 {
     /* update RTC time when exiting the year adjustment states */
-    switch (year_state)
+    switch (fsm_variables->year_state)
     {
     case YEAR_STATE_ADJUST_YEAR:
         rtc_set_time(clock_time);
@@ -229,10 +241,10 @@ void swap_year_state(void)
     default:
         break;
     }
-    year_state++;
-    if (year_state == YEAR_STATE_END)
+    fsm_variables->year_state++;
+    if (fsm_variables->year_state == YEAR_STATE_END)
     {
-        year_state = YEAR_STATE_DISPLAY;
+        fsm_variables->year_state = YEAR_STATE_DISPLAY;
     }
     new_state_start();
 }
@@ -240,10 +252,10 @@ void swap_year_state(void)
 /* swap through the different states in the temperature state */
 void swap_temperature_state(void)
 {
-    temperature_state++;
-    if (temperature_state == TEMPERATURE_STATE_END)
+    fsm_variables->temperature_state++;
+    if (fsm_variables->temperature_state == TEMPERATURE_STATE_END)
     {
-        temperature_state = TEMPERATURE_STATE_DISPLAY_TEMPERATURE;
+        fsm_variables->temperature_state = TEMPERATURE_STATE_DISPLAY_TEMPERATURE;
     }
     new_state_start();
 }
@@ -251,10 +263,10 @@ void swap_temperature_state(void)
 /* swap through the different states in the humidity state */
 void swap_humidity_state(void)
 {
-    humidity_state++;
-    if (humidity_state == HUMIDITY_STATE_END)
+    fsm_variables->humidity_state++;
+    if (fsm_variables->humidity_state == HUMIDITY_STATE_END)
     {
-        humidity_state = HUMIDITY_STATE_DISPLAY_HUMIDITY;
+        fsm_variables->humidity_state = HUMIDITY_STATE_DISPLAY_HUMIDITY;
     }
     new_state_start();
 }
@@ -262,10 +274,10 @@ void swap_humidity_state(void)
 /* swap through the different states in the display testing state */
 void swap_testing_state(void)
 {
-    testing_state++;
-    if (testing_state == TESTING_STATE_END)
+    fsm_variables->testing_state++;
+    if (fsm_variables->testing_state == TESTING_STATE_END)
     {
-        testing_state = TESTING_STATE_ALL_OFF;
+        fsm_variables->testing_state = TESTING_STATE_ALL_OFF;
     }
     new_state_start();
 }
@@ -335,16 +347,36 @@ void trim_alarm_values(void)
     }
 }
 
+void compute_alarm_time(void)
+{
+    alarm_memory->start_hour = alarm_settings->alarm_hour;
+    alarm_memory->start_min = alarm_settings->alarm_min;
+    alarm_memory->start_mins_since_midnight = alarm_memory->start_hour * 60 + alarm_memory->start_min;
+    alarm_memory->duration_mins = ALARM_DURATION_MINS;
+    alarm_memory->end_mins_since_midnight = alarm_memory->start_mins_since_midnight + alarm_memory->duration_mins;
+
+    alarm_memory->end_hour = alarm_memory->end_mins_since_midnight / 60;
+    if (alarm_memory->end_hour > 23)
+    {
+        alarm_memory->end_hour = 0;
+    }
+    alarm_memory->end_min = alarm_memory->end_mins_since_midnight % 60;
+    alarm_memory->triggered = 0;
+    alarm_memory->dismissed = 0;
+}
+
 void load_alarm_settings(void)
 {
     eeprom_read_block((void *)alarm_settings, (const void *)EEPROM_ALARM_SETTINGS_ADDR, sizeof(alarm_settings_t));
     trim_alarm_values();
+    compute_alarm_time();
 }
 
 void update_alarm_settings(void)
 {
     trim_alarm_values();
     eeprom_update_block((const void *)alarm_settings, (void *)EEPROM_ALARM_SETTINGS_ADDR, sizeof(alarm_settings_t));
+    compute_alarm_time();
 }
 
 void toggle_alarm_on_off(void)
@@ -476,6 +508,11 @@ void decrement_year(void)
 
 int main()
 {
+    alarm_settings = (alarm_settings_t *)malloc(sizeof(alarm_settings_t));
+    alarm_memory = (alarm_memory_t *)malloc(sizeof(alarm_memory_t));
+    sensor_values = (sensor_values_t *)malloc(sizeof(sensor_values_t));
+    clock_time = (struct tm *)malloc(sizeof(struct tm));
+    fsm_variables = (fsm_variables_t *)malloc(sizeof(fsm_variables_t));
 
     ALARM_OFF_DISPLAY_VALUE[0] = 0;
     ALARM_OFF_DISPLAY_VALUE[1] = digit_values[0x0];
@@ -527,9 +564,8 @@ int main()
     rtc_init();
     // initialize piezo
     // piezo_init(10);
-    main_state_swapped = true;
+    fsm_variables->main_state_swapped = true;
 
-    alarm_settings = (alarm_settings_t *)malloc(sizeof(alarm_settings_t));
     load_alarm_settings();
     // ************************************************************************************************
 
@@ -539,27 +575,27 @@ int main()
         main FSM
         */
         t_millis = get_millis();
-        switch (main_state)
+        switch (fsm_variables->main_state)
         {
         case MAIN_STATE_HOUR_MIN:
             // run once
-            if (state_start == false)
+            if (fsm_variables->state_start == false)
             {
-                state_start = true;
+                fsm_variables->state_start = true;
 
                 // run only when changing main state
-                if (main_state_swapped == true)
+                if (fsm_variables->main_state_swapped == true)
                 {
-                    main_state_swapped = false;
+                    fsm_variables->main_state_swapped = false;
 
                     // test
                     // clock_time->hour = 88;
                     // clock_time->min = 88;
 
-                    hour_min_state = HOUR_MIN_STATE_DISPLAY;
+                    fsm_variables->hour_min_state = HOUR_MIN_STATE_DISPLAY;
                 }
                 // set button callbacks
-                switch (hour_min_state)
+                switch (fsm_variables->hour_min_state)
                 {
                 /*
                 +- buttons switch between main states
@@ -594,7 +630,7 @@ int main()
             }
             // run forever
             seven_segment_show_hour_minute(clock_time->hour, clock_time->min);
-            switch (hour_min_state)
+            switch (fsm_variables->hour_min_state)
             {
                 /*
                 the current time is displayed with a blinking colon.
@@ -629,18 +665,18 @@ int main()
 
         case MAIN_STATE_ALARM:
             // run once
-            if (state_start == false)
+            if (fsm_variables->state_start == false)
             {
-                state_start = true;
+                fsm_variables->state_start = true;
                 // run only when changing main state
-                if (main_state_swapped == true)
+                if (fsm_variables->main_state_swapped == true)
                 {
                     load_alarm_settings();
-                    main_state_swapped = false;
-                    // alarm_state = ALARM_STATE_DISPLAY;
+                    fsm_variables->main_state_swapped = false;
+                    // fsm_variables->alarm_state = ALARM_STATE_DISPLAY;
                 }
                 // set button callbacks
-                switch (alarm_state)
+                switch (fsm_variables->alarm_state)
                 {
                 /*
                 +- buttons switch between main states
@@ -677,7 +713,7 @@ int main()
             }
             // run forever
 
-            switch (alarm_state)
+            switch (fsm_variables->alarm_state)
             {
             case ALARM_STATE_DISPLAY:
                 if (alarm_settings->enabled == 0)
@@ -704,23 +740,23 @@ int main()
             break;
         case MAIN_STATE_MONTH_DAY:
             // run once
-            if (state_start == false)
+            if (fsm_variables->state_start == false)
             {
-                state_start = true;
+                fsm_variables->state_start = true;
                 // run only when changing main state
-                if (main_state_swapped == true)
+                if (fsm_variables->main_state_swapped == true)
                 {
 
-                    main_state_swapped = false;
+                    fsm_variables->main_state_swapped = false;
 
                     // test
                     // clock_time->mon = 88;
                     // clock_time->mday = 88;
 
-                    hour_min_state = MONTH_DAY_STATE_DISPLAY;
+                    fsm_variables->hour_min_state = MONTH_DAY_STATE_DISPLAY;
                 }
                 // set button callbacks
-                switch (month_day_state)
+                switch (fsm_variables->month_day_state)
                 {
                     /*
                     +- buttons switch between main states
@@ -755,7 +791,7 @@ int main()
             }
             // run forever
             seven_segment_show_month_day(clock_time->mon, clock_time->mday);
-            switch (month_day_state)
+            switch (fsm_variables->month_day_state)
             {
             case MONTH_DAY_STATE_DISPLAY:
                 if (t_millis - prev_millis_read_rtc > 1000)
@@ -776,13 +812,13 @@ int main()
             break;
         case MAIN_STATE_YEAR:
             // run once
-            if (state_start == false)
+            if (fsm_variables->state_start == false)
             {
-                state_start = true;
+                fsm_variables->state_start = true;
                 // run only when changing main state
-                if (main_state_swapped == true)
+                if (fsm_variables->main_state_swapped == true)
                 {
-                    main_state_swapped = false;
+                    fsm_variables->main_state_swapped = false;
                     // test
                     // clock_time->year = 1926;
                     clock_time = rtc_get_time();
@@ -796,10 +832,10 @@ int main()
                         clock_time->year = MAX_YEAR;
                         rtc_set_time(clock_time);
                     }
-                    year_state = YEAR_STATE_DISPLAY;
+                    fsm_variables->year_state = YEAR_STATE_DISPLAY;
                 }
                 // set button callbacks
-                switch (year_state)
+                switch (fsm_variables->year_state)
                 {
                 /*
                 +- buttons switch between main states
@@ -825,7 +861,7 @@ int main()
             }
             // run forever
             seven_segment_show_year(100 + clock_time->year);
-            switch (year_state)
+            switch (fsm_variables->year_state)
             {
             case YEAR_STATE_DISPLAY:
 
@@ -844,17 +880,17 @@ int main()
             break;
         case MAIN_STATE_TEMPERATURE:
             // run once
-            if (state_start == false)
+            if (fsm_variables->state_start == false)
             {
-                state_start = true;
+                fsm_variables->state_start = true;
                 // run only when changing main state
-                if (main_state_swapped == true)
+                if (fsm_variables->main_state_swapped == true)
                 {
-                    temperature = 67.7;
-                    main_state_swapped = false;
+                    sensor_values->temperature = -88.8;
+                    fsm_variables->main_state_swapped = false;
                 }
                 // set button callbacks
-                switch (temperature_state)
+                switch (fsm_variables->temperature_state)
                 {
                     /*
                     +- buttons switch between main states
@@ -871,27 +907,27 @@ int main()
             }
             // run forever
             // Read from sensor
-            DHT_Read(&temperature, &humidity);
-            switch (temperature_state)
+            DHT_Read(&sensor_values->temperature, &sensor_values->humidity);
+            switch (fsm_variables->temperature_state)
             {
             case TEMPERATURE_STATE_DISPLAY_TEMPERATURE:
             default:
-                seven_segment_show_temperature(temperature);
+                seven_segment_show_temperature(sensor_values->temperature);
             }
             break;
         case MAIN_STATE_HUMIDITY:
             // run once
-            if (state_start == false)
+            if (fsm_variables->state_start == false)
             {
-                state_start = true;
+                fsm_variables->state_start = true;
                 // run only when changing main state
-                if (main_state_swapped == true)
+                if (fsm_variables->main_state_swapped == true)
                 {
-                    humidity = 67.7;
-                    main_state_swapped = false;
+                    sensor_values->humidity = 88.8;
+                    fsm_variables->main_state_swapped = false;
                 }
                 // set button callbacks
-                switch (humidity_state)
+                switch (fsm_variables->humidity_state)
                 {
                 /*
                 +- buttons switch between main states
@@ -907,25 +943,25 @@ int main()
                 }
             }
             // run forever
-            DHT_Read(&temperature, &humidity);
-            switch (humidity_state)
+            DHT_Read(&sensor_values->temperature, &sensor_values->humidity);
+            switch (fsm_variables->humidity_state)
             {
             case HUMIDITY_STATE_DISPLAY_HUMIDITY:
             default:
-                seven_segment_show_humidity(humidity);
+                seven_segment_show_humidity(sensor_values->humidity);
             }
             break;
         // 7 segment test on and off
         case MAIN_STATE_TESTING:
             // run once
-            if (state_start == false)
+            if (fsm_variables->state_start == false)
             {
-                state_start = true;
+                fsm_variables->state_start = true;
                 // run only when changing main state
-                if (main_state_swapped == true)
+                if (fsm_variables->main_state_swapped == true)
                 {
-                    main_state_swapped = false;
-                    testing_state = TESTING_STATE_ALL_ON;
+                    fsm_variables->main_state_swapped = false;
+                    fsm_variables->testing_state = TESTING_STATE_ALL_ON;
                 }
                 button_attach_single_click(&minus_button, decrement_main_state);
                 button_attach_single_click(&plus_button, increment_main_state);
@@ -933,17 +969,17 @@ int main()
                 button_attach_single_click(&adjust_button, swap_testing_state);
             }
             // run forever
-            switch (testing_state)
+            switch (fsm_variables->testing_state)
             {
             // 7 segment all off
             case TESTING_STATE_ALL_OFF:
                 seven_segment_clear_all();
-                display_updated = true;
+                fsm_variables->display_updated = true;
                 break;
             // 7 segment all on
             case TESTING_STATE_ALL_ON:
                 seven_segment_set_all();
-                display_updated = true;
+                fsm_variables->display_updated = true;
                 break;
             default:
                 break;
@@ -951,6 +987,54 @@ int main()
             break;
         default:
             break;
+        }
+
+        // alarm checking loop
+        // check if alarm is enabled
+        if (alarm_settings->enabled)
+        {
+            // check if the time is within the alarm time
+            alarm_memory->cur_mins_since_midnight = clock_time->hour * 60 + clock_time->min;
+            // if the alarm start and end times are within the same day
+            if (alarm_memory->start_mins_since_midnight < alarm_memory->end_mins_since_midnight)
+            {
+                if (alarm_memory->cur_mins_since_midnight >= alarm_memory->start_mins_since_midnight &&
+                    alarm_memory->cur_mins_since_midnight <= alarm_memory->end_mins_since_midnight)
+                {
+                    alarm_memory->triggered = 1;
+                }
+            }
+            // if the alarm start and end times are on different days.
+            else if (alarm_memory->start_mins_since_midnight > alarm_memory->end_mins_since_midnight)
+            {
+                if (alarm_memory->cur_mins_since_midnight >= alarm_memory->start_mins_since_midnight ||
+                    alarm_memory->cur_mins_since_midnight <= alarm_memory->end_mins_since_midnight)
+                {
+
+                    alarm_memory->triggered = 1;
+                }
+            }
+            else
+            {
+                alarm_memory->triggered = 0;
+                alarm_memory->dismissed = 0;
+            }
+            // check if the time is within the alarm time and n minutes after the alarm time
+            /*
+            21:00 - 21:05
+            21:58 - 22:03
+            23:58 - 00:03
+
+            convert hour min times into minutes since midnight
+            total_mins = hours * 60 + mins
+            total_mins += timedelta
+            end_hours = timedelta / 60 % 24;
+            end_minutes = timedelta % 60;
+
+            */
+            // if the time is within the alarm time, trigger the alarm until the user clicks the
+            // adjust button once.
+            //
         }
 
         // button tick loops
