@@ -729,10 +729,10 @@ void compute_alarm_time(void)
      344:	30 93 cb 01 	sts	0x01CB, r19	; 0x8001cb <alarm_memory+0x3>
      348:	20 93 ca 01 	sts	0x01CA, r18	; 0x8001ca <alarm_memory+0x2>
     alarm_memory.duration_mins = ALARM_DURATION_MINS;
-     34c:	81 e0       	ldi	r24, 0x01	; 1
+     34c:	85 e0       	ldi	r24, 0x05	; 5
      34e:	80 93 cc 01 	sts	0x01CC, r24	; 0x8001cc <alarm_memory+0x4>
     alarm_memory.end_mins_since_midnight = alarm_memory.start_mins_since_midnight + alarm_memory.duration_mins;
-     352:	2f 5f       	subi	r18, 0xFF	; 255
+     352:	2b 5f       	subi	r18, 0xFB	; 251
      354:	3f 4f       	sbci	r19, 0xFF	; 255
      356:	30 93 d0 01 	sts	0x01D0, r19	; 0x8001d0 <alarm_memory+0x8>
      35a:	20 93 cf 01 	sts	0x01CF, r18	; 0x8001cf <alarm_memory+0x7>

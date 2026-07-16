@@ -49,7 +49,7 @@ typedef struct
 sensor_values_t sensor_values;
 
 #define EEPROM_ALARM_SETTINGS_ADDR (0x0)
-#define ALARM_DURATION_MINS (1)
+#define ALARM_DURATION_MINS (5)
 // alarm settings struct
 typedef struct
 {
