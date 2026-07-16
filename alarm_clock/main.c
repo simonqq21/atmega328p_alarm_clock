@@ -10,7 +10,7 @@
 #include "src/millis_micros.h"
 #include "src/gpio.h"
 #include "src/button.h"
-// #include "src/piezo.h"
+#include "src/piezo.h"
 #include "src/seven_segment.h"
 #include "src/rtc.h"
 // #include "src/serial.h"
@@ -39,6 +39,7 @@ uint32_t prev_millis_read_rtc;
 
 Button minus_button, adjust_button, plus_button;
 struct tm *clock_time;
+uint8_t read_rtc;
 
 // DHT11
 typedef struct
@@ -48,7 +49,7 @@ typedef struct
 sensor_values_t sensor_values;
 
 #define EEPROM_ALARM_SETTINGS_ADDR (0x0)
-#define ALARM_DURATION_MINS 5
+#define ALARM_DURATION_MINS (1)
 // alarm settings struct
 typedef struct
 {
@@ -67,11 +68,13 @@ typedef struct
     uint8_t end_min;
     uint16_t end_mins_since_midnight;
     uint16_t cur_mins_since_midnight;
-    uint8_t triggered;
+    uint8_t within_alarm_period;
+    uint8_t prev_triggered;
     uint8_t dismissed;
-
 } alarm_memory_t;
 alarm_memory_t alarm_memory;
+button_action_t prev_adjust_btn_callback, prev_plus_btn_callback, prev_minus_btn_callback;
+uint8_t prev_btn_callbacks_saved = 0;
 
 uint8_t ALARM_OFF_DISPLAY_VALUE[4];
 
@@ -79,7 +82,7 @@ uint8_t ALARM_OFF_DISPLAY_VALUE[4];
 ISR(TIMER0_COMPA_vect)
 {
     millis_timer_ISR_loop();
-    // piezo_loop_ISR();
+    piezo_loop_ISR();
     seven_segment_loop_isr();
 }
 
@@ -349,20 +352,18 @@ void trim_alarm_values(void)
 
 void compute_alarm_time(void)
 {
-    // alarm_memory.start_hour = alarm_settings.alarm_hour;
-    // alarm_memory.start_min = alarm_settings.alarm_min;
-    // alarm_memory.start_mins_since_midnight = alarm_memory.start_hour * 60 + alarm_memory.start_min;
-    // alarm_memory.duration_mins = ALARM_DURATION_MINS;
-    // alarm_memory.end_mins_since_midnight = alarm_memory.start_mins_since_midnight + alarm_memory.duration_mins;
+    alarm_memory.start_hour = alarm_settings.alarm_hour;
+    alarm_memory.start_min = alarm_settings.alarm_min;
+    alarm_memory.start_mins_since_midnight = alarm_memory.start_hour * 60 + alarm_memory.start_min;
+    alarm_memory.duration_mins = ALARM_DURATION_MINS;
+    alarm_memory.end_mins_since_midnight = alarm_memory.start_mins_since_midnight + alarm_memory.duration_mins;
 
-    // alarm_memory.end_hour = alarm_memory.end_mins_since_midnight / 60;
-    // if (alarm_memory.end_hour > 23)
-    // {
-    //     alarm_memory.end_hour = 0;
-    // }
-    // alarm_memory.end_min = alarm_memory.end_mins_since_midnight % 60;
-    // alarm_memory.triggered = 0;
-    // alarm_memory.dismissed = 0;
+    alarm_memory.end_hour = alarm_memory.end_mins_since_midnight / 60;
+    if (alarm_memory.end_hour > 23)
+    {
+        alarm_memory.end_hour = 0;
+    }
+    alarm_memory.end_min = alarm_memory.end_mins_since_midnight % 60;
 }
 
 void load_alarm_settings(void)
@@ -377,6 +378,48 @@ void update_alarm_settings(void)
     trim_alarm_values();
     eeprom_update_block((const void *)&alarm_settings, (void *)EEPROM_ALARM_SETTINGS_ADDR, sizeof(alarm_settings_t));
     compute_alarm_time();
+}
+
+void dismiss_alarm(void);
+
+/**
+ *
+ */
+void set_alarm_dismiss_button_callbacks()
+{
+    prev_adjust_btn_callback = button_get_single_click_action(&adjust_button);
+    prev_plus_btn_callback = button_get_single_click_action(&plus_button);
+    prev_minus_btn_callback = button_get_single_click_action(&minus_button);
+    prev_btn_callbacks_saved = 1;
+    button_attach_single_click(&adjust_button, dismiss_alarm);
+    button_attach_single_click(&plus_button, dismiss_alarm);
+    button_attach_single_click(&minus_button, dismiss_alarm);
+}
+
+/**
+ * @brief restore all button callbacks
+ */
+void restore_button_callbacks(void)
+{
+    if (prev_btn_callbacks_saved)
+    {
+        prev_btn_callbacks_saved = 0;
+        button_attach_single_click(&adjust_button, prev_adjust_btn_callback);
+        button_attach_single_click(&plus_button, prev_plus_btn_callback);
+        button_attach_single_click(&minus_button, prev_minus_btn_callback);
+    }
+}
+
+/**
+ * @brief dismiss alarm button callback
+ *
+ * dismiss alarm and restore the previous adjust button callback
+ */
+void dismiss_alarm(void)
+{
+    alarm_memory.dismissed = 1;
+
+    restore_button_callbacks();
 }
 
 void toggle_alarm_on_off(void)
@@ -563,10 +606,105 @@ int main()
     twi_init_master();
     rtc_init();
     // initialize piezo
-    // piezo_init(10);
+    piezo_init(60);
     fsm_variables.main_state_swapped = true;
 
     load_alarm_settings();
+
+    /*
+    load tune into memory
+    */
+    // the maiden's prayer
+    uint16_t note_ms = 250;
+    Note notes[] = {
+        {.ocr1a_value = OCR1A_NOTE_AS5, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_DS6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_G6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_AS6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_DS7, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_G7, .duration = note_ms * 5},
+        {.ocr1a_value = OCR1A_NOTE_F7, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_F7, .duration = note_ms * 2},
+        {.ocr1a_value = OCR1A_NOTE_DS7, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_DS7, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_D7, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_C7, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_C7, .duration = note_ms * 6}, // 13
+
+        {.ocr1a_value = OCR1A_NOTE_REST, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_AS5, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_D6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_F6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_GS6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_AS6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_D7, .duration = note_ms * 5},
+        {.ocr1a_value = OCR1A_NOTE_C7, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_C7, .duration = note_ms * 2},
+        {.ocr1a_value = OCR1A_NOTE_AS6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_AS6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_GS6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_G6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_G6, .duration = note_ms * 6}, // 14
+
+        {.ocr1a_value = OCR1A_NOTE_REST, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_AS5, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_DS6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_G6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_AS6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_DS7, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_G7, .duration = note_ms * 5},
+        {.ocr1a_value = OCR1A_NOTE_F7, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_F7, .duration = note_ms * 2},
+        {.ocr1a_value = OCR1A_NOTE_DS7, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_DS7, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_D7, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_C7, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_C7, .duration = note_ms * 6}, // 14
+
+        {.ocr1a_value = OCR1A_NOTE_REST, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_D6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_F6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_GS6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_AS6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_D7, .duration = note_ms * 1}, // 6
+
+        {.ocr1a_value = OCR1A_NOTE_REST, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_DS6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_G6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_AS6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_DS7, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_G7, .duration = note_ms * 1}, // 6
+
+        {.ocr1a_value = OCR1A_NOTE_AS6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_A6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_AS6, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_G7, .duration = note_ms * 2},
+        {.ocr1a_value = OCR1A_NOTE_F7, .duration = note_ms * 1},
+        {.ocr1a_value = OCR1A_NOTE_DS7, .duration = note_ms * 6}, // 6
+
+        {.ocr1a_value = OCR1A_NOTE_REST, .duration = note_ms * 10}, // 1
+
+    };
+
+    for (int i = 0; i < 60 + 1; i++)
+    {
+        piezo_add_note(&notes[i]);
+    }
+
+    /*
+    Alarm test code
+    set the RTC to a certain time and set alarm value to a certain time
+     */
+    // clock_time->sec = 55;
+    // clock_time->min = 59;
+    // clock_time->hour = 5;
+    // rtc_set_time(clock_time);
+
+    // rtc_set_time_s(5, 59, 55);
+    // alarm_settings.alarm_hour = 6;
+    // alarm_settings.alarm_min = 0;
+    // update_alarm_settings();
+
     // ************************************************************************************************
 
     while (1)
@@ -575,6 +713,7 @@ int main()
         main FSM
         */
         t_millis = get_millis();
+        read_rtc = 1;
         switch (fsm_variables.main_state)
         {
         case MAIN_STATE_HOUR_MIN:
@@ -604,6 +743,7 @@ int main()
                 case HOUR_MIN_STATE_DISPLAY:
                     button_attach_single_click(&minus_button, decrement_main_state);
                     button_attach_single_click(&plus_button, increment_main_state);
+                    button_attach_single_click(&adjust_button, NULL);
                     button_attach_long_press(&adjust_button, swap_hour_min_state);
                     break;
                 /*
@@ -638,11 +778,6 @@ int main()
                 */
             case HOUR_MIN_STATE_DISPLAY:
                 seven_segment_flash_colon(1);
-                if (t_millis - prev_millis_read_rtc > 250)
-                {
-                    prev_millis_read_rtc = t_millis;
-                    clock_time = rtc_get_time();
-                }
                 break;
                 /*
                 the current time is displayed with a steady colon, but the hour portion is blinking.
@@ -650,6 +785,7 @@ int main()
                 */
             case HOUR_MIN_STATE_ADJUST_HOUR:
                 seven_segment_flash_digits_hours(1);
+                read_rtc = 0;
                 break;
                 /*
                 the current time is displayed with a steady colon, but the minute portion is blinking.
@@ -657,6 +793,7 @@ int main()
                  */
             case HOUR_MIN_STATE_ADJUST_MIN:
                 seven_segment_flash_digits_minutes(1);
+                read_rtc = 0;
                 break;
             default:
                 break;
@@ -712,7 +849,6 @@ int main()
                 }
             }
             // run forever
-
             switch (fsm_variables.alarm_state)
             {
             case ALARM_STATE_DISPLAY:
@@ -765,6 +901,7 @@ int main()
                 case MONTH_DAY_STATE_DISPLAY:
                     button_attach_single_click(&minus_button, decrement_main_state);
                     button_attach_single_click(&plus_button, increment_main_state);
+                    button_attach_single_click(&adjust_button, NULL);
                     button_attach_long_press(&adjust_button, swap_month_day_state);
                     break;
                     /*
@@ -794,17 +931,14 @@ int main()
             switch (fsm_variables.month_day_state)
             {
             case MONTH_DAY_STATE_DISPLAY:
-                if (t_millis - prev_millis_read_rtc > 1000)
-                {
-                    prev_millis_read_rtc = t_millis;
-                    clock_time = rtc_get_time();
-                }
                 break;
             case MONTH_DAY_STATE_ADJUST_MONTH:
                 seven_segment_flash_digits_hours(1);
+                read_rtc = 0;
                 break;
             case MONTH_DAY_STATE_ADJUST_DAY:
                 seven_segment_flash_digits_minutes(1);
+                read_rtc = 0;
                 break;
             default:
                 break;
@@ -844,6 +978,7 @@ int main()
                 case YEAR_STATE_DISPLAY:
                     button_attach_single_click(&minus_button, decrement_main_state);
                     button_attach_single_click(&plus_button, increment_main_state);
+                    button_attach_single_click(&adjust_button, NULL);
                     button_attach_long_press(&adjust_button, swap_year_state);
                     break;
                 /*
@@ -864,15 +999,10 @@ int main()
             switch (fsm_variables.year_state)
             {
             case YEAR_STATE_DISPLAY:
-
-                if (t_millis - prev_millis_read_rtc > 1000)
-                {
-                    prev_millis_read_rtc = t_millis;
-                    clock_time = rtc_get_time();
-                }
                 break;
             case YEAR_STATE_ADJUST_YEAR:
                 seven_segment_flash_all_digits(1);
+                read_rtc = 0;
                 break;
             default:
                 break;
@@ -991,34 +1121,40 @@ int main()
 
         // alarm checking loop
         // check if alarm is enabled
-        if (alarm_settings.enabled)
+        if (alarm_settings.enabled && read_rtc)
         {
             // check if the time is within the alarm time
             alarm_memory.cur_mins_since_midnight = clock_time->hour * 60 + clock_time->min;
             // if the alarm start and end times are within the same day
-            if (alarm_memory.start_mins_since_midnight < alarm_memory.end_mins_since_midnight)
-            {
-                if (alarm_memory.cur_mins_since_midnight >= alarm_memory.start_mins_since_midnight &&
-                    alarm_memory.cur_mins_since_midnight <= alarm_memory.end_mins_since_midnight)
-                {
-                    alarm_memory.triggered = 1;
-                }
-            }
+            bool same_day_alarm_triggered = (alarm_memory.start_mins_since_midnight < alarm_memory.end_mins_since_midnight) &&
+                                            (alarm_memory.cur_mins_since_midnight >= alarm_memory.start_mins_since_midnight &&
+                                             alarm_memory.cur_mins_since_midnight < alarm_memory.end_mins_since_midnight);
             // if the alarm start and end times are on different days.
-            else if (alarm_memory.start_mins_since_midnight > alarm_memory.end_mins_since_midnight)
-            {
-                if (alarm_memory.cur_mins_since_midnight >= alarm_memory.start_mins_since_midnight ||
-                    alarm_memory.cur_mins_since_midnight <= alarm_memory.end_mins_since_midnight)
-                {
+            bool different_day_alarm_triggered = (alarm_memory.start_mins_since_midnight > alarm_memory.end_mins_since_midnight) &&
+                                                 (alarm_memory.cur_mins_since_midnight >= alarm_memory.start_mins_since_midnight ||
+                                                  alarm_memory.cur_mins_since_midnight < alarm_memory.end_mins_since_midnight);
 
-                    alarm_memory.triggered = 1;
+            if (same_day_alarm_triggered || different_day_alarm_triggered)
+            {
+                alarm_memory.within_alarm_period = 1;
+                if (alarm_memory.prev_triggered == 0)
+                {
+                    alarm_memory.prev_triggered = 1;
+                    alarm_memory.dismissed = 0;
+                    // set button callbacks
+                    set_alarm_dismiss_button_callbacks();
                 }
             }
             else
             {
-                alarm_memory.triggered = 0;
-                alarm_memory.dismissed = 0;
+                if (alarm_memory.prev_triggered == 1)
+                {
+                    alarm_memory.prev_triggered = 0;
+                    restore_button_callbacks();
+                }
+                alarm_memory.within_alarm_period = 0;
             }
+
             // check if the time is within the alarm time and n minutes after the alarm time
             /*
             21:00 - 21:05
@@ -1032,11 +1168,28 @@ int main()
             end_minutes = timedelta % 60;
 
             */
-            // if the time is within the alarm time, trigger the alarm until the user clicks the
-            // adjust button once.
-            //
+
+            /*
+            if alarm is outside alarm period or has been dismissed, stop playing the alarm.
+            else if the time is within the alarm time period, and if the alarm has not been manually dismissed,
+            start playing the alarm notes.
+            */
+            if (!alarm_memory.within_alarm_period || alarm_memory.dismissed)
+            {
+                piezo_stop_sequence();
+            }
+            else if (alarm_memory.within_alarm_period && !alarm_memory.dismissed && !piezo_is_playing())
+            {
+                piezo_play_sequence();
+            }
         }
 
+        // read RTC
+        if (t_millis - prev_millis_read_rtc > 500 && read_rtc)
+        {
+            prev_millis_read_rtc = t_millis;
+            clock_time = rtc_get_time();
+        }
         // button tick loops
         button_loop(&minus_button);
         button_loop(&adjust_button);

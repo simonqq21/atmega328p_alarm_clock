@@ -9,8 +9,14 @@
 #include <util/delay.h>
 #include "millis_micros.h"
 #include "gpio.h"
-#include <util/atomic.h>
 #include "config.h"
+#include "button.h"
+
+#define BTNS_PORT PORTC
+#define BTNS_DDR DDRC
+#define BTNS_PIN PINC
+#define BTN_1_PIN_NUM PC1 // down
+Button btn;
 
 Pin common_pin = {
     .ddr = &DDRB,
@@ -22,6 +28,11 @@ Pin cathode_pin = {
     .port = &PORTD,
     .pin_num = 1,
 };
+
+#define TIMES_TO_PLAY 2
+#define STOP_PLAYING (255)
+uint32_t t_millis, last_millis_main = 0;
+uint8_t times_played = STOP_PLAYING;
 
 ISR(TIMER2_COMPA_vect)
 {
@@ -44,6 +55,19 @@ void timer2_init(void)
     OCR2A = 249;
     sei();
 }
+void start_playing(void);
+void stop_playing(void);
+void start_playing(void)
+{
+    times_played = 0;
+    button_attach_single_click(&btn, stop_playing);
+}
+
+void stop_playing(void)
+{
+    times_played = STOP_PLAYING;
+    button_attach_single_click(&btn, start_playing);
+}
 
 int main()
 {
@@ -51,6 +75,13 @@ int main()
     // gpio_set_pin_output(&common_pin);
     // gpio_set_pin_output(&cathode_pin);
     // gpio_set_pin_low(&common_pin);
+
+    btn.button_pin.ddr = &BTNS_DDR;
+    btn.button_pin.port = &BTNS_PORT;
+    btn.button_pin.pin = &BTNS_PIN;
+    btn.button_pin.pin_num = BTN_1_PIN_NUM;
+    button_setup(&btn);
+    button_attach_single_click(&btn, start_playing);
 
     piezo_init(10);
     // Note note = {.ocr1a_value = 8000, .duration = 100};
@@ -294,10 +325,33 @@ int main()
         piezo_add_note(&notes[i]);
     }
 
-    piezo_play_sequence();
+    // piezo_play_sequence();
 
     while (1)
     {
+        t_millis = get_millis();
+
+        if (!piezo_is_playing())
+        {
+            if (times_played < TIMES_TO_PLAY)
+            {
+                piezo_play_sequence();
+                times_played++;
+            }
+        }
+        else
+        {
+            if (times_played > TIMES_TO_PLAY)
+                piezo_stop_sequence();
+        }
+
+        button_loop(&btn);
+        // // test piezo_stop_sequence
+        // if (t_millis - last_millis > 5000)
+        // {
+        //     piezo_stop_sequence();
+        // }
+
         // gpio_toggle_pin_output(&cathode_pin);
         // _delay_ms(500);
 

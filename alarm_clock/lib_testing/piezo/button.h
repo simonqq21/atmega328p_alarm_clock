@@ -1,8 +1,12 @@
 #ifndef BUTTON_H
 #define BUTTON_H
 
-#include "config.h"
-
+#ifndef F_CPU
+#define F_CPU 16000000UL
+#endif
+#ifndef __AVR_ATmega328P__
+#define __AVR_ATmega328P__
+#endif
 /*
 button_loop is placed inside the ISR
 button_debounce and fsm called by button_loop
@@ -10,8 +14,6 @@ button_debounce and fsm called by button_loop
 */
 #include "gpio.h"
 #include "millis_micros.h"
-
-// callback function typedef
 typedef void (*button_action_t)(void);
 
 /*
@@ -102,11 +104,6 @@ void button_attach_single_click(Button *btn,
                                 button_action_t action);
 
 /**
- *
- */
-button_action_t button_get_single_click_action(Button *btn);
-
-/**
  * @brief button attach double click function
  *
  * @param btn pointer to Button
@@ -116,11 +113,6 @@ void button_attach_double_click(Button *btn,
                                 button_action_t action);
 
 /**
- *
- */
-button_action_t button_get_double_click_action(Button *btn);
-
-/**
  * @brief button attach long press function
  *
  * @param btn pointer to Button
@@ -128,11 +120,6 @@ button_action_t button_get_double_click_action(Button *btn);
  */
 void button_attach_long_press(Button *btn,
                               button_action_t action);
-
-/**
- *
- */
-button_action_t button_get_long_press_action(Button *btn);
 
 /**
  * @brief button debounce function run inside the button ISR tick

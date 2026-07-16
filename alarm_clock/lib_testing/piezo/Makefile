@@ -60,7 +60,7 @@ AVRDUDE_TARGET = m328pb
 OPTIMIZE	   = -O2
 DEFS		   =
 # 
-LIBS		   =  gpio.c piezo.c
+LIBS		   =  gpio.c piezo.c millis_micros.c button.c
 # You should not have to change anything below here.
 CC			 = avr-gcc
 # Override is only needed by avr-lib build system.

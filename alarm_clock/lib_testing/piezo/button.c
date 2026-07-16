@@ -7,8 +7,8 @@ void button_setup(Button *btn)
     */
     gpio_set_pin_input(&btn->button_pin);
     gpio_set_pin_high(&btn->button_pin);
-    btn->debounce_ms = 10;
-    btn->click_period_timeout_ms = 60;
+    btn->debounce_ms = 20;
+    btn->click_period_timeout_ms = 100;
     btn->longpress_ms = 1000;
     btn->_state = BUTTON_STATE_INIT;
     btn->num_clicks = 0;
@@ -41,31 +41,16 @@ void button_attach_single_click(Button *btn,
     btn->single_click_action = action;
 }
 
-button_action_t button_get_single_click_action(Button *btn)
-{
-    return btn->single_click_action;
-}
-
 void button_attach_double_click(Button *btn,
                                 button_action_t action)
 {
     btn->double_click_action = action;
 }
 
-button_action_t button_get_double_click_action(Button *btn)
-{
-    return btn->double_click_action;
-}
-
 void button_attach_long_press(Button *btn,
                               button_action_t action)
 {
     btn->long_press_action = action;
-}
-
-button_action_t button_get_long_press_action(Button *btn)
-{
-    return btn->long_press_action;
 }
 
 // , button_action_t f1, button_action_t f2

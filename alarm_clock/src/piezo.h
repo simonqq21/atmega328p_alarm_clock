@@ -30,6 +30,17 @@
 #define NOTE_AS6 1865
 #define NOTE_B6 1976
 #define NOTE_C7 2093
+#define NOTE_CS7 2217
+#define NOTE_D7 2349
+#define NOTE_DS7 2489
+#define NOTE_E7 2637
+#define NOTE_F7 2794
+#define NOTE_FS7 2960
+#define NOTE_G7 3136
+#define NOTE_GS7 3322
+#define NOTE_A7 3520
+#define NOTE_AS7 3729
+#define NOTE_B7 3951
 
 // defined note OCRNA values
 // if OCR1A value is 0, disable the piezo output because that
@@ -60,7 +71,17 @@
 #define OCR1A_NOTE_AS6 535
 #define OCR1A_NOTE_B6 505
 #define OCR1A_NOTE_C7 477
-
+#define OCR1A_NOTE_CS7 450
+#define OCR1A_NOTE_D7 425
+#define OCR1A_NOTE_DS7 401
+#define OCR1A_NOTE_E7 378
+#define OCR1A_NOTE_F7 357
+#define OCR1A_NOTE_FS7 337
+#define OCR1A_NOTE_G7 318
+#define OCR1A_NOTE_GS7 300
+#define OCR1A_NOTE_A7 283
+#define OCR1A_NOTE_AS7 267
+#define OCR1A_NOTE_B7 252
 typedef struct
 {
     uint16_t ocr1a_value;
