@@ -1,3 +1,6 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
 #ifndef _AVR_ATmega328P_
 #define _AVR_ATmega328P_
 #endif
@@ -23,3 +26,22 @@
 #define COLON_DDR DDRB
 #define COLON_PORT PORTB
 #define COLON_PIN_NUM 5
+
+// buttons
+#define BTNS_PORT PORTC
+#define BTNS_DDR DDRC
+#define BTNS_PIN PINC
+#define BTN_1_PIN_NUM PC1 // down
+#define BTN_2_PIN_NUM PC2 // reset
+#define BTN_3_PIN_NUM PC3 // up
+
+#define MIN_YEAR 1900
+#define MAX_YEAR 1999
+
+// DHT11
+typedef struct
+{
+    double humidity, temperature;
+} sensor_values_t;
+
+#endif

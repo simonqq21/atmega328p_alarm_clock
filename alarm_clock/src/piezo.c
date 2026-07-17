@@ -145,7 +145,7 @@ void piezo_stop_sequence(void)
 {
     piezo_off();
     DDRB |= _BV(PB1);
-    PORTB |= _BV(PB1);
+    PORTB |= _BV(PB1); // active low triggered passive buzzer
     is_playing = false;
 }
 
