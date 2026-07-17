@@ -144,7 +144,8 @@ void piezo_off(void)
 void piezo_stop_sequence(void)
 {
     piezo_off();
-    DDRB &= ~_BV(PB1);
+    DDRB |= _BV(PB1);
+    PORTB |= _BV(PB1);
     is_playing = false;
 }
 
