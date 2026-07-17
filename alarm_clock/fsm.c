@@ -10,7 +10,8 @@ extern alarm_memory_t alarm_memory;
 extern uint8_t read_rtc;
 extern sensor_values_t sensor_values;
 extern uint8_t ALARM_OFF_DISPLAY_VALUE[4];
-
+extern struct cRGB colors[8];
+extern struct cRGB led[8];
 /**
  * set the state_start and display_updated flags false when a new main FSM state
  * is entered.
@@ -342,6 +343,38 @@ void decrement_year(void)
     }
 }
 
+void toggle_mood_light(void)
+{
+    static uint8_t state = 0;
+    state++;
+    if (state == 9)
+    {
+        state = 0;
+    }
+    // if (state)
+    // {
+    //     colors[0].r = 0;
+    //     colors[0].g = 255;
+    //     colors[0].b = 0;
+    // }
+    // else
+    // {
+    //     colors[0].r = 0;
+    //     colors[0].g = 0;
+    //     colors[0].b = 0;
+    // }
+
+    for (int i = 0; i < 8; i++)
+    {
+        led[i].r = colors[state].r;
+        led[i].g = colors[state].g;
+        led[i].b = colors[state].b;
+    }
+    ws2812_sendarray((uint8_t *)led, 8 * 3);
+    _delay_ms(2);
+    ws2812_sendarray((uint8_t *)led, 8 * 3);
+}
+
 void fsm_loop(void)
 {
 
@@ -374,7 +407,7 @@ void fsm_loop(void)
             case HOUR_MIN_STATE_DISPLAY:
                 button_attach_single_click(&minus_button, decrement_main_state);
                 button_attach_single_click(&plus_button, increment_main_state);
-                button_attach_single_click(&adjust_button, NULL);
+                button_attach_single_click(&adjust_button, toggle_mood_light);
                 button_attach_long_press(&adjust_button, swap_hour_min_state);
                 break;
             /*

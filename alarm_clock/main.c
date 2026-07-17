@@ -16,6 +16,7 @@
 // #include "src/serial.h"
 #include "src/DHT.h"
 #include "src/states.h"
+#include "src/light_ws2812.h"
 
 #include "alarm.h"
 #include "fsm.h"
@@ -37,6 +38,9 @@ sensor_values_t sensor_values;
 alarm_memory_t alarm_memory;
 button_action_t prev_adjust_btn_callback, prev_plus_btn_callback, prev_minus_btn_callback;
 uint8_t prev_btn_callbacks_saved = 0;
+
+struct cRGB colors[9];
+struct cRGB led[8];
 
 uint8_t ALARM_OFF_DISPLAY_VALUE[4];
 
@@ -152,6 +156,42 @@ int main()
     // alarm_settings.alarm_min = 0;
     // update_alarm_settings();
 
+    // Rainbowcolors
+    colors[0].r = 0;
+    colors[0].g = 0;
+    colors[0].b = 0;
+    colors[1].r = 255;
+    colors[1].g = 000;
+    colors[1].b = 000; // red
+    colors[2].r = 255;
+    colors[2].g = 100;
+    colors[2].b = 000; // orange
+    colors[3].r = 100;
+    colors[3].g = 255;
+    colors[3].b = 000; // yellow
+    colors[4].r = 000;
+    colors[4].g = 255;
+    colors[4].b = 000; // green
+    colors[5].r = 000;
+    colors[5].g = 100;
+    colors[5].b = 255; // light blue (türkis)
+    colors[6].r = 000;
+    colors[6].g = 000;
+    colors[6].b = 255; // blue
+    colors[7].r = 100;
+    colors[7].g = 000;
+    colors[7].b = 255; // violet
+    colors[8].r = 255;
+    colors[8].g = 255;
+    colors[8].b = 255; // violet
+
+    for (int i = 0; i < 8; i++)
+    {
+        led[i].r = colors[0].r;
+        led[i].g = colors[0].g;
+        led[i].b = colors[0].b;
+    }
+    ws2812_sendarray((uint8_t *)led, 8 * 3);
     // ************************************************************************************************
 
     while (1)

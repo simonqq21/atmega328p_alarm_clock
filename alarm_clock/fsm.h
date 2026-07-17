@@ -11,6 +11,7 @@
 // #include "src/serial.h"
 #include "src/DHT.h"
 #include "src/states.h"
+#include "src/light_ws2812.h"
 
 // state updated variable used to run code when switching to a new state
 typedef struct
