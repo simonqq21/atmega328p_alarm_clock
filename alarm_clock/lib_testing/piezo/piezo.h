@@ -97,7 +97,7 @@ void piezo_init(uint8_t note_buf_len);
 /**
  * @brief piezo playing loop runs only when prompted to play.
  */
-void piezo_loop_ISR(void);
+void piezo_loop_ISR(uint32_t piezo_millis);
 
 /**
  * @brief play a single note for a certain duration

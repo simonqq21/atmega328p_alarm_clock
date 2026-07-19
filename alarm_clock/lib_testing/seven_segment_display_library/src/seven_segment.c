@@ -1,5 +1,15 @@
 #include "seven_segment.h"
 
+display_data_t display_data;
+// Pin segment_pins[8];
+Pin srclk_pin;
+Pin lclk_pin;
+Pin ser_pin;
+Pin digit_pins[4];
+Pin colon_pin;
+uint32_t prev_millis_flash;
+uint8_t flash_colon, flash_digits_minutes, flash_digits_hours, flash_all_digits;
+
 const uint8_t digit_values[17] = {
     0b00111111, // 0
     0b00000110, // 1
@@ -17,25 +27,33 @@ const uint8_t digit_values[17] = {
     0b01011110, // d
     0b01111001, // E
     0b01110001, // F
-    0b01110101, // H (for humidity)
+    0b01110110, // H (for humidity)
 };
-
-display_data_t display_data;
-Pin segment_pins[8];
-Pin digit_pins[4];
-Pin colon_pin;
-uint32_t prev_millis_flash;
-uint8_t flash_colon, flash_digits_minutes, flash_digits_hours, flash_all_digits;
 
 void seven_segment_init()
 {
-    for (int i = 0; i < 8; i++)
-    {
-        segment_pins[i].ddr = &SEGMENTS_DDR;
-        segment_pins[i].port = &SEGMENTS_PORT;
-        segment_pins[i].pin_num = i;
-        gpio_set_pin_output(&segment_pins[i]);
-    }
+    // for (int i = 0; i < 8; i++)
+    // {
+    //     segment_pins[i].ddr = &SEGMENTS_DDR;
+    //     segment_pins[i].port = &SEGMENTS_PORT;
+    //     segment_pins[i].pin_num = i;
+    //     gpio_set_pin_output(&segment_pins[i]);
+    // }
+    srclk_pin.ddr = &SR_DDR;
+    srclk_pin.port = &SR_PORT;
+    srclk_pin.pin_num = SRCLK_PIN;
+    gpio_set_pin_output(&srclk_pin);
+
+    lclk_pin.ddr = &SR_DDR;
+    lclk_pin.port = &SR_PORT;
+    lclk_pin.pin_num = LCLK_PIN;
+    gpio_set_pin_output(&lclk_pin);
+
+    ser_pin.ddr = &SR_DDR;
+    ser_pin.port = &SR_PORT;
+    ser_pin.pin_num = SER_PIN;
+    gpio_set_pin_output(&ser_pin);
+
     int i1 = 0;
     for (int i = 0; i < 5; i++)
     {
@@ -73,9 +91,22 @@ void seven_segment_loop_isr(void)
     // if current digit index is enabled, display the digit.
     if (display_data.enable_digits[display_data.cur_digit_index])
     {
+
+        // SEGMENTS_PORT = ~(display_data.display_digits[display_data.cur_digit_index] |
+        //                   display_data.enable_decimal_points[display_data.cur_digit_index] << 7);
+
+        // set latch pin low
+        display_data.display_digits[display_data.cur_digit_index] = display_data.display_digits[display_data.cur_digit_index] |
+                                                                    display_data.enable_decimal_points[display_data.cur_digit_index] << 7;
+        for (int i = 0; i < 7; i++)
+        {
+            gpio_set_pin_val(&ser_pin, ~display_data.display_digits[display_data.cur_digit_index] & _BV(7 - i));
+            gpio_set_pin_val(&srclk_pin, 1);
+            gpio_set_pin_val(&srclk_pin, 0);
+        }
+        gpio_set_pin_val(&lclk_pin, 1);
+        gpio_set_pin_val(&lclk_pin, 0);
         DIGITS_PORT &= ~(_BV(digit_pins[3 - display_data.cur_digit_index].pin_num));
-        SEGMENTS_PORT = ~(display_data.display_digits[display_data.cur_digit_index] |
-                          display_data.enable_decimal_points[display_data.cur_digit_index] << 7);
     }
     display_data.cur_digit_index++;
     if (display_data.cur_digit_index > 3)

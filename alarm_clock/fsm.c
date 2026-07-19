@@ -12,6 +12,8 @@ extern sensor_values_t sensor_values;
 extern uint8_t ALARM_OFF_DISPLAY_VALUE[4];
 extern struct cRGB colors[8];
 extern struct cRGB led[8];
+extern uint32_t t_millis, prev_millis_read_rtc, prev_millis_read_dht;
+
 /**
  * set the state_start and display_updated flags false when a new main FSM state
  * is entered.
@@ -567,7 +569,7 @@ void fsm_loop(void)
             case MONTH_DAY_STATE_DISPLAY:
                 button_attach_single_click(&minus_button, decrement_main_state);
                 button_attach_single_click(&plus_button, increment_main_state);
-                button_attach_single_click(&adjust_button, NULL);
+                button_attach_single_click(&adjust_button, toggle_mood_light);
                 button_attach_long_press(&adjust_button, swap_month_day_state);
                 break;
                 /*
@@ -646,7 +648,7 @@ void fsm_loop(void)
             case YEAR_STATE_DISPLAY:
                 button_attach_single_click(&minus_button, decrement_main_state);
                 button_attach_single_click(&plus_button, increment_main_state);
-                button_attach_single_click(&adjust_button, NULL);
+                button_attach_single_click(&adjust_button, toggle_mood_light);
                 button_attach_long_press(&adjust_button, swap_year_state);
                 break;
             /*
@@ -697,7 +699,7 @@ void fsm_loop(void)
             case TEMPERATURE_STATE_DISPLAY_TEMPERATURE:
                 button_attach_single_click(&minus_button, decrement_main_state);
                 button_attach_single_click(&plus_button, increment_main_state);
-                button_attach_single_click(&adjust_button, NULL);
+                button_attach_single_click(&adjust_button, toggle_mood_light);
                 button_attach_long_press(&adjust_button, NULL);
                 break;
             default:
@@ -706,7 +708,13 @@ void fsm_loop(void)
         }
         // run forever
         // Read from sensor
-        DHT_Read(&sensor_values.temperature, &sensor_values.humidity);
+        if (t_millis - prev_millis_read_dht > 3000)
+        {
+            prev_millis_read_dht = t_millis;
+            cli();
+            DHT_Read(&sensor_values.temperature, &sensor_values.humidity);
+            sei();
+        }
         switch (fsm_variables.temperature_state)
         {
         case TEMPERATURE_STATE_DISPLAY_TEMPERATURE:
@@ -734,7 +742,7 @@ void fsm_loop(void)
             case HUMIDITY_STATE_DISPLAY_HUMIDITY:
                 button_attach_single_click(&minus_button, decrement_main_state);
                 button_attach_single_click(&plus_button, increment_main_state);
-                button_attach_single_click(&adjust_button, NULL);
+                button_attach_single_click(&adjust_button, toggle_mood_light);
                 button_attach_long_press(&adjust_button, NULL);
                 break;
             default:

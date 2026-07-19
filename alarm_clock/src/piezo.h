@@ -94,6 +94,7 @@ typedef struct
  */
 void piezo_init(uint8_t note_buf_len);
 
+// uint32_t piezo_millis
 /**
  * @brief piezo playing loop runs only when prompted to play.
  */

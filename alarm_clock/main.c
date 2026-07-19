@@ -28,8 +28,8 @@ extern const uint8_t digit_values[17];
 
 */
 
-uint32_t t_millis;
-uint32_t prev_millis_read_rtc;
+volatile uint32_t t_millis;
+uint32_t prev_millis_read_rtc, prev_millis_read_dht;
 
 Button minus_button, adjust_button, plus_button;
 struct tm *clock_time;
@@ -47,8 +47,8 @@ uint8_t ALARM_OFF_DISPLAY_VALUE[4];
 // interrupts
 ISR(TIMER0_COMPA_vect)
 {
-    millis_timer_ISR_loop();
     piezo_loop_ISR();
+    millis_timer_ISR_loop();
     seven_segment_loop_isr();
 }
 
@@ -221,5 +221,7 @@ int main()
         button_loop(&plus_button);
         // seven segment flashing loop
         seven_segment_flashing_loop(t_millis);
+
+        // piezo_loop_ISR(t_millis);
     }
 }

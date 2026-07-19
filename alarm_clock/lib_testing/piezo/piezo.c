@@ -62,9 +62,9 @@ void piezo_init(uint8_t note_buf_len)
     is_playing = false;
 }
 
-void piezo_loop_ISR(void)
+void piezo_loop_ISR(uint32_t piezo_millis)
 {
-    piezo_millis++;
+    // piezo_millis++;
 
     if (is_playing)
     {

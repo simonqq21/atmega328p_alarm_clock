@@ -10,8 +10,12 @@
 #include "avr/interrupt.h"
 #include "util/atomic.h"
 
-#define SEGMENTS_DDR DDRD
-#define SEGMENTS_PORT PORTD
+#define SR_DDR DDRD
+#define SR_PORT PORTD
+#define SER_PIN 2
+#define SRCLK_PIN 3
+#define LCLK_PIN 4
+
 #define DIGITS_DDR DDRB
 #define DIGITS_PORT PORTB
 #define DIGITS_START_INDEX 0
