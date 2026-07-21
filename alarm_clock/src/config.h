@@ -33,6 +33,11 @@
 #define COLON_PORT PORTB
 #define COLON_PIN_NUM 5
 
+// LED strip
+#define WS2812_DDR DDRD
+#define WS2812_PORT PORTD
+#define WS2812_PIN_NUM 5
+
 // buttons
 #define BTNS_PORT PORTC
 #define BTNS_DDR DDRC

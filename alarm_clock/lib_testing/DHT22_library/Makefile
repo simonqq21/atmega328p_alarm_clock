@@ -1,5 +1,5 @@
 # set program name and object file name
-PRG			= main
+PRG			= demo
 #MCU_TARGET	 = at90s2313
 #MCU_TARGET	 = at90s2333
 #MCU_TARGET	 = at90s4414
@@ -59,9 +59,8 @@ AVRDUDE_TARGET = m328pb
 
 OPTIMIZE	   = -O2
 DEFS		   =
-LIBS		   =  src/millis_micros.c src/gpio.c src/button.c src/seven_segment.c src/rtc.c \
-				src/twi.c src/twi-lowlevel.c src/dht22.c src/piezo.c src/light_ws2812.c \
-				alarm.c fsm.c notes.c
+LIBS		   = gpio.c millis_micros.c dht22.c
+# 
 # You should not have to change anything below here.
 CC			 = avr-gcc
 # Override is only needed by avr-lib build system.
@@ -71,10 +70,8 @@ OBJCOPY		= avr-objcopy
 OBJDUMP		= avr-objdump
 
 all: $(PRG).elf lst text eeprom
-$(PRG).elf: $(PRG).o
+$(PRG).elf: $(PRG).o uart.o
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
-	avr-size $@
-
 # dependency:
 # demo.o: demo.c iocompat.h
 

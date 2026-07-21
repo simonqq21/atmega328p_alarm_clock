@@ -14,7 +14,7 @@
 #include "src/seven_segment.h"
 #include "src/rtc.h"
 // #include "src/serial.h"
-#include "src/DHT.h"
+#include "src/dht22.h"
 #include "src/states.h"
 #include "src/light_ws2812.h"
 
@@ -32,9 +32,10 @@ volatile uint32_t t_millis;
 uint32_t prev_millis_read_rtc, prev_millis_read_dht;
 
 Button minus_button, adjust_button, plus_button;
+Pin ws2812_pin_struct;
 struct tm *clock_time;
 uint8_t read_rtc;
-sensor_values_t sensor_values;
+dht_values_t dht_values;
 alarm_memory_t alarm_memory;
 button_action_t prev_adjust_btn_callback, prev_plus_btn_callback, prev_minus_btn_callback;
 uint8_t prev_btn_callbacks_saved = 0;
@@ -129,6 +130,15 @@ int main()
     // initialize seven segment
     seven_segment_init();
     seven_segment_clear_all();
+
+    // initialize WS2812 pin
+    ws2812_pin_struct.ddr = &WS2812_DDR;
+    ws2812_pin_struct.port = &WS2812_PORT;
+    ws2812_pin_struct.pin_num = WS2812_PIN_NUM;
+    gpio_set_pin_output(&ws2812_pin_struct);
+
+    // initialize DHT22
+    dht22_init();
 
     // initialize RTC
     twi_init_master();

@@ -9,7 +9,7 @@
 #include "src/seven_segment.h"
 #include "src/rtc.h"
 // #include "src/serial.h"
-#include "src/DHT.h"
+#include "src/dht22.h"
 #include "src/states.h"
 #include "src/light_ws2812.h"
 

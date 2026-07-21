@@ -8,7 +8,7 @@ extern Button minus_button, adjust_button, plus_button;
 extern alarm_settings_t alarm_settings;
 extern alarm_memory_t alarm_memory;
 extern uint8_t read_rtc;
-extern sensor_values_t sensor_values;
+extern dht_values_t dht_values;
 extern uint8_t ALARM_OFF_DISPLAY_VALUE[4];
 extern struct cRGB colors[8];
 extern struct cRGB led[8];
@@ -373,8 +373,6 @@ void toggle_mood_light(void)
         led[i].b = colors[state].b;
     }
     ws2812_sendarray((uint8_t *)led, 8 * 3);
-    _delay_ms(2);
-    ws2812_sendarray((uint8_t *)led, 8 * 3);
 }
 
 void fsm_loop(void)
@@ -687,7 +685,7 @@ void fsm_loop(void)
             // run only when changing main state
             if (fsm_variables.main_state_swapped == true)
             {
-                sensor_values.temperature = -88.8;
+                dht_values.temperature = -88.8;
                 fsm_variables.main_state_swapped = false;
             }
             // set button callbacks
@@ -712,14 +710,14 @@ void fsm_loop(void)
         {
             prev_millis_read_dht = t_millis;
             cli();
-            DHT_Read(&sensor_values.temperature, &sensor_values.humidity);
+            dht22_measure_values(&dht_values);
             sei();
         }
         switch (fsm_variables.temperature_state)
         {
         case TEMPERATURE_STATE_DISPLAY_TEMPERATURE:
         default:
-            seven_segment_show_temperature(sensor_values.temperature);
+            seven_segment_show_temperature(dht_values.temperature);
         }
         break;
     case MAIN_STATE_HUMIDITY:
@@ -730,7 +728,7 @@ void fsm_loop(void)
             // run only when changing main state
             if (fsm_variables.main_state_swapped == true)
             {
-                sensor_values.humidity = 88.8;
+                dht_values.humidity = 88.8;
                 fsm_variables.main_state_swapped = false;
             }
             // set button callbacks
@@ -750,12 +748,18 @@ void fsm_loop(void)
             }
         }
         // run forever
-        DHT_Read(&sensor_values.temperature, &sensor_values.humidity);
+        if (t_millis - prev_millis_read_dht > 3000)
+        {
+            prev_millis_read_dht = t_millis;
+            cli();
+            dht22_measure_values(&dht_values);
+            sei();
+        }
         switch (fsm_variables.humidity_state)
         {
         case HUMIDITY_STATE_DISPLAY_HUMIDITY:
         default:
-            seven_segment_show_humidity(sensor_values.humidity);
+            seven_segment_show_humidity(dht_values.humidity);
         }
         break;
     // 7 segment test on and off
