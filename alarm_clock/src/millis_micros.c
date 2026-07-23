@@ -1,6 +1,3 @@
-#ifndef __AVR_ATmega328P__
-#define __AVR_ATmega328P__
-#endif
 #include "millis_micros.h"
 
 /*
@@ -31,6 +28,7 @@ void millis_timer_init(void)
 
     TCCR0A = 0x00;
     TCCR0B = 0x00;
+
     // WGM0 = 0b010, CTC mode
     // COM0A = 0b00, COM0B = 0b00, normal port operation
     TCCR0A |= _BV(WGM01);
@@ -38,8 +36,12 @@ void millis_timer_init(void)
     // each tick is 4 us
     TCCR0B |= _BV(CS01) | _BV(CS00);
     // TCNT0 counts from 0 to 249 (restart every 250 counts)
+    // 16 MHz
     OCR0A = 249;
-    OCR0B = 0;
+    // 8 MHz
+    // OCR0A = 124;
+    // OCR0B = 0;
+
     // OCIE0B = 0b1, OCIE0A = 0b1
     TIMSK0 |= _BV(OCIE0A);
     // TIMSK0 |= _BV(OCIE0B);

@@ -9,7 +9,6 @@
 #include "src/seven_segment.h"
 #include "src/rtc.h"
 // #include "src/serial.h"
-#include "src/DHT.h"
 #include "src/states.h"
 
 #define EEPROM_ALARM_SETTINGS_ADDR (0x0)

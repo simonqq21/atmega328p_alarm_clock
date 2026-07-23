@@ -1,11 +1,4 @@
 // ************************************************************************************************
-#ifndef F_CPU
-#define F_CPU 16000000UL
-#endif
-#ifndef __AVR_ATmega328P__
-#define __AVR_ATmega328P__
-#endif
-
 #include "src/config.h"
 #include "src/millis_micros.h"
 #include "src/gpio.h"

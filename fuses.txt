@@ -1,0 +1,7 @@
+avrdude -p m328pb -c arduino -P /dev/ttyACM0 -b19200 -U lfuse:r:low_fuse_val.txt:h -U hfuse:r:high_fuse_val.txt:h -U efuse:r:ext_fuse_val.txt:h
+
+avrdude -p m328pb -c arduino -P /dev/ttyACM0 -b19200 -U lfuse:w:0xFF:m
+
+internal 8 MHz
+avrdude -p m328pb -c arduino -P /dev/ttyACM0 -b19200 -U lfuse:w:0x62:m
+avrdude -p m328pb -c arduino -P /dev/ttyACM0 -b19200 -U lfuse:w:0xE2:m

@@ -9,7 +9,6 @@
 #include "src/seven_segment.h"
 #include "src/rtc.h"
 // #include "src/serial.h"
-#include "src/DHT.h"
 #include "src/states.h"
 
 void load_alarm_notes(void);

@@ -23,15 +23,9 @@ void gpio_toggle_pin_mode(Pin *pin)
 
 uint8_t gpio_read_pin(Pin *pin)
 {
-    if (*pin->pin & _BV(pin->pin_num))
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
+    return (*pin->pin & _BV(pin->pin_num));
 }
+
 void gpio_set_pin_val(Pin *pin, uint8_t value)
 {
     if (value)

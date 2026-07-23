@@ -1,13 +1,7 @@
 #ifndef DHT22_H
 #define DHT22_H
 
-#ifndef __AVR_ATmega328P__
-#define __AVR_ATmega328P__
-#endif
-#ifndef F_CPU
-#define F_CPU 16000000UL
-#endif
-
+#include "config.h"
 #include "gpio.h"
 #include <util/delay.h>
 

@@ -1,11 +1,11 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#ifndef _AVR_ATmega328P_
-#define _AVR_ATmega328P_
-#endif
 #ifndef F_CPU
 #define F_CPU 16000000UL
+#endif
+#ifndef __AVR_ATmega328P__
+#define __AVR_ATmega328P__
 #endif
 
 #include <stdlib.h>

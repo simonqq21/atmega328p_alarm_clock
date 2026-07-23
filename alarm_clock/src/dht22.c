@@ -75,7 +75,7 @@ dht22_status_t dht22_measure_values(dht_values_t *dht_values)
                 dht22_raw_values[j / 8] <<= 1;
 
                 // check if bit is 0 or 1
-                if (counter >= 12)
+                if (counter >= 9) // 12
                 {
                     dht22_raw_values[j / 8] |= 1;
                 }

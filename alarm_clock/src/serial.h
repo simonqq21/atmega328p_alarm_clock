@@ -30,13 +30,6 @@
 #ifndef _serial_h
 #define _serial_h
 
-#ifndef F_CPU
-#define F_CPU 16000000UL
-#endif
-#ifndef __AVR_ATmega328P__
-#define __AVR_ATmega328P__
-#endif
-
 /** \addtogroup uart UART Library
  *  UART Library enabling you to control all available
  *  UART Modules. With XON/XOFF Flow Control and buffered

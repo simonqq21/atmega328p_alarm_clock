@@ -372,7 +372,9 @@ void toggle_mood_light(void)
         led[i].g = colors[state].g;
         led[i].b = colors[state].b;
     }
+    cli();
     ws2812_sendarray((uint8_t *)led, 8 * 3);
+    sei();
 }
 
 void fsm_loop(void)
